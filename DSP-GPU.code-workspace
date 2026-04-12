@@ -1,0 +1,42 @@
+{
+  "folders": [
+    { "path": "core",              "name": "🔵 core (DrvGPU)" },
+    { "path": "spectrum",          "name": "📡 spectrum (FFT+filters+lch)" },
+    { "path": "stats",             "name": "📊 stats (welford+median)" },
+    { "path": "signal_generators", "name": "📶 signal_generators" },
+    { "path": "heterodyne",        "name": "🔀 heterodyne (dechirp)" },
+    { "path": "linalg",            "name": "🧮 linalg (vecalg+capon)" },
+    { "path": "radar",             "name": "🎯 radar (range_angle+fm)" },
+    { "path": "strategies",        "name": "🏗️ strategies (pipelines)" },
+    { "path": "DSP",               "name": "🏛️ DSP (meta-repo)" }
+  ],
+  "settings": {
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configurePreset": "local-dev",
+    "cmake.buildPreset": "local-dev",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.cppStandard": "c++17",
+    "files.associations": {
+      "*.hip": "cpp",
+      "*.hpp": "cpp",
+      "*.cl":  "opencl"
+    },
+    "[cpp]": {
+      "editor.defaultFormatter": "ms-vscode.cpptools"
+    },
+    "explorer.openEditors.visible": 5,
+    "plantuml.render": "PlantUMLServer",
+    "plantuml.server": "https://www.plantuml.com/plantuml",
+    "plantuml.diagramsRoot": "DSP/Doc/Architecture",
+    "plantuml.exportOutDir": "DSP/Doc/Architecture/export"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.cpptools",
+      "ms-vscode.cmake-tools",
+      "vadimcn.vscode-lldb",
+      "jebbs.plantuml",
+      "ms-python.python"
+    ]
+  }
+}

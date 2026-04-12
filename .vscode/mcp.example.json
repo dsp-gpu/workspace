@@ -1,0 +1,87 @@
+{
+  "servers": {
+
+    "sequential-thinking": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "env": {}
+    },
+
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "env": {}
+    },
+
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "__REPLACE_WITH_DSP_GPU_ORG_TOKEN__"
+      }
+    },
+
+    "supermemory": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["__REPLACE_WITH_PATH_TO_supermemory-mcp.js__"],
+      "env": {
+        "SUPERMEMORY_API_KEY": "__REPLACE_WITH_SUPERMEMORY_API_KEY__",
+        "SUPERMEMORY_PROJECT": "DSP-GPU"
+      }
+    },
+
+    "wolfram-alpha": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["wolfram-alpha-mcp-server"],
+      "env": {
+        "WOLFRAM_API_KEY": "__REPLACE_WITH_WOLFRAM_API_KEY__"
+      }
+    },
+
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "__REPLACE_WITH_WORKSPACE_PATH__"
+      ],
+      "env": {}
+    },
+
+    "git": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-git", "--repository", "__REPLACE_WITH_DSP_REPO_PATH__"],
+      "env": {}
+    },
+
+    "fetch": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "env": {}
+    },
+
+    "memory": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {}
+    },
+
+    "repomix": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "repomix-mcp"],
+      "env": {}
+    }
+
+  },
+  "inputs": []
+}
