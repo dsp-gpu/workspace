@@ -16,10 +16,10 @@
 ## 🗂️ Структура workspace
 
 ```
-E:\DSP-GPU\                       ← корень workspace (не git!)
+E:\DSP-GPU\                       ← корень workspace, git: github.com/dsp-gpu/workspace
 ├── DSP-GPU.code-workspace         ← VSCode multi-folder workspace
 ├── CLAUDE.md                      ← этот файл
-├── MemoryBank/                    ← управляющие данные (не в git)
+├── MemoryBank/                    ← управляющие данные (в git workspace)
 ├── .vscode/                       ← настройки VSCode + MCP
 ├── .claude/                       ← настройки Claude Code
 │
@@ -34,10 +34,11 @@ E:\DSP-GPU\                       ← корень workspace (не git!)
 └── DSP/               ← git: github.com/dsp-gpu/DSP (мета-репо)
 ```
 
-## 📦 Репозитории (9 штук)
+## 📦 Репозитории (10 штук)
 
 | Репо | Содержимое | Зависит от |
 |------|-----------|-----------|
+| `workspace` | Корень: CLAUDE.md, MemoryBank, .vscode | — |
 | `core` | DrvGPU — backend, profiler, logger | hip, OpenCL |
 | `spectrum` | fft_func + filters + lch_farrow | core + hipFFT |
 | `stats` | statistics (welford, median, radix) | core + rocprim |
@@ -59,12 +60,12 @@ E:\DSP-GPU\                       ← корень workspace (не git!)
 ## 📁 MemoryBank
 
 > 📍 **Главный файл**: `MemoryBank/MASTER_INDEX.md`
-> ⚠️ MemoryBank НЕ в git — локальная папка `E:\DSP-GPU\MemoryBank\`
+> ✅ MemoryBank в git — репо `github.com/dsp-gpu/workspace`
 
 ```
 MemoryBank/
 ├── MASTER_INDEX.md      # 🗂️ Главный индекс — ЧИТАТЬ ПЕРВЫМ
-├── specs/               # 📝 Спецификации (план миграции, архитектура)
+├── specs/               # 📝 Спецификации (план миграции, архитектура, ревью)
 ├── tasks/               # 📋 Задачи (BACKLOG → IN_PROGRESS → COMPLETED)
 ├── changelog/           # 📊 История изменений
 └── sessions/            # 💬 История сессий
@@ -155,14 +156,14 @@ cmake -S . -B build --preset local-dev
 
 | Модуль → Репо | Статус миграции |
 |--------------|----------------|
-| DrvGPU → core | ⏳ Фаза 2 |
-| fft_func+filters+lch_farrow → spectrum | ⏳ Фаза 2 |
-| statistics → stats | ⏳ Фаза 2 |
-| signal_generators → signal_generators | ⏳ Фаза 2 |
-| heterodyne → heterodyne | ⏳ Фаза 2 |
-| vector_algebra+capon → linalg | ⏳ Фаза 2 |
-| range_angle+fm_correlator → radar | ⏳ Фаза 2 |
-| strategies → strategies | ⏳ Фаза 2 |
+| DrvGPU → core | ✅ Код + CMake + Python binding |
+| fft_func+filters+lch_farrow → spectrum | ✅ Код + CMake + Python binding |
+| statistics → stats | ✅ Код + CMake + Python binding |
+| signal_generators → signal_generators | ✅ Код + CMake + Python binding |
+| heterodyne → heterodyne | ✅ Код + CMake + Python binding |
+| vector_algebra+capon → linalg | ✅ Код + CMake + Python binding |
+| range_angle+fm_correlator → radar | ✅ Код + CMake + Python binding |
+| strategies → strategies | ✅ Код + CMake + Python binding |
 
 ---
 
