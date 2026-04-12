@@ -161,7 +161,7 @@ dsp-gpu/core/
 ├── CMakeLists.txt
 ├── CMakePresets.json
 ├── cmake/
-│   ├── DspCoreConfig.cmake.in   ← с find_dependency(HIP, OpenCL)
+│   ├── DspCoreConfig.cmake.in   ← с find_dependency(hip, OpenCL)
 │   └── FindROCm.cmake           ← поиск ROCm/HIP SDK
 ├── include/
 │   └── dsp/
@@ -217,7 +217,7 @@ option(DSP_CORE_BUILD_EXAMPLES "Build examples"      OFF)
 option(DSP_CORE_BUILD_PYTHON   "Build Python bindings" OFF)
 
 # ── ROCm/HIP ───────────────────────────────────────────────────────
-find_package(HIP REQUIRED)
+find_package(hip REQUIRED)       # lowercase — Linux case-sensitive!
 find_package(OpenCL REQUIRED)
 
 # ── Основная библиотека ────────────────────────────────────────────
@@ -303,7 +303,7 @@ endif()
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
-find_dependency(HIP REQUIRED)
+find_dependency(hip REQUIRED)       # lowercase!
 find_dependency(OpenCL REQUIRED)
 
 include("${CMAKE_CURRENT_LIST_DIR}/DspCoreTargets.cmake")
@@ -323,7 +323,7 @@ option(DSP_SPECTRUM_BUILD_TESTS  "Build tests"         ON)
 option(DSP_SPECTRUM_BUILD_PYTHON "Build Python bindings" OFF)
 
 # ── Зависимости ────────────────────────────────────────────────────
-find_package(HIP REQUIRED)
+find_package(hip REQUIRED)       # lowercase — Linux case-sensitive!
 find_package(hipfft REQUIRED)
 
 # Ищем DspCore — FetchContent с FIND_PACKAGE_ARGS (R1 ревью)
@@ -389,7 +389,7 @@ endif()
 
 include(CMakeFindDependencyMacro)
 find_dependency(DspCore  REQUIRED)   # ← критично!
-find_dependency(HIP      REQUIRED)
+find_dependency(hip      REQUIRED)   # lowercase!
 find_dependency(hipfft   REQUIRED)
 
 include("${CMAKE_CURRENT_LIST_DIR}/DspSpectrumTargets.cmake")

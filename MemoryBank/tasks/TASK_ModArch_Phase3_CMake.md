@@ -2,7 +2,7 @@
 
 > **Индекс**: [`TASK_Modular_Architecture_INDEX.md`](TASK_Modular_Architecture_INDEX.md)
 > **Спецификация**: [`specs/modular_architecture_plan.md`](../specs/modular_architecture_plan.md) — раздел 7 Фаза 3, разделы 4 и 8.3
-> **Статус**: ⬜ BACKLOG
+> **Статус**: ✅ DONE — завершено 2026-04-12
 > **Зависимость**: Фаза 2 должна быть ✅ DONE
 > **Платформа**: Windows (редактирование файлов, GPU не нужен)
 > **Результат**: каждый репо собирается standalone `cmake --build`, namespace `dsp::` в C++

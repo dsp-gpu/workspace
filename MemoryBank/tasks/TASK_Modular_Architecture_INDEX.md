@@ -4,7 +4,7 @@
 > **Спецификация**: [`specs/modular_architecture_plan.md`](../specs/modular_architecture_plan.md)
 > **Ревью**: [`specs/modular_architecture_plan_REVIEW_v2.md`](../specs/modular_architecture_plan_REVIEW_v2.md)
 > **Версия плана**: v2 (после ревью 2026-04-11)
-> **Статус**: IN_PROGRESS (Фаза 0 ✅, Фаза 1 в работе)
+> **Статус**: Фазы 0-3b ✅ DONE, Фаза 4 ⬜ BACKLOG
 
 ---
 
@@ -33,10 +33,10 @@ github.com/dsp-gpu/
 | Фаза | Файл задачи | Статус |
 |------|-------------|--------|
 | 0 — Аудит зависимостей | [`TASK_ModArch_Phase0_Audit.md`](TASK_ModArch_Phase0_Audit.md) | ✅ DONE |
-| 1 — Скелет 9 репо | [`TASK_ModArch_Phase1_Skeleton.md`](TASK_ModArch_Phase1_Skeleton.md) | ⬜ BACKLOG |
-| 2 — Копирование кода | [`TASK_ModArch_Phase2_Copy.md`](TASK_ModArch_Phase2_Copy.md) | ⬜ BACKLOG |
-| 3 — CMake + namespace | [`TASK_ModArch_Phase3_CMake.md`](TASK_ModArch_Phase3_CMake.md) | ⬜ BACKLOG |
-| **3b — Python migration** | [`TASK_ModArch_Phase3b_Python.md`](TASK_ModArch_Phase3b_Python.md) | ⬜ BACKLOG |
+| 1 — Скелет 9 репо | [`TASK_ModArch_Phase1_Skeleton.md`](TASK_ModArch_Phase1_Skeleton.md) | ✅ DONE |
+| 2 — Копирование кода | [`TASK_ModArch_Phase2_Copy.md`](TASK_ModArch_Phase2_Copy.md) | ✅ DONE |
+| 3 — CMake-адаптация | [`TASK_ModArch_Phase3_CMake.md`](TASK_ModArch_Phase3_CMake.md) | ✅ DONE |
+| **3b — Python bindings** | [`TASK_ModArch_Phase3b_Python.md`](TASK_ModArch_Phase3b_Python.md) | ✅ DONE |
 | 4 — Тестирование GPU | [`TASK_ModArch_Phase4_Test.md`](TASK_ModArch_Phase4_Test.md) | ⬜ BACKLOG |
 
 ---

@@ -2,7 +2,7 @@
 
 > **Индекс**: [`TASK_Modular_Architecture_INDEX.md`](TASK_Modular_Architecture_INDEX.md)
 > **Спецификация**: [`specs/modular_architecture_plan.md`](../specs/modular_architecture_plan.md) — раздел 7, Фаза 2
-> **Статус**: ⬜ BACKLOG
+> **Статус**: ✅ DONE — завершено 2026-04-12
 > **Зависимость**: Фаза 1 должна быть ✅ DONE
 > **Платформа**: Windows (копирование файлов, GPU не нужен)
 > **Результат**: реальный код в 9 репо, без GPU тестирования
