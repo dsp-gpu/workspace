@@ -1,5 +1,9 @@
 # =============================================================================
 # CMakeLists.txt — полный pipeline: version → build → test → package
+#
+# DEPRECATED: Это черновик/прототип. Актуальная реализация —
+#   {module}/cmake/version.cmake (с MODULE_PREFIX, copy_if_different)
+#   См. MemoryBank/specs/cmake_git_aware_build.md
 # =============================================================================
 cmake_minimum_required(VERSION 3.20)
 

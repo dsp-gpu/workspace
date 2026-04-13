@@ -1,0 +1,38 @@
+---
+description: Workflow Кодо — Context7, sequential-thinking, URL, GitHub
+alwaysApply: true
+---
+
+# Workflow: инструменты Кодо
+
+При работе над задачами использовать помощников (синьоров):
+
+## 1. Context7
+- **Когда:** Нужен контекст по теме, библиотеке, API
+- **Как:** Запрашивать через MCP `context7`
+- **Пример:** Исследование OpenCL kernel cache, ROCm hipModuleLoad, pybind11 API
+
+## 2. Релевантные библиотеки (URL / WebFetch)
+- **Когда:** Работа с внешними библиотеками (OpenCL, ROCm, pybind11, nlohmann/json)
+- **Как:** Подтягивать статьи/документацию по URL через WebFetch
+- **Пример:** Khronos clCreateProgramWithBinary, AMD ROCm docs
+
+## 3. Sequential-thinking
+- **Когда:** Сложная задача, несколько вариантов, архитектурные решения, математика
+- **Как:** MCP `sequential-thinking` — разбор задачи, плюсы/минусы вариантов
+- **Пример:** Выбор между единой БД и раздельными, FFT алгоритмы, интеграция нового модуля
+
+## 4. GitHub
+- **Когда:** Поиск референсного кода, примеров, best practices
+- **Как:** MCP `github` — поиск по репозиториям
+- **Пример:** Intel COMPILER_CACHE, ROCm samples, HIP примеры
+
+## 5. Explore Agent
+- **Когда:** Поиск по большой кодовой базе (несколько уровней вложенности)
+- **Как:** Agent tool с subagent_type=Explore
+- **Пример:** Найти все использования BufferSet, проверить все all_test.hpp
+
+## Где писать результаты
+
+Любые результаты (анализ, ревью, планы, аудит, сессии) — ТОЛЬКО в основной `MemoryBank/`.
+Никогда в `.claude/worktrees/*/` — там файлы теряются, в GitHub не попадают.

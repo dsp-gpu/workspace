@@ -12,6 +12,10 @@ DSP/
 # ── Секреты — НИКОГДА в git ───────────────────────────────────────
 .vscode/mcp.json
 
+# ── Claude Code / IDE (временные) ────────────────────────────────
+.claude/worktrees/
+.claude/claude-code-chat-images/
+
 # ── Системное ────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
