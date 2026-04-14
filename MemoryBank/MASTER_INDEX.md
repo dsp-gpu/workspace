@@ -76,6 +76,12 @@ E:\DSP-GPU\
 | [modular_architecture_plan_REVIEW_v2.md](specs/modular_architecture_plan_REVIEW_v2.md) | Последнее ревью v2 |
 | [TASK_Modular_Architecture_INDEX.md](tasks/TASK_Modular_Architecture_INDEX.md) | Индекс всех задач |
 
+## 🔖 Follow-ups
+
+| Задача | Описание |
+|--------|----------|
+| [TASK_Spectrum_Review_Followups.md](tasks/TASK_Spectrum_Review_Followups.md) | ScopedHipEvent в 4 файла + ревью kernels (после ревью 2026-04-14) |
+
 ---
 
 ## ⚠️ Важные ссылки
