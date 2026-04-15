@@ -22,7 +22,7 @@ model: opus
 ## Структура DSP-GPU
 
 ```
-/home/alex/DSP-GPU/
+<workspace>/
 ├── core/           ← DrvGPU + GPUProfiler
 ├── spectrum/       ← FFT + filters
 ├── stats/          ← statistics
@@ -43,9 +43,9 @@ model: opus
 ```
 
 Справочные материалы:
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/GPU_Profiling_Mechanism.md` — как работает GPUProfiler
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/ROCm_Regression_Check_Algorithm.md` — алгоритм проверки регрессий
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/Info_ROCm_HIP_Optimization_Guide.md` — оптимизации
+- `./~!Doc/~Разобрать/GPU_Profiling_Mechanism.md` — как работает GPUProfiler
+- `./~!Doc/~Разобрать/ROCm_Regression_Check_Algorithm.md` — алгоритм проверки регрессий
+- `./~!Doc/~Разобрать/Info_ROCm_HIP_Optimization_Guide.md` — оптимизации
 
 ## Метрики для анализа
 

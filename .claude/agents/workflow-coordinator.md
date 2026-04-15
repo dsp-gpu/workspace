@@ -45,8 +45,8 @@ fix-agent  →  build-agent  →  test-agent  →  doc-agent
 ### Шаг 1 — Прочитать текущее состояние
 
 ```bash
-cat /home/alex/DSP-GPU/MemoryBank/tasks/IN_PROGRESS.md
-cat /home/alex/DSP-GPU/MemoryBank/MASTER_INDEX.md
+cat ./MemoryBank/tasks/IN_PROGRESS.md
+cat ./MemoryBank/MASTER_INDEX.md
 ```
 
 Определить: какие репо на каком этапе.

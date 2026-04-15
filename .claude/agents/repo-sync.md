@@ -22,7 +22,7 @@ model: sonnet
 ## Структура DSP-GPU
 
 ```
-/home/alex/DSP-GPU/
+<workspace>/
 ├── .  (workspace) ← git: dsp-gpu/workspace
 ├── core/          ← git: dsp-gpu/core       (DrvGPU)
 ├── spectrum/      ← git: dsp-gpu/spectrum    (FFT+filters)
@@ -69,7 +69,7 @@ DSP        ← все (мета-репо + Python/ + Doc/)
 ```bash
 # Найти запрещённые uppercase find_package
 grep -rn "find_package(HIP\|find_package(ROCm\|find_package(ROCM\|find_package(HipFFT" \
-    /home/alex/DSP-GPU/*/CMakeLists.txt
+    ./*/CMakeLists.txt
 # Результат должен быть ПУСТЫМ
 ```
 
@@ -103,27 +103,27 @@ done
 
 ### 2. Проверить find_package
 ```bash
-grep -rn "find_package(" /home/alex/DSP-GPU/*/CMakeLists.txt | grep -v "^Binary\|^build"
+grep -rn "find_package(" ./*/CMakeLists.txt | grep -v "^Binary\|^build"
 ```
 
 ### 3. Проверить version.cmake наличие
 ```bash
 for repo in core spectrum stats signal_generators heterodyne linalg radar strategies; do
-    test -f "/home/alex/DSP-GPU/$repo/cmake/version.cmake" && echo "$repo: ✅" || echo "$repo: ❌ MISSING"
+    test -f "./$repo/cmake/version.cmake" && echo "$repo: ✅" || echo "$repo: ❌ MISSING"
 done
 ```
 
 ### 4. Проверить Python bindings
 ```bash
 for repo in core spectrum stats signal_generators heterodyne linalg radar strategies; do
-    count=$(ls /home/alex/DSP-GPU/$repo/python/dsp_*_module.cpp 2>/dev/null | wc -l)
+    count=$(ls ./$repo/python/dsp_*_module.cpp 2>/dev/null | wc -l)
     echo "$repo: $count module(s)"
 done
 ```
 
 ### 5. Проверить dependency guards в DSP
 ```bash
-grep -n "DSP_BUILD_STATS\|DSP_BUILD_LINALG\|FATAL_ERROR" /home/alex/DSP-GPU/DSP/CMakeLists.txt
+grep -n "DSP_BUILD_STATS\|DSP_BUILD_LINALG\|FATAL_ERROR" ./DSP/CMakeLists.txt
 ```
 
 ## Формат ответа

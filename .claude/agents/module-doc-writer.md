@@ -22,7 +22,7 @@ model: sonnet
 ## Структура DSP-GPU
 
 ```
-/home/alex/DSP-GPU/
+<workspace>/
 ├── core/           ← DrvGPU (backend, profiler, logger)
 ├── spectrum/       ← FFT + filters + lch_farrow
 ├── stats/          ← statistics
@@ -36,9 +36,9 @@ model: sonnet
 ## Эталоны документации
 
 Перед написанием ОБЯЗАТЕЛЬНО прочитай:
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/heterodyne_Full.md` — образец Full.md
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/heterodyne_Quick.md` — образец Quick.md
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/vector_algebra_Full.md` — второй образец
+- `./~!Doc/~Разобрать/heterodyne_Full.md` — образец Full.md
+- `./~!Doc/~Разобрать/heterodyne_Quick.md` — образец Quick.md
+- `./~!Doc/~Разобрать/vector_algebra_Full.md` — второй образец
 
 ## Алгоритм работы
 
@@ -171,4 +171,4 @@ OUTPUT {ResultStruct}
 Если `Doc/` нет — создать директорию.
 
 После создания/обновления:
-- Обновить `/home/alex/DSP-GPU/MemoryBank/MASTER_INDEX.md` если нужно
+- Обновить `./MemoryBank/MASTER_INDEX.md` если нужно

@@ -21,7 +21,7 @@ model: opus
 ## Структура проекта DSP-GPU
 
 ```
-/home/alex/DSP-GPU/
+<workspace>/
 ├── core/           ← DrvGPU (backend, profiler, logger)
 ├── spectrum/       ← FFT + filters + lch_farrow
 ├── stats/          ← statistics
@@ -33,14 +33,14 @@ model: opus
 └── DSP/            ← мета-репо
 ```
 
-## Эталон — `/home/alex/DSP-GPU/linalg/`
+## Эталон — `./linalg/`
 
 Это лучший репо проекта. Всегда читай его как референс:
-- `/home/alex/DSP-GPU/linalg/include/` — структура публичного API
-- `/home/alex/DSP-GPU/linalg/python/` — Python bindings
-- `/home/alex/DSP-GPU/linalg/tests/` — тесты
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/vector_algebra_Full.md` — эталон документации
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/vector_algebra_api.md` — эталон Python API
+- `./linalg/include/` — структура публичного API
+- `./linalg/python/` — Python bindings
+- `./linalg/tests/` — тесты
+- `./~!Doc/~Разобрать/vector_algebra_Full.md` — эталон документации
+- `./~!Doc/~Разобрать/vector_algebra_api.md` — эталон Python API
 
 ## Структура каждого репо (стандарт)
 

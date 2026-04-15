@@ -24,8 +24,10 @@ model: opus
 
 ## Структура проекта DSP-GPU
 
+Все пути — относительные от корня workspace (текущая cwd).
+
 ```
-/home/alex/DSP-GPU/
+<workspace>/
 ├── core/           ← DrvGPU (backend, profiler, logger)
 ├── spectrum/       ← FFT + filters + lch_farrow
 ├── stats/          ← statistics
@@ -38,10 +40,10 @@ model: opus
 
 ## Эталонные материалы
 
-Перед анализом ОБЯЗАТЕЛЬНО прочитай:
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/Info_ROCm_HIP_Optimization_Guide.md` — теория + проверенные паттерны
-- `/home/alex/DSP-GPU/~!Doc/~Разобрать/ROCm_Optimization_Cheatsheet.md` — быстрая шпаргалка
-- `/home/alex/DSP-GPU/linalg/` — эталонный репо (лучшая реализация в проекте)
+Перед анализом ОБЯЗАТЕЛЬНО прочитай (пути от корня workspace):
+- `~!Doc/~Разобрать/Info_ROCm_HIP_Optimization_Guide.md` — теория + проверенные паттерны
+- `~!Doc/~Разобрать/ROCm_Optimization_Cheatsheet.md` — быстрая шпаргалка
+- `linalg/` — эталонный репо (лучшая реализация в проекте)
 
 Структура каждого репо:
 ```

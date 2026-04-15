@@ -75,7 +75,7 @@ model: sonnet
 ## Структура проекта DSP-GPU
 
 ```
-/home/alex/DSP-GPU/
+<workspace>/
 ├── core/              ← MODULE_PREFIX = DSPCORE
 ├── spectrum/          ← MODULE_PREFIX = DSPSPECTRUM
 ├── stats/             ← MODULE_PREFIX = DSPSTATS
@@ -92,8 +92,8 @@ model: sonnet
 ## Ревью-документ
 
 Прочитай перед работой:
-- `/home/alex/DSP-GPU/MemoryBank/specs/cmake_git_aware_build_REVIEW.md` — найденные проблемы
-- `/home/alex/DSP-GPU/MemoryBank/specs/cmake_git_aware_build.md` — спецификация (если есть)
+- `./MemoryBank/specs/cmake_git_aware_build_REVIEW.md` — найденные проблемы
+- `./MemoryBank/specs/cmake_git_aware_build.md` — спецификация (если есть)
 
 ## Известные проблемы из ревью
 
@@ -182,13 +182,13 @@ endif()
 ### Проверка после исправлений:
 ```bash
 # Убедиться что BUILD_TIMESTAMP не осталось в version.h.in
-grep -r "BUILD_TIMESTAMP" /home/alex/DSP-GPU/*/cmake/
+grep -r "BUILD_TIMESTAMP" ./*/cmake/
 
 # Убедиться что namespace добавлен
-grep -r "MODULE_PREFIX" /home/alex/DSP-GPU/*/cmake/
+grep -r "MODULE_PREFIX" ./*/cmake/
 
 # Проверить guards в DSP
-grep -A2 "DSP_BUILD_STATS" /home/alex/DSP-GPU/DSP/CMakeLists.txt
+grep -A2 "DSP_BUILD_STATS" ./DSP/CMakeLists.txt
 ```
 
 ## Правила проекта

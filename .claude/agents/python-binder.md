@@ -36,7 +36,7 @@ model: sonnet
 ## Ссылка на эталон тестов
 
 > ℹ️ **Эталоны отлаженных Python тестов** лежат здесь:
-> **`/home/alex/C++/GPUWorkLib/Python_test/{module}/`**
+> **`../C++/GPUWorkLib/Python_test/{module}/`**
 >
 > Это **проверенные** тесты из старого монолита — оттуда **копируем** структуру, numpy-эталоны, tolerance, setup. Адаптируем импорты и пути под DSP-GPU.
 
@@ -54,8 +54,8 @@ model: sonnet
 ## Алгоритм
 
 1. **TodoWrite** — план (читаем эталон, пишем биндинг, регистрируем, тест, запуск)
-2. Прочитай **эталонный биндинг**: `/home/alex/DSP-GPU/linalg/python/py_vector_algebra_rocm.hpp`
-3. Прочитай регистрацию: `/home/alex/DSP-GPU/linalg/python/dsp_linalg_module.cpp`
+2. Прочитай **эталонный биндинг**: `./linalg/python/py_vector_algebra_rocm.hpp`
+3. Прочитай регистрацию: `./linalg/python/dsp_linalg_module.cpp`
 4. Прочитай эталонный Python-тест в GPUWorkLib (см. маппинг выше)
 5. Создай биндинг + регистрацию + тест по той же схеме
 
@@ -65,7 +65,7 @@ model: sonnet
 - `{repo}/python/dsp_{module}_module.cpp` — `PYBIND11_MODULE` точка входа
 - `{repo}/python/CMakeLists.txt` — сборка .so (добавление `.cpp` OK, остальное — с OK)
 
-Готовый `.so` линкуется в `/home/alex/DSP-GPU/DSP/Python/lib/dsp_{module}*.so`.
+Готовый `.so` линкуется в `./DSP/Python/lib/dsp_{module}*.so`.
 
 ## Паттерн биндинга (с GIL release!)
 
@@ -111,14 +111,14 @@ inline void register_{module}(py::module& m) {
 
 ## Python тест (СТРОГО БЕЗ pytest!)
 
-Создай `/home/alex/DSP-GPU/DSP/Python/{module}/test_{module}.py`:
+Создай `./DSP/Python/{module}/test_{module}.py`:
 
 ```python
 #!/usr/bin/env python3
 """Standalone test — запуск: python3 test_{module}.py"""
 import sys
 import numpy as np
-sys.path.insert(0, '/home/alex/DSP-GPU/DSP/Python/lib')
+sys.path.insert(0, './DSP/Python/lib')
 import dsp_{module} as m
 
 def main() -> int:
@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
 **Запуск**:
 ```bash
-python3 /home/alex/DSP-GPU/DSP/Python/{module}/test_{module}.py
+python3 ./DSP/Python/{module}/test_{module}.py
 ```
 
 ### Параллельный поток (для проверки GIL release)

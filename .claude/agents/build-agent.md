@@ -79,7 +79,7 @@ Python: system python3
 ### Шаг 1 — Configure
 
 ```bash
-cd /home/alex/DSP-GPU/{repo}
+cd ./{repo}
 cmake --preset debian-local-dev 2>&1 | tee /tmp/cmake_configure_{repo}.log
 ```
 
@@ -119,14 +119,14 @@ cmake --build build --target dsp_{repo}_tests 2>/dev/null
 ### `FETCHCONTENT_SOURCE_DIR_DSP* not found`
 Проверить что соседний репо существует:
 ```bash
-ls /home/alex/DSP-GPU/core/CMakeLists.txt  # для spectrum
+ls ./core/CMakeLists.txt  # для spectrum
 ```
 Если нет — сначала нужно исправить в том репо.
 
 ### `No such file or directory: src/xxx.cpp`
 После fix-agent пути в `target_sources()` могли устареть. Проверить:
 ```bash
-find /home/alex/DSP-GPU/{repo}/src -name "*.cpp"
+find ./{repo}/src -name "*.cpp"
 ```
 Исправить пути в `target_sources()` — это разрешено без согласования.
 
@@ -135,7 +135,7 @@ find /home/alex/DSP-GPU/{repo}/src -name "*.cpp"
 ### Include path errors (`fatal error: xxx/yyy.hpp: No such file`)
 ```bash
 # Найти реальное расположение файла
-find /home/alex/DSP-GPU/{repo}/include -name "yyy.hpp"
+find ./{repo}/include -name "yyy.hpp"
 ```
 Если файл есть — значит include путь неправильный. Это исправляет fix-agent, не build-agent.
 
@@ -165,7 +165,7 @@ python3 -c "import pybind11; print(pybind11.get_cmake_dir())"
 После успешной сборки core:
 
 ```bash
-cd /home/alex/DSP-GPU/DSP
+cd ./DSP
 cmake --preset debian-local-dev \
     -DDSP_BUILD_CORE=ON \
     -DDSP_BUILD_SPECTRUM=OFF \  # пока остальные не готовы
@@ -189,12 +189,12 @@ Targets:    lib{repo}.so / dsp_{repo}_tests / dsp_{repo} (pybind)
 
 Перед первым запуском убедиться что директория существует:
 ```bash
-mkdir -p /home/alex/DSP-GPU/MemoryBank/agent_reports
+mkdir -p ./MemoryBank/agent_reports
 ```
 
 Сохранять логи в:
 ```
-/home/alex/DSP-GPU/MemoryBank/agent_reports/build_{repo}_{YYYY-MM-DD}.log
+./MemoryBank/agent_reports/build_{repo}_{YYYY-MM-DD}.log
 ```
 
 ## Поиск — Glob/Grep tool

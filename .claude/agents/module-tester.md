@@ -32,8 +32,8 @@ model: sonnet
 ## Алгоритм
 
 1. **TodoWrite** — план (чтение эталона, 4 тест-файла × N edge cases)
-2. Прочитай `/home/alex/DSP-GPU/linalg/tests/` — эталонная структура
-3. Прочитай `/home/alex/DSP-GPU/strategies/tests/` — паттерн профилирования и benchmark
+2. Прочитай `./linalg/tests/` — эталонная структура
+3. Прочитай `./strategies/tests/` — паттерн профилирования и benchmark
 4. Создай тесты по той же структуре
 
 ## Обязательная структура тестов
@@ -92,7 +92,7 @@ drv_gpu_lib::ConsoleOutput::GetInstance().Print(gpu_id, "{MODULE}_TEST", message
 ## Сборка и запуск тестов
 
 ```bash
-cd /home/alex/DSP-GPU/{repo}
+cd ./{repo}
 cmake --build build --target dsp_{repo}_tests --parallel $(nproc)
 ./build/dsp_{repo}_tests
 # или: ctest --preset debian-local-dev --output-on-failure

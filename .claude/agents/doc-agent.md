@@ -60,14 +60,14 @@ model: sonnet
 | `Doc/Modules/range_angle/` + `Doc/Modules/fm_correlator/` | radar | `radar/Doc/` |
 | `Doc/Modules/strategies/` | strategies | `strategies/Doc/` |
 
-GPUWorkLib источник: `/home/alex/C++/GPUWorkLib/`
+GPUWorkLib источник: `../C++/GPUWorkLib/`
 
 ## Алгоритм для каждого репо
 
 ### Шаг 1 — Прочитать исходную документацию
 
 ```bash
-ls /home/alex/C++/GPUWorkLib/Doc/Modules/{source_module}/
+ls ../C++/GPUWorkLib/Doc/Modules/{source_module}/
 # Ожидаем: Full.md, Quick.md, API.md
 ```
 
@@ -76,7 +76,7 @@ ls /home/alex/C++/GPUWorkLib/Doc/Modules/{source_module}/
 ### Шаг 2 — Создать Doc/ директорию
 
 ```bash
-mkdir -p /home/alex/DSP-GPU/{repo}/Doc/
+mkdir -p ./{repo}/Doc/
 ```
 
 ### Шаг 3 — Адаптировать и записать Full.md
@@ -125,7 +125,7 @@ import dsp_{module} as m
 **Namespace в примерах:**
 ```cpp
 // Проверить актуальный namespace через:
-// grep -rn "^namespace" /home/alex/DSP-GPU/{repo}/include/
+// grep -rn "^namespace" ./{repo}/include/
 ```
 
 ### Шаг 4 — Адаптировать Quick.md
@@ -140,7 +140,7 @@ import dsp_{module} as m
 
 ```bash
 # Проверить реальные имена классов
-grep -n "py::class_\|PYBIND11_MODULE" /home/alex/DSP-GPU/{repo}/python/dsp_{repo}_module.cpp
+grep -n "py::class_\|PYBIND11_MODULE" ./{repo}/python/dsp_{repo}_module.cpp
 ```
 
 ### Шаг 6 — Обновить MemoryBank
@@ -150,12 +150,12 @@ grep -n "py::class_\|PYBIND11_MODULE" /home/alex/DSP-GPU/{repo}/python/dsp_{repo
 # Найти строку репо и обновить статус
 ```
 
-Файл: `/home/alex/DSP-GPU/MemoryBank/MASTER_INDEX.md`
+Файл: `./MemoryBank/MASTER_INDEX.md`
 
 ### Шаг 7 — Git commit (локально, автономно)
 
 ```bash
-cd /home/alex/DSP-GPU/{repo}
+cd ./{repo}
 
 # Добавить только Doc/ (не трогать остальное)
 git add Doc/
@@ -199,7 +199,7 @@ git push origin main
 **Только после «OK»** запускать цикл:
 ```bash
 for repo in core spectrum stats signal_generators heterodyne linalg radar strategies DSP; do
-    cd /home/alex/DSP-GPU/$repo
+    cd ./$repo
     git tag v0.1.0 -m "Migration complete: fix + build + test + docs"
     git push origin v0.1.0
 done

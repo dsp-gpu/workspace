@@ -21,8 +21,10 @@ model: sonnet
 
 ## Структура DSP-GPU
 
+Workspace root: текущая рабочая директория (обычно `$WORKSPACE`). Все команды — с относительными путями от workspace root.
+
 ```
-/home/alex/DSP-GPU/
+<workspace>/
 ├── core/           ← DrvGPU (backend, profiler, logger)
 ├── spectrum/       ← FFT + filters + lch_farrow
 ├── stats/          ← statistics
@@ -132,23 +134,27 @@ QUIET                  = YES
 
 В каждом репо есть `Doc/Doxygen/build_docs.sh` (единый скрипт). Запускай его вместо ручного цикла:
 
+Запускай из корня workspace (cwd = workspace root):
+
 ```bash
 # Порядок ВАЖЕН: core → модули → DSP мета
-bash /home/alex/DSP-GPU/core/Doc/Doxygen/build_docs.sh
-bash /home/alex/DSP-GPU/spectrum/Doc/Doxygen/build_docs.sh
-bash /home/alex/DSP-GPU/stats/Doc/Doxygen/build_docs.sh
-bash /home/alex/DSP-GPU/signal_generators/Doc/Doxygen/build_docs.sh
-bash /home/alex/DSP-GPU/heterodyne/Doc/Doxygen/build_docs.sh
-bash /home/alex/DSP-GPU/linalg/Doc/Doxygen/build_docs.sh
-bash /home/alex/DSP-GPU/radar/Doc/Doxygen/build_docs.sh
-bash /home/alex/DSP-GPU/strategies/Doc/Doxygen/build_docs.sh
-bash /home/alex/DSP-GPU/DSP/Doc/Doxygen/build_docs.sh
+bash ./core/Doc/Doxygen/build_docs.sh
+bash ./spectrum/Doc/Doxygen/build_docs.sh
+bash ./stats/Doc/Doxygen/build_docs.sh
+bash ./signal_generators/Doc/Doxygen/build_docs.sh
+bash ./heterodyne/Doc/Doxygen/build_docs.sh
+bash ./linalg/Doc/Doxygen/build_docs.sh
+bash ./radar/Doc/Doxygen/build_docs.sh
+bash ./strategies/Doc/Doxygen/build_docs.sh
+bash ./DSP/Doc/Doxygen/build_docs.sh
 ```
 
 Или сразу все (master-скрипт в workspace):
 ```bash
-bash /home/alex/DSP-GPU/scripts/build_all_docs.sh
+bash ./scripts/build_all_docs.sh
 ```
+
+> ⚠️ Если `{repo}/Doc/Doxygen/build_docs.sh` ещё не создан — сначала создай по шаблону ниже (задача установки Doxygen с нуля). Не вызывай несуществующий скрипт.
 
 ### build_docs.sh (шаблон)
 
@@ -165,12 +171,14 @@ echo "[doxygen] Done: $SCRIPT_DIR/html/index.html"
 
 ### 4. Проверить ссылки (аудит)
 
+Запускай из корня workspace:
+
 ```bash
 # Все @page определения
-grep -rh "@page " /home/alex/DSP-GPU/*/Doc/Doxygen/pages/ --include="*.md" | awk '{print $2}' | sort -u > /tmp/pages.txt
+grep -rh "@page " ./*/Doc/Doxygen/pages/ --include="*.md" | awk '{print $2}' | sort -u > /tmp/pages.txt
 
 # Все @ref ссылки
-grep -roh "@ref [a-z_]*" /home/alex/DSP-GPU/*/Doc/Doxygen/pages/ --include="*.md" | awk '{print $2}' | sort -u > /tmp/refs.txt
+grep -roh "@ref [a-z_]*" ./*/Doc/Doxygen/pages/ --include="*.md" | awk '{print $2}' | sort -u > /tmp/refs.txt
 
 # Битые ссылки
 comm -23 /tmp/refs.txt /tmp/pages.txt
@@ -184,4 +192,4 @@ comm -23 /tmp/refs.txt /tmp/pages.txt
 4. **@page ID** — `{repo}_overview`, `{repo}_formulas`, `{repo}_tests`
 5. **EXTENSION_MAPPING** — `hip=C++` обязательно
 6. **TAGFILES путь** — считается от расположения Doxyfile
-7. **Справочник**: `/home/alex/DSP-GPU/~!Doc/~Разобрать/Doxygen_agent_пример.md`
+7. **Справочник**: `~!Doc/~Разобрать/Doxygen_agent_пример.md` (от корня workspace)

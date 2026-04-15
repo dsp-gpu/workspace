@@ -37,7 +37,7 @@ model: sonnet
 ## Источник тестов (GPUWorkLib)
 
 ```
-/home/alex/C++/GPUWorkLib/
+../C++/GPUWorkLib/
 ├── modules/
 │   ├── {module}/tests/     ← C++ тесты
 │   │   ├── all_test.hpp    ← точка входа (включает все тест-классы)
@@ -67,8 +67,8 @@ model: sonnet
 ### Шаг 1 — Прочитать исходные тесты
 
 ```bash
-ls /home/alex/C++/GPUWorkLib/modules/{source_module}/tests/
-cat /home/alex/C++/GPUWorkLib/modules/{source_module}/tests/all_test.hpp
+ls ../C++/GPUWorkLib/modules/{source_module}/tests/
+cat ../C++/GPUWorkLib/modules/{source_module}/tests/all_test.hpp
 ```
 
 Понять структуру: какие классы, какие методы тестируются.
@@ -76,8 +76,8 @@ cat /home/alex/C++/GPUWorkLib/modules/{source_module}/tests/all_test.hpp
 ### Шаг 2 — Прочитать текущее состояние DSP-GPU тестов
 
 ```bash
-ls /home/alex/DSP-GPU/{repo}/tests/
-cat /home/alex/DSP-GPU/{repo}/tests/CMakeLists.txt
+ls ./{repo}/tests/
+cat ./{repo}/tests/CMakeLists.txt
 ```
 
 Проверить: тесты уже перенесены или CMakeLists.txt пустой/заглушка?
@@ -103,7 +103,7 @@ cat /home/alex/DSP-GPU/{repo}/tests/CMakeLists.txt
 // СТАЛО: dsp::heterodyne::HeterodyneProcessor (проверить в .hpp файлах!)
 ```
 
-**Проверить**: используй `grep -rn "namespace" /home/alex/DSP-GPU/{repo}/include/` чтобы найти актуальный namespace.
+**Проверить**: используй `grep -rn "namespace" ./{repo}/include/` чтобы найти актуальный namespace.
 
 ### Шаг 4 — Обновить tests/CMakeLists.txt
 
@@ -121,14 +121,14 @@ target_sources(dsp_{repo}_tests PRIVATE
 ### Шаг 5 — Собрать тесты
 
 ```bash
-cd /home/alex/DSP-GPU/{repo}
+cd ./{repo}
 cmake --build build --target dsp_{repo}_tests 2>&1 | tail -30
 ```
 
 ### Шаг 6 — Запустить тесты
 
 ```bash
-cd /home/alex/DSP-GPU/{repo}/build
+cd ./{repo}/build
 ctest --preset debian-local-dev --output-on-failure 2>&1
 # или напрямую:
 ./dsp_{repo}_tests
@@ -139,8 +139,8 @@ ctest --preset debian-local-dev --output-on-failure 2>&1
 ### Шаг 1 — Проверить что .so готов
 
 ```bash
-ls /home/alex/DSP-GPU/DSP/Python/lib/dsp_{repo}*.so 2>/dev/null || \
-ls /home/alex/DSP-GPU/{repo}/build/python/dsp_{repo}*.so 2>/dev/null
+ls ./DSP/Python/lib/dsp_{repo}*.so 2>/dev/null || \
+ls ./{repo}/build/python/dsp_{repo}*.so 2>/dev/null
 ```
 
 Если `.so` нет → сначала build-agent должен собрать Python binding.
@@ -148,7 +148,7 @@ ls /home/alex/DSP-GPU/{repo}/build/python/dsp_{repo}*.so 2>/dev/null
 ### Шаг 2 — Прочитать исходный Python тест
 
 ```bash
-cat /home/alex/C++/GPUWorkLib/Python_test/{source_module}/test_{module}.py
+cat ../C++/GPUWorkLib/Python_test/{source_module}/test_{module}.py
 ```
 
 ### Шаг 3 — Адаптировать импорты
@@ -162,20 +162,20 @@ obj = gw.HeterodyneProcessor(ctx)
 
 # СТАЛО (DSP-GPU):
 import sys
-sys.path.insert(0, '/home/alex/DSP-GPU/DSP/Python/lib')
+sys.path.insert(0, './DSP/Python/lib')
 import dsp_heterodyne as m
 obj = m.HeterodyneProcessor(ctx)
 ```
 
 Актуальные имена классов — проверить в:
 ```bash
-grep -n "py::class_" /home/alex/DSP-GPU/{repo}/python/dsp_{repo}_module.cpp
+grep -n "py::class_" ./{repo}/python/dsp_{repo}_module.cpp
 ```
 
 ### Шаг 4 — Создать тест в DSP/Python/{module}/
 
 ```
-/home/alex/DSP-GPU/DSP/Python/{module}/
+./DSP/Python/{module}/
 ├── test_{module}.py     ← адаптированный тест
 └── README.md            ← краткое описание что тестирует
 ```
@@ -183,7 +183,7 @@ grep -n "py::class_" /home/alex/DSP-GPU/{repo}/python/dsp_{repo}_module.cpp
 ### Шаг 5 — Запустить Python тест
 
 ```bash
-cd /home/alex/DSP-GPU/DSP/Python/{module}
+cd ./DSP/Python/{module}
 python3 test_{module}.py
 ```
 
