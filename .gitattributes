@@ -1,0 +1,45 @@
+# По умолчанию текстовые файлы, хранить с LF
+# Windows: для подавления предупреждений CRLF: git config core.safecrlf false
+* text=auto eol=lf
+
+# Явно: код и скрипты только LF
+*.c      text eol=lf
+*.cpp    text eol=lf
+*.cxx    text eol=lf
+*.h      text eol=lf
+*.hpp    text eol=lf
+*.inl    text eol=lf
+
+*.py     text eol=lf
+*.sh     text eol=lf
+*.bat    text eol=lf
+*.ps1    text eol=lf
+
+# OpenCL, CMake, прочие исходники
+*.cl     text eol=lf
+*.tpp    text eol=lf
+
+*.cmake  text eol=lf
+CMakeLists.txt text eol=lf
+
+*.md     text eol=lf
+*.txt    text eol=lf
+*.json   text eol=lf
+# manifest.json — LF (генерируется FormScriptGenerator)
+modules/signal_generators/kernels/manifest.json text eol=lf
+.gitkeep text eol=lf
+
+# Бинарники не трогаем
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.bmp    binary
+*.ico    binary
+*.exe    binary
+*.dll    binary
+*.lib    binary
+*.pdb    binary
+*.zip    binary
+*.7z     binary
+*.pdf    binary
