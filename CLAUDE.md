@@ -43,7 +43,7 @@ E:\DSP-GPU\                       ← корень workspace, git: github.com/ds
 | `spectrum` | fft_func + filters + lch_farrow | core + hipFFT |
 | `stats` | statistics (welford, median, radix) + SNR-estimator | core + spectrum + rocprim |
 | `signal_generators` | CW/LFM/Noise/Script/FormSignal | core + spectrum |
-| `heterodyne` | LFM Dechirp, NCO, Mix | core + spectrum + signal_gen |
+| `heterodyne` | LFM Dechirp, NCO, Mix | core + spectrum + signal_generators |
 | `linalg` | vector_algebra + capon | core + rocBLAS + rocSOLVER |
 | `radar` | range_angle + fm_correlator | core + spectrum + stats |
 | `strategies` | pipeline v1, v2... | все выше |
