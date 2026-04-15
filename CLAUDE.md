@@ -41,7 +41,7 @@ E:\DSP-GPU\                       ← корень workspace, git: github.com/ds
 | `workspace` | Корень: CLAUDE.md, MemoryBank, .vscode | — |
 | `core` | DrvGPU — backend, profiler, logger | hip, OpenCL |
 | `spectrum` | fft_func + filters + lch_farrow | core + hipFFT |
-| `stats` | statistics (welford, median, radix) | core + rocprim |
+| `stats` | statistics (welford, median, radix) + SNR-estimator | core + spectrum + rocprim |
 | `signal_generators` | CW/LFM/Noise/Script/FormSignal | core + spectrum |
 | `heterodyne` | LFM Dechirp, NCO, Mix | core + spectrum + signal_gen |
 | `linalg` | vector_algebra + capon | core + rocBLAS + rocSOLVER |
