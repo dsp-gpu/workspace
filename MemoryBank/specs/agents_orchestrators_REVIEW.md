@@ -42,7 +42,7 @@
 | # | Проблема | Решение |
 |---|----------|---------|
 | 5 | Противоречивый Console API | Унифицирован: `drv_gpu_lib::ConsoleOutput::GetInstance().Print(gpu_id, "Module", msg)` во всех агентах. Проверен по реальному `core/include/dsp/services/console_output.hpp`. |
-| 6 | `python-binder` без GIL release | Добавлен `py::call_guard<py::gil_scoped_release>()` + пример `py::array_t<std::complex<float>>` + пример параллельного Python-потока через `threading.Thread`. |
+| 6 | `python-binder` без GIL release | Добавлен `py::call_guard<py::gil_scoped_release>()` + пример `py::array_t<std::complex<float>>` + пример параллельного Python-потока через `threading.Thread`. |1
 | 7 | `module-writer` путал GPUWorkLib и DSP-GPU | Разделён на два локальных: один в `/home/alex/C++/GPUWorkLib/.claude/agents/` (с `modules/`, Ref03), другой в `/home/alex/DSP-GPU/.claude/agents/` (с репо-за-репо, эталон linalg, Ref03 скопирован в `~!Doc/Architecture/`). |
 | 8 | Массовое `find`/`grep` в Bash | Во всех write-агентах добавлено правило «Glob/Grep tool вместо `find`/`grep`». |
 | 9 | Сборка без preset | В обоих `module-writer` прописано жёстко: `cmake --preset debian-local-dev`. Ветки nvidia нет — только ROCm 7.2/Linux/AMD. |

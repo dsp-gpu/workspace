@@ -80,6 +80,7 @@ E:\DSP-GPU\
 ### 📝 Specs (ревью)
 | Документ | Дата | Тема |
 |----------|------|------|
+| [review_core_deep_2026-04-16.md](specs/review_core_deep_2026-04-16.md) | 16.04 | **core глубокое ревью — 15 находок** |
 | [core_spectrum_REVIEW_2026-04-15.md](specs/core_spectrum_REVIEW_2026-04-15.md) | 15.04 | core + spectrum follow-ups |
 | [review_stats_2026-04-15.md](specs/review_stats_2026-04-15.md) | 15.04 | stats SNR_05 блокер |
 | [review_heterodyne_2026-04-15.md](specs/review_heterodyne_2026-04-15.md) | 15.04 | heterodyne — почти чист |
@@ -93,6 +94,7 @@ E:\DSP-GPU\
 | [TASK_Core_Spectrum_Review_2026-04-15.md](tasks/TASK_Core_Spectrum_Review_2026-04-15.md) | ⏸ T0+T5 на GPU завтра |
 | [TASK_Stats_Review_2026-04-15.md](tasks/TASK_Stats_Review_2026-04-15.md) | ⏸ T6 на GPU завтра |
 | [TASK_Radar_Migration_2026-04-15.md](tasks/TASK_Radar_Migration_2026-04-15.md) | ✅ DONE |
+| [TASK_Core_Review_Fixes_2026-04-16.md](tasks/TASK_Core_Review_Fixes_2026-04-16.md) | ✅ DONE (T1-T10 verified) |
 | [TASK_Spectrum_Review_Followups.md](tasks/TASK_Spectrum_Review_Followups.md) | Частично закрыт |
 
 ### 📊 Changelog (ночная сессия 2026-04-15)
@@ -117,7 +119,7 @@ E:\DSP-GPU\
 |---|--------|-------|
 | 1 | Сборка всех 8 репо на Linux GPU (baseline + ctest) | утром |
 | 2 | ScopedHipEvent в linalg/tests/ (custom паттерны: `t_start`, `EventGuard8`) | после билда |
-| 3 | Глубокое ревью core (backends/, services/, logger/, config/) | на свежую голову |
+| 3 | ~~Глубокое ревью core~~ → [review](specs/review_core_deep_2026-04-16.md) + [task](tasks/TASK_Core_Review_Fixes_2026-04-16.md) | ✅ DONE — T1-T10 верифицированы, R16-R19 отложены |
 | 4 | Git push tags v0.2.0 (если сборка зелёная) | после OK Alex |
 
 ---
