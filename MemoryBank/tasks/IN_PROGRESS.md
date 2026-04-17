@@ -1,8 +1,38 @@
-# 🚧 IN PROGRESS — Фаза 4: Тестирование на Linux GPU
+# 🚧 IN PROGRESS — GPUProfiler v2 Rewrite + Фаза 4: Linux GPU тестирование
 
-**Последнее обновление**: 2026-04-15 (night session)
-**Готовность**: 8 репо отрефакторены и запушены, готовы к сборке
+**Последнее обновление**: 2026-04-17 (профайлер-таски)
+**Готовность**: 8 репо собраны, готовы к миграции профайлера
 **Координатор**: `workflow-coordinator` (при необходимости)
+
+---
+
+## 🆕 2026-04-17 — GPUProfiler v2 rewrite (НОВЫЙ поток)
+
+**Спека**: `MemoryBank/specs/GPUProfiler_Rewrite_Proposal_2026-04-16.md`
+**Ревью**: `MemoryBank/specs/GPUProfiler_Rewrite_Proposal_2026-04-16_REVIEW.md` (Round 3 — все закрыто)
+**Индекс**: `MemoryBank/tasks/TASK_Profiler_v2_INDEX.md`
+
+### Подробные таски (исполнитель — следующая сессия Кодо)
+
+| Phase | TASK file | Status |
+|-------|-----------|:------:|
+| A | `TASK_Profiler_v2_PhaseA_BranchRemoveOpenCL.md` | ⬜ READY |
+| B1 | `TASK_Profiler_v2_PhaseB1_ProfilingRecord.md` | ⬜ READY |
+| B2 | `TASK_Profiler_v2_PhaseB2_ProfileStore.md` | ⬜ READY |
+| B3 | `TASK_Profiler_v2_PhaseB3_ProfileAnalyzer.md` | ⬜ READY |
+| B4 | `TASK_Profiler_v2_PhaseB4_ReportPrinter.md` | ⬜ READY |
+| C | `TASK_Profiler_v2_PhaseC_Exporters.md` | ⬜ READY |
+| D | `TASK_Profiler_v2_PhaseD_CrossRepo.md` | ⬜ READY |
+| E | `TASK_Profiler_v2_PhaseE_Polish.md` | ⬜ READY |
+
+**Effort**: 28-40 часов total | **Ветка**: `new_profiler` | **Radar**: исключён
+
+### Начало работы
+1. Прочитать `TASK_Profiler_v2_INDEX.md` (overview + ключевые решения)
+2. Выполнить `TASK_Profiler_v2_PhaseA_BranchRemoveOpenCL.md` (2-3ч)
+3. После каждой Phase — сообщить Alex + дождаться OK на push/tag
+
+---
 
 ---
 
