@@ -6,6 +6,26 @@
 
 ---
 
+## 🆕 2026-04-17 — KernelCache v2 rewrite (параллельно с profiler, Вариант B)
+
+**Спека**: `MemoryBank/specs/KernelCache_v2_Proposal_2026-04-16.md` (v3 clean-slate)
+**Индекс**: `MemoryBank/tasks/TASK_KernelCache_v2_INDEX.md`
+**Координация**: Phase A ждёт merge profiler'а; Phase B-D идут параллельно.
+
+### Подробные таски
+
+| Phase | TASK file | Status | Effort |
+|-------|-----------|:------:|-------:|
+| A | `TASK_KernelCache_v2_PhaseA_CoreNewApi.md` | ⏸ WAIT profiler merge | 4-6 ч |
+| B | `TASK_KernelCache_v2_PhaseB_CriticalFixes.md` | ⬜ READY after A | 4-5 ч |
+| C | `TASK_KernelCache_v2_PhaseC_LinalgStrategies.md` | ⬜ READY after A | 5-7 ч |
+| D | `TASK_KernelCache_v2_PhaseD_Cleanup.md` | ⬜ READY after C | 1-2 ч |
+| E | `TASK_KernelCache_v2_PhaseE_Polish.md` | ⬜ READY after D | 1-2 ч |
+
+**Effort total**: 15-22ч | **Ветка**: `kernel_cache_v2`
+
+---
+
 ## 🆕 2026-04-17 — GPUProfiler v2 rewrite (НОВЫЙ поток)
 
 **Спека**: `MemoryBank/specs/GPUProfiler_Rewrite_Proposal_2026-04-16.md`

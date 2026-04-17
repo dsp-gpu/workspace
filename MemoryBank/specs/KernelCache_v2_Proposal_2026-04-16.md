@@ -1,398 +1,493 @@
-# Kernel Cache v2 -- Deep Analysis & Per-Repo Improvement Plan
+# Kernel Cache v2 — Clean-Slate Design
 
-**Date**: 2026-04-16 (v2 — after Alex review, fixed architecture)
+**Date**: 2026-04-17 (v3 — clean-slate rewrite)
 **Author**: Codo (AI Assistant)
-**Object**: Kernel compilation, disk caching, GPU memory persistence — ALL 8 repos
-**Method**: 2 Explore agents + Context7 ROCm + sequential-thinking (9 steps)
-**Status**: PROPOSAL v2 — fixed per Alex: NO global singleton, per-GPU architecture
+**Object**: Kernel compilation + disk cache — ALL 8 repos, GreenField
+**Method**: 2 Explore agents + grep актуального кода + sequential-thinking
+**Status**: PROPOSAL v3 — clean slate, нет legacy constraints
 
 ---
 
-## 0. Architecture Principle (from Alex)
+## 0. Архитектурный принцип (Alex)
 
 > "10 GPU, у всех свой объектник, не пересекаются.
 > Критерий — **надёжность** и **скорость**!"
+>
+> "Мы создаём все с чистого листа — если нужно переделать на правильную конфигурацию, переделывай."
 
-Each GPU has its own address space. `hipModule_t` is device-specific.
-**NO global singleton**. Each GPU independently:
-1. Compiles its own kernels (or loads from disk cache)
-2. Keeps them in its own memory until processor destroyed
-3. Disk cache shared (per-architecture subdirs: gfx1201/, gfx908/)
-
-GpuContext (per-module, per-GPU) is the **correct** ownership model.
-Fix: ensure ALL modules use it, fix stale cache, add preloading.
-
----
-
-## 1. Full Project Inventory (every file, every repo)
-
-### 1.1 Pattern A: Through GpuContext (correct) — 21 files
-
-| Repo | Class | File | Status |
-|------|-------|------|--------|
-| **spectrum** | FFTProcessorROCm | `fft_processor_rocm.cpp` | ✅ |
-| | SpectrumProcessorROCm | `spectrum_processor_rocm.cpp` | ✅ |
-| | ComplexToMagPhaseROCm | `complex_to_mag_phase_rocm.cpp` | ✅ |
-| | LchFarrowROCm | `lch_farrow_rocm.cpp` | ✅ |
-| | FirFilterROCm | `fir_filter_rocm.cpp` | ✅ |
-| | IirFilterROCm | `iir_filter_rocm.cpp` | ✅ |
-| | KalmanFilterROCm | `kalman_filter_rocm.cpp` | ✅ |
-| | MovingAverageFilterROCm | `moving_average_filter_rocm.cpp` | ⚠️ recreates GpuContext on N_WINDOW change |
-| | KaufmanFilterROCm | `kaufman_filter_rocm.cpp` | ⚠️ recreates GpuContext on N_WINDOW change |
-| **stats** | StatisticsProcessor | `statistics_processor.cpp` | ✅ clean Ref03 |
-| **heterodyne** | HeterodyneProcessorROCm | `heterodyne_processor_rocm.cpp` | ✅ |
-| **signal_gen** | CwGeneratorROCm | `cw_generator_rocm.cpp` | ✅ |
-| | LfmGeneratorROCm | `lfm_generator_rocm.cpp` | ✅ |
-| | LfmConjugateGeneratorROCm | `lfm_conjugate_generator_rocm.cpp` | ✅ |
-| | LfmGeneratorAnalyticalDelayROCm | `lfm_generator_analytical_delay_rocm.cpp` | ✅ |
-| | NoiseGeneratorROCm | `noise_generator_rocm.cpp` | ✅ |
-| | FormSignalGeneratorROCm | `form_signal_generator_rocm.cpp` | ✅ |
-| **radar** | RangeAngleProcessor | `range_angle_processor.cpp` | ✅ |
-| | FMCorrelatorProcessorROCm | `fm_correlator_processor_rocm.cpp` | ⚠️ legacy dead code |
-| **linalg** | CaponProcessor | `capon_processor.cpp` | ✅ |
-| **strategies** | AntennaProcessorV1 | `antenna_processor_v1.cpp` | ✅ |
-
-### 1.2 Pattern B: Manual hiprtc (NEEDS FIX) — 6 files
-
-| Repo | Class | File | Problem |
-|------|-------|------|---------|
-| **spectrum** | AllMaximaPipelineROCm | `all_maxima_pipeline_rocm.cpp` | Own hipModule_t + KernelCacheService, ~150 lines boilerplate |
-| **signal_gen** | ScriptGeneratorROCm | `script_generator_rocm.cpp` | Own hipModule_t, **NO disk cache!** Recompiles every run! |
-| **linalg** | CholeskyInverterROCm | `cholesky_inverter_rocm.cpp` | Own kernel_cache_ + hipModule_t, ~100 lines |
-| **linalg** | SymmetrizeGpuROCm | `symmetrize_gpu_rocm.cpp` | Own KernelCacheService + hiprtc, ~90 lines |
-| **linalg** | DiagonalLoadRegularizer | `diagonal_load_regularizer.cpp` | Manual hiprtc, own module_/function_ |
-| **strategies** | StrategiesFloatApi | `strategies_float_api.hpp` | ~120 lines INLINE in header! Own kernel_module_ |
-
-### 1.3 Summary
-
-```
-Pattern A (GpuContext): 21 files ✅  (reliable, cached, fast)
-Pattern B (manual):      6 files ❌  (duplicated, fragile, some without cache)
-Issues in Pattern A:     3 files ⚠️  (dead code, GpuContext recreation)
-
-Total duplicated boilerplate: ~670 lines across 6 Pattern B files
-```
+### Следствия clean-slate
+- ❌ Нет legacy `Load(name)` API → делаем правильный сразу
+- ❌ Нет миграции старых `manifest.json` → новая схема с первого коммита
+- ❌ Нет "workaround recreate GpuContext on N_WINDOW change" — это уходит
+- ✅ Единый правильный дизайн кеша с первого дня
 
 ---
 
-## 2. Critical Issues Found
+## 1. Правильный дизайн — композитный ключ
 
-### 2.1 CRITICAL: ScriptGeneratorROCm has NO disk cache!
+### 1.1 Проблема старого дизайна
 
-**File**: `signal_generators/src/.../script_generator_rocm.cpp`
 ```cpp
-// Lines 298-305:
-hipError_t err = hipModuleLoadData(&module_, code.data());
-// ...
-err = hipModuleGetFunction(&kernel_fn_, module_, "script_signal");
+cache.Save("symmetrize", source, binary, "", "");  // ❌
 ```
-**Problem**: NO KernelCacheService, NO Save() call. **Recompiles hiprtc EVERY time.**
-Cost: ~100-200ms per script generator creation on each of 10 GPUs.
-**Fix**: Add GpuContext with disk cache → ~1-5ms after first run.
+Ключ = только имя. Значит:
+- `symmetrize` с `-DBLOCK_SIZE=256` → H1
+- `symmetrize` с `-DBLOCK_SIZE=512` → перетирает H1
+- `symmetrize` на gfx908 → перетирает gfx1201
 
-### 2.2 HIGH: Stale binary risk (no source hash)
+**Workaround сейчас**: пересоздают GpuContext при смене defines. Лишние unload/load, ~5ms penalty, архитектурная кривизна.
 
-**File**: `core/src/services/kernel_cache_service.cpp` Load()
+### 1.2 Решение — `CompileKey`
+
 ```cpp
-if (entry->has_binary()) return *entry;  // No hash check!
+namespace drv_gpu_lib {
+
+struct CompileKey {
+    std::string              source;        ///< HIP C++ source
+    std::vector<std::string> defines;       ///< ["-DBLOCK_SIZE=256", "-DN_WIN=5"]
+    std::string              arch;          ///< "gfx1201"
+    std::string              hiprtc_version;///< "ROCm-6.4.0"
+
+    /// Composite 64-bit hash (xxHash64 или FNV-1a composite).
+    /// Стабилен между запусками → disk cache работает корректно.
+    uint64_t Hash() const;
+
+    /// 8-значный hex для вставки в имя файла: "2af81b3c".
+    std::string HashHex() const;
+};
+
+} // namespace drv_gpu_lib
 ```
-**Problem**: If kernel source changes (bug fix), old binary still loaded from cache.
-**Fix**: SHA256 hash of source in manifest.json, verify on Load().
 
-### 2.3 MEDIUM: 6 files with Pattern B — ~670 lines duplication
+**Свойства**:
+- Разные `defines` → разный hash → разные бинарники в кеше → **сосуществуют**
+- Разные `arch` → разный hash → защита от кросс-загрузки HSACO
+- Разная `hiprtc_version` (обновился ROCm) → автоматическая recompile
+- Неизменный source + defines + arch + hiprtc → **гарантированный hit**
 
-Each Pattern B file repeats:
-```cpp
-hiprtcCreateProgram → hiprtcCompileProgram → hiprtcGetCode →
-hipModuleLoadData → hipModuleGetFunction → kernel_cache_->Save()
+### 1.3 Структура директории
+
 ```
-**Fix**: Replace with `ctx_.CompileModule(source, names)` — 1 line.
-
-### 2.4 LOW: GpuContext recreation in spectrum filters
-
-**Files**: `moving_average_filter_rocm.cpp:137`, `kaufman_filter_rocm.cpp:119`
-```cpp
-ctx_ = drv_gpu_lib::GpuContext(backend, "SMA", "modules/filters/kernels");
-ctx_.CompileModule(...);  // recompile with new N_WINDOW define
+kernels_cache/
+├── <module>/                       # "capon", "symmetrize", "script_gen", "fft"
+│   └── <arch>/                     # "gfx1201", "gfx908"
+│       ├── <kernel>_<hash8>.hsaco  # "symmetrize_2af81b3c.hsaco"
+│       ├── <kernel>_<hash8>.hsaco  # та же kernel, другие defines → другой hash
+│       └── manifest.json           # optional index для CLI `list-kernels`
 ```
-**Acceptable**: N_WINDOW changes are rare. Disk cache covers reloading.
-But hipModuleUnload → hipModuleLoadData = ~5ms penalty.
 
-### 2.5 LOW: Dead code in FMCorrelator
-
-**File**: `radar/src/fm_correlator/src/fm_correlator_processor_rocm.cpp:590-710`
-Legacy `CompileKernels()` method + own `kernel_cache_` member.
-Already replaced by `EnsureCompiled()` + GpuContext. ~120 lines dead code.
+**Плюсы**:
+- Один модуль — одна директория
+- Per-arch — HSACO не смешиваются
+- Hash в имени — сосуществуют все варианты defines
+- Manifest — опционален, для CLI утилит, не критичен для runtime
 
 ---
 
-## 3. Current Kernel Lifecycle Per GPU
+## 2. Новый API `KernelCacheService`
 
-```
-GPU 0 starts:
-  ┌─ HeterodyneProcessor(backend_gpu0)
-  │    └─ GpuContext("heterodyne", cache_dir)
-  │         └─ CompileModule():
-  │              1. disk hit? → hipModuleLoadData (~1ms) → DONE
-  │              2. disk miss → hiprtc (~150ms) → hipModuleLoadData → Save()
-  │         └─ hipModule_t lives in GPU 0 memory
-  │         └─ hipFunction_t pointers cached in map
-  │
-  ├─ FFTProcessor(backend_gpu0)
-  │    └─ GpuContext("fft_func", cache_dir) ... same flow
-  │
-  ├─ StatisticsProcessor(backend_gpu0) ...
-  └─ ... (all modules)
+### 2.1 Header (полный, clean-slate)
 
-GPU 0 runs N iterations:
-  Each call → ctx_.GetKernel("name") → O(1) lookup → hipModuleLaunchKernel
-  NO recompilation, NO disk I/O. Pure GPU speed.
-
-GPU 0 shutdown:
-  ~Processor → ~GpuContext → hipModuleUnload → memory freed
-```
-
-This is CORRECT for reliability. Each GPU is independent.
-Kernel stays in GPU memory for entire processor lifetime.
-
----
-
-## 4. Proposed Fixes (per file)
-
-### CORE: 3 improvements
-
-| # | File | Change | Priority |
-|---|------|--------|----------|
-| **C1** | `kernel_cache_service.cpp` | Add SHA256 source hash validation in Load() | HIGH |
-| **C2** | `kernel_cache_service.hpp` | Add CacheStats: hits, misses, compile_time_ms | MEDIUM |
-| **C3** | `gpu_context.hpp/cpp` | Add `static PreloadFromCache()` for startup warming | LOW |
-
-### SPECTRUM: 1 migration
-
-| # | File | Change | Lines removed |
-|---|------|--------|:---:|
-| **S1** | `all_maxima_pipeline_rocm.cpp` + `.hpp` | Replace manual hiprtc with GpuContext | ~150 |
-
-### SIGNAL_GENERATORS: 1 critical fix
-
-| # | File | Change | Lines removed |
-|---|------|--------|:---:|
-| **SG1** | `script_generator_rocm.cpp` + `form_script_generator.hpp` | Add GpuContext + disk cache (currently NO CACHE!) | ~80 |
-
-### RADAR: 1 cleanup
-
-| # | File | Change | Lines removed |
-|---|------|--------|:---:|
-| **R1** | `fm_correlator_processor_rocm.cpp` | Delete dead CompileKernels() + own kernel_cache_ | ~120 |
-
-### LINALG: 3 migrations
-
-| # | File | Change | Lines removed |
-|---|------|--------|:---:|
-| **L1** | `cholesky_inverter_rocm.cpp` + `.hpp` | Replace with GpuContext | ~100 |
-| **L2** | `symmetrize_gpu_rocm.cpp` | Replace with GpuContext | ~90 |
-| **L3** | `diagonal_load_regularizer.cpp` + `.hpp` | Replace with GpuContext | ~80 |
-
-### STRATEGIES: 1 migration
-
-| # | File | Change | Lines removed |
-|---|------|--------|:---:|
-| **ST1** | `strategies_float_api.hpp` | Replace inline hiprtc with GpuContext, move to .cpp | ~120 |
-
-### Total
-
-| Metric | Value |
-|--------|-------|
-| Files to change | 12 |
-| Repos affected | 6 of 8 (stats & heterodyne clean) |
-| Lines removed (boilerplate) | **~740** |
-| Lines added | ~50 (hash, stats, preload) |
-| Net reduction | **~690 lines** |
-
----
-
-## 5. Per-Fix Details
-
-### C1: SHA256 Source Hash Validation
+**Файл**: `core/include/core/services/kernel_cache_service.hpp`
 
 ```cpp
-// In KernelCacheService::Save():
-void Save(name, source, binary, metadata, comment) {
-    // ... existing atomic write ...
-    WriteManifestEntry(name, comment, backend,
-        ComputeHash(source));  // NEW: store hash
-}
+#pragma once
 
-// In KernelCacheService::Load():
-std::optional<CacheEntry> Load(name, const std::string& current_source) {
-    auto entry = LoadFromDisk(name);
-    if (!entry || !entry->has_binary()) return std::nullopt;
-    
-    // NEW: verify source hasn't changed
-    std::string cached_hash = GetManifestHash(name);
-    std::string current_hash = ComputeHash(current_source);
-    if (cached_hash != current_hash) {
-        // Source changed! Binary is stale.
-        DRVGPU_LOG_WARNING("KernelCache",
-            name + ": source hash mismatch, recompiling");
-        return std::nullopt;  // Force recompile
-    }
-    return entry;
+#include <core/common/backend_type.hpp>
+
+#include <atomic>
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <vector>
+
+namespace drv_gpu_lib {
+
+/// Composite cache key — всё что влияет на бинарник.
+struct CompileKey {
+    std::string              source;
+    std::vector<std::string> defines;
+    std::string              arch;
+    std::string              hiprtc_version;
+
+    uint64_t    Hash() const;
+    std::string HashHex() const;
+};
+
+/// Thread-safe cache statistics (atomic counters).
+struct CacheStats {
+    std::atomic<uint64_t> hits{0};
+    std::atomic<uint64_t> misses{0};
+    std::atomic<uint64_t> total_compile_ms{0};
+    std::atomic<uint64_t> total_load_ms{0};
+
+    CacheStats() = default;
+    CacheStats(const CacheStats& o)
+        : hits(o.hits.load()), misses(o.misses.load()),
+          total_compile_ms(o.total_compile_ms.load()),
+          total_load_ms(o.total_load_ms.load()) {}
+};
+
+/// On-disk cache for compiled HIP kernels.
+///
+/// KEY: (source + defines + arch + hiprtc_version) → 64-bit hash.
+/// FILE: <base_dir>/<module>/<arch>/<kernel>_<hash8>.hsaco
+///
+/// Thread-safety: per-GPU instance (no global singleton, per Alex).
+/// Multi-process safety: atomic rename → partial writes never visible.
+class KernelCacheService {
+public:
+    /// @param base_dir  Cache root (e.g. "<exe>/kernels_cache")
+    /// @param module    Module subdir (e.g. "capon", "symmetrize")
+    KernelCacheService(std::string base_dir, std::string module);
+
+    /// Load HSACO binary by (kernel_name, key). Returns nullopt on miss.
+    /// Updates CacheStats (hits/misses).
+    std::optional<std::vector<uint8_t>>
+    Load(const std::string& kernel_name, const CompileKey& key);
+
+    /// Save HSACO binary for (kernel_name, key).
+    /// Atomic write: tmp → rename → durable.
+    /// Idempotent: если файл уже есть с тем же размером — skip IO.
+    void Save(const std::string& kernel_name,
+              const CompileKey&  key,
+              const std::vector<uint8_t>& binary);
+
+    /// Cache statistics snapshot (thread-safe).
+    CacheStats GetStats() const;
+
+    /// List all cached kernels (for CLI / debugging).
+    /// Returns: [{kernel_name, hash_hex, arch, file_size_bytes}, ...]
+    struct CacheEntry {
+        std::string kernel_name;
+        std::string hash_hex;
+        std::string arch;
+        size_t      file_size;
+    };
+    std::vector<CacheEntry> ListEntries() const;
+
+    /// Root directory for this service instance.
+    const std::string& ModuleDir() const { return module_dir_; }
+
+private:
+    std::string base_dir_;
+    std::string module_;
+    std::string module_dir_;     // base_dir_ + "/" + module_
+    mutable CacheStats stats_;
+
+    std::string HsacoPath(const std::string& kernel, const CompileKey& key) const;
+
+    static void        AtomicWrite(const std::string& path, const std::vector<uint8_t>& data);
+    static std::string DetectHiprtcVersion();    // "ROCm-6.4.0" или "<unknown>"
+};
+
+} // namespace drv_gpu_lib
+```
+
+### 2.2 Что УДАЛЕНО из старого API (clean-slate)
+
+| Было | Стало | Почему |
+|------|-------|--------|
+| `Load(const std::string& name)` без source | `Load(name, CompileKey)` | Без key — нет stale detection |
+| `Save(name, source, binary, metadata, comment)` | `Save(name, CompileKey, binary)` | `metadata`/`comment` → входят в CompileKey.defines |
+| `CacheEntry{ source, binary }` | `std::vector<uint8_t>` | source хранить не нужно, живёт в коде |
+| `VersionOldFiles(name_00, name_01, ...)` | (удалено) | hash различает версии, versioning избыточен |
+| `BackendType` параметр (OpenCL vs ROCm) | — (только ROCm) | OpenCL уходит (Phase A профайлера) |
+| `GetBinarySuffix()` | hard-coded `.hsaco` | ROCm only |
+
+---
+
+## 3. Единственный паттерн использования — `GpuContext::CompileModule`
+
+### 3.1 После clean-slate
+
+Все 27 processor-файлов используют **ОДНО API** — через GpuContext:
+
+```cpp
+// В конструкторе processor:
+ctx_ = GpuContext(backend, "Capon", ResolveCacheDir("capon"));
+
+// При первом Process():
+ctx_.CompileModule(kernels::GetCaponSource(),
+                   {"capon_kernel_a", "capon_kernel_b"},
+                   {"-DBLOCK_SIZE=256", "-DUSE_FP32"});
+// внутри CompileModule:
+//   CompileKey key{source, defines, arch_, hiprtc_ver_};
+//   auto bin = cache_->Load(name, key);
+//   if (!bin) {
+//       bin = Hiprtc(source, defines);  // ~150ms
+//       cache_->Save(name, key, bin);
+//   }
+//   hipModuleLoadData(...);
+```
+
+**Больше нет Pattern B. Вообще.**
+
+### 3.2 Как решается "spectrum filters N_WINDOW change"
+
+**Было** (workaround):
+```cpp
+void SetWindow(int n) {
+    ctx_ = GpuContext(backend, "SMA", ...);  // recreate — ~5ms penalty
+    ctx_.CompileModule(source, names, {"-DN_WIN=" + std::to_string(n)});
 }
 ```
 
-SHA256 implementation: ~50 lines standalone (no external dep), or simple FNV-1a hash (faster, sufficient for change detection).
-
-### SG1: ScriptGeneratorROCm — Most Critical Fix
-
-**Before** (no cache, recompiles every time):
+**Стало** (чисто):
 ```cpp
-hiprtcCreateProgram(&prog, source.c_str(), ...);
-hiprtcCompileProgram(prog, ...);  // ~150ms EVERY TIME!
-hiprtcGetCode(prog, code.data());
-hipModuleLoadData(&module_, code.data());
-```
-
-**After** (with GpuContext):
-```cpp
-// In constructor:
-ctx_ = GpuContext(backend, "ScriptGen", ResolveCacheDir("script_gen"));
-
-// In CompileScript():
-ctx_.CompileModule(generated_source, {"script_signal"});
-// First run: hiprtc → save HSACO. Next runs: load from disk (~1ms)
-```
-
-### L1-L3: linalg migration example
-
-**Before** (symmetrize_gpu_rocm.cpp, ~90 lines):
-```cpp
-kernel_cache_ = make_unique<KernelCacheService>(cache_dir);
-auto entry = kernel_cache_->Load(kKernelName);
-if (entry && entry->has_binary()) {
-    hipModuleLoadData(&module, entry->binary.data());
-    hipModuleGetFunction(&func, module, "symmetrize_upper_to_full");
-} else {
-    hiprtcCreateProgram(...);
-    hiprtcCompileProgram(...);
-    // ... 50 more lines ...
-    kernel_cache_->Save(...);
+void SetWindow(int n) {
+    // GpuContext НЕ пересоздаётся
+    ctx_.CompileModule(source, names, {"-DN_WIN=" + std::to_string(n)});
+    // внутри: CompileKey с новым N_WIN → другой hash → либо disk hit,
+    // либо компиляция + save. hipModuleUnload делается только для СТАРОГО module.
 }
 ```
 
-**After** (3 lines):
-```cpp
-// In constructor: ctx_(backend, "SymmetrizeGPU", ResolveCacheDir("vector_algebra"))
-// In EnsureCompiled():
-ctx_.CompileModule(kernels::GetSymmetrizeSource(), {"symmetrize_upper_to_full"});
+`GpuContext` внутри хранит map `hash → hipModule_t` — можно держать несколько вариантов live одновременно или unload старый при смене. Это уже детали реализации GpuContext (Phase A3).
+
+---
+
+## 4. Realt inventory — что меняется
+
+### 4.1 Pattern B (manual hiprtc) — 6 файлов, все переводим на GpuContext
+
+Подтверждено grep'ом 2026-04-17:
+
+| Repo | Файл | Изменение |
+|------|------|-----------|
+| spectrum | `fft_func/src/all_maxima_pipeline_rocm.cpp` | Заменить manual hiprtc на `ctx_.CompileModule()` |
+| signal_generators | `signal_generators/src/script_generator_rocm.cpp` | **CRITICAL**: сейчас без disk cache → добавить GpuContext |
+| linalg | `vector_algebra/src/cholesky_inverter_rocm.cpp` | GpuContext |
+| linalg | `vector_algebra/src/symmetrize_gpu_rocm.cpp` | GpuContext |
+| linalg | `vector_algebra/src/diagonal_load_regularizer.cpp` | GpuContext |
+| strategies | `include/strategies/strategies_float_api.hpp` (337 строк, header-inline!) | Вынести в .cpp + GpuContext |
+
+### 4.2 Pattern A (через GpuContext) — 21 файл
+
+Переписывать не надо. Но `GpuContext::CompileModule` внутри получит новый API — все 21 caller **останутся работающими** (API для caller-а не меняется, меняется только внутренности + поведение кеша).
+
+### 4.3 Dead code — удалить физически
+
+| Файл | Что удалить |
+|------|-------------|
+| `radar/src/fm_correlator/src/fm_correlator_processor_rocm.cpp:573-710` | `#if 0 // REMOVED` блок → **удалить строки**, не оставлять обёрнутым. Плюс `kernel_cache_` member если не используется. |
+
+### 4.4 filter recreation — убрать workaround
+
+| Файл | Что поменять |
+|------|--------------|
+| `spectrum/src/filters/src/moving_average_filter_rocm.cpp:137` | Убрать `ctx_ = GpuContext(...)` — просто `ctx_.CompileModule(source, names, new_defines)` |
+| `spectrum/src/filters/src/kaufman_filter_rocm.cpp:119` | То же |
+
+---
+
+## 5. Phase Plan — clean slate
+
+> Ветка: `kernel_cache_v2` во всех репо.
+> **Координация с `new_profiler`**: см. секцию 7.
+
+### Phase A: Core — новый API + hash infrastructure (4-6 ч)
+
+| Step | Что | Файл | Effort |
+|------|-----|------|--------|
+| A1 | `CompileKey` struct + Hash (FNV-1a composite) | NEW: `core/include/core/services/compile_key.hpp` + `.cpp` | 1 ч |
+| A2 | Перепечатать `KernelCacheService` (новый API) | `kernel_cache_service.hpp/.cpp` полностью переписать | 2 ч |
+| A3 | Обновить `GpuContext::CompileModule` — использовать CompileKey | `gpu_context.hpp/.cpp` | 1 ч |
+| A4 | Unit-тесты (8+ тестов) | `tests/test_compile_key.hpp`, `test_kernel_cache_service.hpp` | 1-2 ч |
+| | Build + test core | | **GATE** |
+
+**Acceptance для Phase A**:
+- CompileKey с разными defines даёт разный hash (тест)
+- Разный arch → разный hash (тест)
+- Сохранил с key1, load с key2 → nullopt (stale detection)
+- Hash стабилен между запусками (bit-exact regression)
+
+### Phase B: Critical fixes (4-5 ч)
+
+| Step | Что | Файл | Effort |
+|------|-----|------|--------|
+| B1 | ScriptGeneratorROCm → GpuContext (впервые получит disk cache!) | `script_generator_rocm.cpp` | 2 ч |
+| B2 | AllMaximaPipelineROCm → GpuContext | `all_maxima_pipeline_rocm.cpp` | 1-2 ч |
+| B3 | Build + test signal_generators, spectrum | | **GATE** |
+
+**Ценность**: ScriptGen перестаёт recompile'иться на каждый запуск — это **-150ms на создание** на 10 GPU.
+
+### Phase C: linalg + strategies (5-7 ч)
+
+| Step | Что | Файл | Effort |
+|------|-----|------|--------|
+| C1 | CholeskyInverterROCm → GpuContext | `cholesky_inverter_rocm.cpp` | 1.5 ч |
+| C2 | SymmetrizeGpuROCm → GpuContext | `symmetrize_gpu_rocm.cpp` | 1 ч |
+| C3 | DiagonalLoadRegularizer → GpuContext | `diagonal_load_regularizer.cpp` | 1 ч |
+| C4 | StrategiesFloatApi → .cpp + GpuContext | `strategies_float_api.hpp` → `.cpp` | 3-4 ч ⚠️ |
+| | Build + test linalg, strategies | | **GATE** |
+
+**⚠️ C4**: 337 строк header-inline → .cpp split + CMake правка. **Требует OK Alex на CMake** (добавить `.cpp` в `target_sources`).
+
+### Phase D: Cleanup workaround + dead code (1-2 ч)
+
+| Step | Что | Файл | Effort |
+|------|-----|------|--------|
+| D1 | Убрать recreate GpuContext в filters | `moving_average_filter_rocm.cpp`, `kaufman_filter_rocm.cpp` | 30 мин |
+| D2 | Удалить `#if 0` dead code в FM Correlator | `fm_correlator_processor_rocm.cpp` | 30 мин |
+| D3 | Integration test: все 8 репо, full pipeline | DSP meta | 1 ч |
+| | PR → main (с OK Alex) | | **GATE** |
+
+### Phase E: Polish (1-2 ч)
+
+| Step | Что | Effort |
+|------|-----|--------|
+| E1 | `KernelCacheService::ListEntries` + CLI tool `dsp-cache-list` | 1 ч |
+| E2 | Документация Full.md обновить (новый API) | 30 мин |
+| E3 | Tag `v0.3.0` (с OK Alex) | |
+
+### Total effort
+**15-22 часа** (realistic) вместо 14-16 первоначальных.
+
+---
+
+## 6. Quality Gates
+
+| # | Gate | Criterion | Checkpoint |
+|---|------|-----------|------------|
+| G1 | Hash correctness | Изменение source / defines / arch / hiprtc_ver → разный hash (unit test) | Phase A |
+| G2 | Stale detection | Save(k1), Load(k2) → nullopt (unit test) | Phase A |
+| G3 | Hash stability | Hash стабилен между запусками — regression test с bit-exact golden value | Phase A |
+| G4 | No legacy API | `grep "Load(const std::string& name)"` → 0 occurrences | Phase A |
+| G5 | Cache hit rate | ScriptGen после 1st run: `CacheStats.hits > 0` на 2nd run (integration test) | Phase B |
+| G6 | No pattern B | `grep "hiprtcCompileProgram\|hipModuleLoadData" ALL_REPOS/src` — только в GpuContext | Phase C |
+| G7 | Filter reconfig without reload | SetWindow(5) → SetWindow(10) — обе compiled, обе в кеше, no GpuContext recreate | Phase D |
+| G8 | All repos build+test | `debian-local-dev preset` зелёный для 8 репо | Phase D |
+| G9 | Memory — no leaks | `rocm-smi` после 1000 iterations: hipModule не накапливается | Phase D |
+| G10 | Performance regression | GpuContext::CompileModule 1st call (cache miss): ≤ baseline + 10% | Phase D |
+
+---
+
+## 7. Координация с `new_profiler` (минимальные пересечения)
+
+### 7.1 Что уже есть в работе
+**GPUProfiler v2** уже спланирован и разложен на таски:
+- Спека: `GPUProfiler_Rewrite_Proposal_2026-04-16.md`
+- Ревью (Round 3, все согласовано): `GPUProfiler_Rewrite_Proposal_2026-04-16_REVIEW.md`
+- Индекс: `MemoryBank/tasks/TASK_Profiler_v2_INDEX.md`
+- 8 TASK-файлов Phase A → E
+- Effort: 28-40ч, ветка `new_profiler`
+
+### 7.2 Реальные пересечения — их почти нет
+
+Проверено grep'ом 2026-04-17:
+
+| Что trогает | new_profiler | kernel_cache_v2 | Конфликт? |
+|-------------|:-----:|:-----:|:-----:|
+| `*benchmark*.hpp` (6 репо, 17 файлов) | ✅ | — | — |
+| `*_rocm.cpp` processors (6 файлов в 4 репо) | — | ✅ | — |
+| `core/include/core/services/profiling/` (новая папка) | ✅ создаёт | — | — |
+| `core/include/core/services/kernel_cache_service.hpp` | — | ✅ переписывает | — |
+| `core/include/core/services/compile_key.hpp` (новый) | — | ✅ создаёт | — |
+| `core/include/core/interface/gpu_context.hpp` | — | ✅ API tweak | — |
+| `core/src/services/gpu_profiler.cpp` (удаляется) | ✅ удаляет | — | — |
+| `core/src/services/kernel_cache_service.cpp` | — | ✅ переписывает | — |
+| `core/src/CMakeLists.txt` | ✅ add profiling/*.cpp | ✅ add compile_key.cpp | 🟡 trivial |
+| `core/tests/CMakeLists.txt` | ✅ add test_profile_* | ✅ add test_compile_key | 🟡 trivial |
+
+**Вывод**: файлы **кода** разные. Единственный шов — две строки в `target_sources(core)` у двух `CMakeLists.txt`. Это **auto-merge** в 95% случаев.
+
+### 7.3 Рекомендуемый порядок
+
+```
+main ─── new_profiler ─── merge ─── kernel_cache_v2 ─── merge ─── v0.3.0
+         (28-40ч)                  (15-22ч — стартует после profiler merged)
 ```
 
----
+**Почему profiler первый**:
+1. Уже разложен на таски (можно начинать исполнение сегодня)
+2. Фундаментальнее — все benchmarks в 6 репо через него
+3. Kernel_cache самодостаточен — может подождать
 
-## 6. Kernel Memory Persistence Guarantee
+### 7.4 Если хочется ускорить
 
-> Alex: "контроль что когда кернел вызывается, он остается в памяти до окончания работы"
+Если Alex согласен — **kernel_cache_v2 может стартовать параллельно в ветке `kernel_cache_v2`**, при условиях:
+- Phase A (core — самая spornaya часть) ждёт merge profiler'а в main
+- Phase B-D (processors) могут работать параллельно — они не trогают файлы profiler'а
+- Ежедневный `git rebase origin/new_profiler` (дёшево — 1-2 строки CMake)
 
-**Current guarantee** (for Pattern A):
-```
-hipModule_t lifetime = GpuContext lifetime = Processor lifetime = Application lifetime
-```
+**Риск**: минимальный (только trivial CMake merge).
+**Выигрыш**: ~15-20ч календарного времени.
 
-Processors are created once at startup and destroyed at shutdown.
-Kernels stay in GPU memory for the ENTIRE session. ✅
+### 7.5 Если хочется совсем просто
 
-**Risk only in Pattern B** (manual hipModule):
-- DiagonalLoadRegularizer: move-semantics can transfer ownership incorrectly
-- StrategiesFloatApi: header-inline destructor may fire unexpectedly
-
-**Fix**: Migrate Pattern B → GpuContext. Then guarantee is automatic.
-
-**Additionally for spectrum filters** (S2/S3):
-When N_WINDOW changes, GpuContext is recreated → hipModuleUnload → reload.
-This is ~5ms penalty. Acceptable because:
-- N_WINDOW changes are rare (user reconfiguration)
-- Disk cache ensures fast reload
-- Alternative (compile all N_WINDOW variants) wastes GPU memory
+**Последовательно** (профайлер → потом kernel_cache). Гарантированно без конфликтов. 50-60ч календарных — нормально для итогового качества.
 
 ---
 
-## 7. Migration Phases
+### 🎯 Решение за Alex (Q8)
 
-> Branch: **`kernel_cache_v2`** per repo
+| Вариант | Риск | Календ. время | Рекомендация |
+|---------|:-----:|:-----:|:-----:|
+| A — последовательно | 🟢 0 | 50-60ч | ✅ безопасно |
+| B — параллельно с rebase | 🟡 trivial | 35-45ч | ✅ оптимально если есть bandwidth |
+| C — одна ветка `v2_refactor` | 🔴 big PR | 45-55ч | ❌ не надо, PR станет гигантским |
 
-### Phase A: Core improvements
-
-| Step | What | Files | Effort |
-|------|------|-------|--------|
-| A1 | SHA256 hash in KernelCacheService | kernel_cache_service.hpp/cpp | 2h |
-| A2 | CacheStats (hits/misses/ms) | kernel_cache_service.hpp/cpp | 1h |
-| A3 | PreloadFromCache() static method | gpu_context.hpp/cpp | 1h |
-| | Build + test core | | Gate |
-
-### Phase B: Critical fixes (SG1 + S1)
-
-| Step | What | Files | Effort |
-|------|------|-------|--------|
-| B1 | ScriptGeneratorROCm → GpuContext + cache | script_generator_rocm.cpp | 2h |
-| B2 | AllMaximaPipelineROCm → GpuContext | all_maxima_pipeline_rocm.cpp | 2h |
-| | Build + test signal_generators, spectrum | | Gate |
-
-### Phase C: linalg + strategies migration (L1-L3, ST1)
-
-| Step | What | Files | Effort |
-|------|------|-------|--------|
-| C1 | CholeskyInverterROCm → GpuContext | cholesky_inverter_rocm.cpp/hpp | 1.5h |
-| C2 | SymmetrizeGpuROCm → GpuContext | symmetrize_gpu_rocm.cpp | 1h |
-| C3 | DiagonalLoadRegularizer → GpuContext | diagonal_load_regularizer.cpp/hpp | 1h |
-| C4 | StrategiesFloatApi → GpuContext + .cpp | strategies_float_api.hpp | 1.5h |
-| | Build + test linalg, strategies | | Gate |
-
-### Phase D: Cleanup + integration
-
-| Step | What | Effort |
-|------|------|--------|
-| D1 | Delete dead CompileKernels() in FM Correlator | 30min |
-| D2 | Integration test: all 8 repos on kernel_cache_v2 | 1h |
-| D3 | PR → main per repo | Gate (Alex OK) |
-
-### Total effort: ~14-16 hours
+Моя ставка — **B** (параллельно с rebase), если ты готов периодически ребейзить.
+Если нет — **A** (сначала профайлер, потом cache).
 
 ---
 
-## 8. Expected Results
+## 8. Decision Points — FINAL (согласовано Alex 2026-04-17)
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Pattern consistency | 2 patterns (A+B) | **1 pattern** (A only) |
-| Files with disk cache | 21 of 27 | **27 of 27** (100%) |
-| ScriptGenerator startup | ~150ms (recompile) | **~1ms** (cache hit) |
-| Stale binary protection | NONE | **SHA256 hash** |
-| Duplicated boilerplate | ~740 lines | **0 lines** |
-| Cache statistics | none | **hits/misses/compile_time** |
-| Kernel memory persistence | depends on pattern | **guaranteed** (all through GpuContext) |
-| Pre-warming option | none | **available** (startup load) |
-
----
-
-## 9. Decision Points for Alex
-
-| # | Question | Recommendation |
-|---|----------|---------------|
-| Q1 | Hash: SHA256 or FNV-1a? | **FNV-1a** — faster, no deps, sufficient for change detection |
-| Q2 | Start with SG1 (most critical)? | **Yes** — ScriptGenerator without cache is a bug |
-| Q3 | Phase A-D sequential or parallel? | **A first** (core), then B+C parallel |
-| Q4 | Branch name? | **`kernel_cache_v2`** |
-| Q5 | Pre-warming mandatory? | **Optional** — config flag `preload_kernels` |
+| # | Вопрос | Решение |
+|---|--------|---------|
+| Q1 | Hash функция | ✅ **FNV-1a 64-bit composite** — 20 строк своей реализации, no deps |
+| Q2 | `CompileKey` размещение | ✅ Отдельный `core/include/core/services/compile_key.hpp` |
+| Q3 | Manifest.json | ✅ **Optional** — для CLI tool, не для runtime (runtime по hash в имени файла) |
+| Q4 | CacheStats типизация | ✅ **Atomic** счётчики (hits/misses/compile_ms/load_ms) |
+| Q5 | Variants для разных defines | ✅ **Хранить все** (диск дешёвый) |
+| Q6 | Corrupted HSACO at Load | ✅ Удалить файл + recompile + `DRVGPU_LOG_WARNING` |
+| Q7 | hipModuleUnload при смене defines | ✅ **Deferred** — старый модуль живёт до shutdown GpuContext |
+| Q8 | Порядок с new_profiler | ✅ **Вариант B**: параллельно в своих ветках, Phase A ждёт merge profiler'а, Phase B-D идут параллельно |
+| Q9 | Branch name | ✅ `kernel_cache_v2` в каждом затронутом репо (core + 4: spectrum, signal_generators, linalg, strategies) |
+| Q10 | TASK-файлы | ✅ Да — 6 файлов по образцу `TASK_Profiler_v2_*.md` |
 
 ---
 
-## Appendix: ROCm Notes (from Context7)
+## 9. Open Questions
 
-1. HIP runtime (ROCm 6.4+) has built-in code object cache — but only for HIP API compiled kernels, NOT for hiprtc. Our hiprtc kernels NEED manual disk caching.
-2. `hipModuleLoad/hipModuleUnload` has known memory leak in some ROCm versions → minimizing Unload calls is good practice.
-3. rocFFT uses `ROCFFT_RTC_CACHE_PATH` env for RTC cache — same pattern as our `DSP_CACHE_DIR`.
-4. Per-architecture HSACO is mandatory — gfx908 binary won't run on gfx1201.
+1. **hipModuleUnload leak в ROCm** — Appendix спеки v2 упоминал что это known issue. Нужно подтвердить на ROCm 7.2+ (текущая версия проекта). Если issue ещё актуален → держать все варианты hipModule live до shutdown GpuContext.
+
+2. **Hash collision probability** — FNV-1a 64-bit на realistic payload (source ~10KB × defines 20 строк × arch + hiprtc_version): коллизия вероятность ~2^-32. На 1000 kernels × 10 configs = 10K entries, probability collision < 10^-5. Достаточно.
+
+3. **Cross-platform hash** — FNV-1a byte-order independent (побайтно). `std::hash` — implementation-defined → использовать нельзя для disk cache.
 
 ---
 
-*Created: 2026-04-16 | v2 after Alex review | Codo (AI Assistant)*
+## 10. Expected Results
+
+| Метрика | До (v1 текущий) | После (v3 clean) |
+|---------|------------------|------------------|
+| Pattern consistency | 2 паттерна | **1** (GpuContext only) |
+| Файлов с disk cache | 21 из 27 | **27 из 27** |
+| ScriptGen startup | ~150ms recompile | **~1ms** hit |
+| Stale binary detection | нет | **composite hash** |
+| Filter reconfig latency | ~5ms (GpuContext recreate) | **~1ms** (hash-miss → disk hit, no recreate) |
+| Поддержка N_WINDOW variants | одно за раз | **все одновременно** в кеше |
+| CacheStats | нет | `hits/misses/compile_ms/load_ms` |
+| Duplicated boilerplate | ~740 строк | **0 строк** |
+| Dead code | 122 строки (#if 0) | **0 строк** |
+
+---
+
+## 11. Что дальше
+
+1. **Alex прочитает эту спеку** — даст OK или комментарии
+2. Если OK → **написать TASK-файлы** (5-6 штук, по образцу `TASK_Profiler_v2_*.md`):
+   - `TASK_KernelCache_v2_INDEX.md`
+   - `TASK_KernelCache_v2_PhaseA_CoreNewApi.md`
+   - `TASK_KernelCache_v2_PhaseB_Critical.md`
+   - `TASK_KernelCache_v2_PhaseC_LinalgStrategies.md`
+   - `TASK_KernelCache_v2_PhaseD_Cleanup.md`
+   - `TASK_KernelCache_v2_PhaseE_Polish.md`
+3. Решить Q8 (порядок с new_profiler) — **до** старта
+
+---
+
+*Created: 2026-04-16 | v3 clean-slate: 2026-04-17 | Codo (AI Assistant)*
