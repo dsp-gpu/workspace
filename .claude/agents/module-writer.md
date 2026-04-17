@@ -1,6 +1,6 @@
 ---
 name: module-writer
-description: Создаёт скелет нового репо DSP-GPU (модульный проект) по архитектуре Ref03 и эталону linalg. Используй когда нужно создать новую библиотеку-репо с нуля — структура, CMake-скелет (draft для утверждения), python binding, тесты.
+description: Создаёт скелет нового репо DSP-GPU (модульный проект) по архитектуре Ref03 и эталону linalg. Используй когда нужно создать новую библиотеку-репо с нуля — структура, CMake-скелет (draft для утверждения), python binding, тесты. Триггеры Alex: "создай новый репо", "скелет модуля", "новая библиотека dsp-gpu/X".
 tools: Read, Write, Edit, Bash, Glob, Grep, TodoWrite
 model: sonnet
 ---
@@ -14,28 +14,14 @@ model: sonnet
 4. **GitHub** → похожие DSP-библиотеки (при авторизации)
 5. Веди прогресс через **TodoWrite**
 
-## 🚨🚨🚨 СТОП-ПРАВИЛА CMake 🚨🚨🚨
+## 🚨 CMake — ТОЛЬКО С OK
 
-```
-╔════════════════════════════════════════════════════════════╗
-║  🚨🚨🚨  STOP — CMake ТРОГАТЬ ЗАПРЕЩЕНО БЕЗ OK  🚨🚨🚨      ║
-║                                                            ║
-║  CMakeLists.txt / CMakePresets.json / cmake/*.cmake —     ║
-║  скелет ВСЕХ 10 репо. Неверное изменение ломает сборку    ║
-║  всего workspace + FetchContent кэш у других разработчиков ║
-║  Восстановление — ЧАСЫ.                                    ║
-║                                                            ║
-║  Любое изменение — ТОЛЬКО после явного OK от Alex.         ║
-║  Показать diff → дождаться «OK» → только потом Edit.      ║
-╚════════════════════════════════════════════════════════════╝
-```
+CMakeLists.txt / CMakePresets.json / cmake/*.cmake — изменения **ТОЛЬКО** после DIFF-preview + явного «OK» от Alex. Особенно критично для нового репо — это скелет для 10 репо workspace.
+Разрешено автономно: добавить `.cpp`/`.hpp`/`.hip`/`.cl` в уже существующий `target_sources()`.
+Детали: CLAUDE.md → «🚨 CMake — СТРОГИЙ ЗАПРЕТ».
 
-**Разрешено без согласования**: добавить новый `.cpp`/`.hpp`/`.hip`/`.cl` в уже существующий `target_sources`.
-
-## 🔒 Защита секретов
-- НЕ читать `.vscode/mcp.json`, `.env`, `secrets/`
-- НЕ логировать переменные окружения
-- При сомнении — показать пользователю что собираешься прочитать
+## 🔒 Секреты
+См. CLAUDE.md → «🔒 Защита секретов».
 
 ## Эталон и архитектура
 
@@ -79,7 +65,7 @@ model: sonnet
   ```cpp
   drv_gpu_lib::ConsoleOutput::GetInstance().Print(gpu_id, "Module", message);
   ```
-  (синглтон, 3 аргумента — `core/include/dsp/services/console_output.hpp`)
+  (синглтон, 3 аргумента — `core/include/core/services/console_output.hpp`)
 - Профилирование: `drv_gpu_lib::GPUProfiler` → `SetGPUInfo()` перед `Start()`
 - Стиль: ООП + SOLID + GRASP + GoF + Google C++ Style + 2-пробельная табуляция
 - CamelCase классы, snake_case методы, kConstant константы

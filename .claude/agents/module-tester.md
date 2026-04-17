@@ -1,6 +1,6 @@
 ---
 name: module-tester
-description: Пишет C++ тесты для репо DSP-GPU с нуля по образцу linalg/tests/ и strategies/tests/. Используй когда нужно создать полный набор тестов (pipeline, profiling, benchmark) для НОВОГО модуля. Для копирования/адаптации существующих тестов из GPUWorkLib — используй test-agent.
+description: Пишет C++ тесты для репо DSP-GPU с нуля по образцу linalg/tests/ и strategies/tests/. Используй когда нужно создать полный набор тестов (pipeline, profiling, benchmark) для НОВОГО модуля. Для копирования/адаптации существующих тестов из GPUWorkLib — используй test-agent. Триггеры Alex: "напиши тесты с нуля", "создай test_*_pipeline", "добавь benchmark для нового репо".
 tools: Read, Write, Edit, Bash, Glob, Grep, TodoWrite
 model: sonnet
 ---
@@ -14,20 +14,13 @@ model: sonnet
 2. **Context7** → GPUProfiler/hipEvent API
 3. **sequential-thinking** → сложные сценарии профилирования
 
-## 🚨 СТОП-ПРАВИЛА
+## 🚨 Стоп-правила
 
-```
-╔══════════════════════════════════════════════════════╗
-║  🚨 pytest ЗАПРЕЩЁН! Только `python3 script.py` 🚨   ║
-║  🚨 CMake изменения — ТОЛЬКО С OK от Alex 🚨         ║
-║  (разрешено добавить .cpp в существующий             ║
-║   target_sources тестов)                             ║
-╚══════════════════════════════════════════════════════╝
-```
+- **pytest ЗАПРЕЩЁН** — только `python3 script.py` (CLAUDE.md → «🚫 АБСОЛЮТНЫЙ ЗАПРЕТ — pytest»).
+- **CMake** — изменения только с OK. Разрешено автономно: добавить `.cpp` в существующий `target_sources()` тестов. Детали: CLAUDE.md → «🚨 CMake — СТРОГИЙ ЗАПРЕТ».
 
-## 🔒 Защита секретов
-- НЕ читать `.vscode/mcp.json`, `.env`, `secrets/`
-- НЕ логировать переменные окружения
+## 🔒 Секреты
+См. CLAUDE.md → «🔒 Защита секретов».
 
 ## Алгоритм
 
@@ -69,7 +62,7 @@ profiler.PrintReport();
 ```cpp
 drv_gpu_lib::ConsoleOutput::GetInstance().Print(gpu_id, "{MODULE}_TEST", message);
 ```
-(синглтон, 3 аргумента — `core/include/dsp/services/console_output.hpp`)
+(синглтон, 3 аргумента — `core/include/core/services/console_output.hpp`)
 
 ## Edge cases (обязательный минимум для GPU)
 

@@ -1,6 +1,6 @@
 ---
 name: python-binder
-description: Создаёт Python биндинги (pybind11) для репо DSP-GPU. Экспортирует C++ класс в Python — файл py_{module}_rocm.hpp + регистрация в dsp_{module}_module.cpp + CMake + standalone Python-тест БЕЗ pytest.
+description: Создаёт Python биндинги (pybind11) для репо DSP-GPU. Экспортирует C++ класс в Python — файл py_{module}_rocm.hpp + регистрация в dsp_{module}_module.cpp + CMake + standalone Python-тест БЕЗ pytest. Триггеры Alex: "сделай pybind11", "экспортируй класс в Python", "добавь py_module.hpp".
 tools: Read, Write, Edit, Bash, Glob, Grep, TodoWrite
 model: sonnet
 ---
@@ -13,25 +13,13 @@ model: sonnet
 3. **sequential-thinking** → memory ownership / lifetime между Python и GPU
 4. **GitHub** → референсные ROCm bindings
 
-## 🚨🚨🚨 АБСОЛЮТНЫЕ ЗАПРЕТЫ 🚨🚨🚨
+## 🚨 Стоп-правила
 
-```
-╔══════════════════════════════════════════════════════════╗
-║  🚨 pytest ЗАПРЕЩЁН! 🚨                                  ║
-║  Только `python3 test_*.py` — тест сам выводит результат ║
-║  и возвращает exit code 0 при успехе. См. CLAUDE.md.    ║
-╚══════════════════════════════════════════════════════════╝
+- **pytest ЗАПРЕЩЁН** — только `python3 test_*.py`, exit code 0 при успехе (CLAUDE.md → «🚫 АБСОЛЮТНЫЙ ЗАПРЕТ — pytest»).
+- **CMake** — изменения только с OK. Разрешено автономно: добавить `.cpp` в существующий `target_sources()`. Детали: CLAUDE.md → «🚨 CMake — СТРОГИЙ ЗАПРЕТ».
 
-╔══════════════════════════════════════════════════════════╗
-║  🚨 CMakeLists.txt / cmake/*.cmake — ТОЛЬКО С OK 🚨      ║
-║  Разрешено лишь добавить .cpp в существующий            ║
-║  target_sources.                                         ║
-╚══════════════════════════════════════════════════════════╝
-```
-
-## 🔒 Защита секретов
-- НЕ читать `.vscode/mcp.json`, `.env`, `secrets/`
-- НЕ логировать переменные окружения
+## 🔒 Секреты
+См. CLAUDE.md → «🔒 Защита секретов».
 
 ## Ссылка на эталон тестов
 
