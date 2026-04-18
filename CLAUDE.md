@@ -16,7 +16,7 @@
 ## 🗂️ Структура workspace
 
 ```
-E:\DSP-GPU\                       ← корень workspace, git: github.com/dsp-gpu/workspace
+~/DSP-GPU/  (Windows: E:\DSP-GPU\) ← корень workspace, git: github.com/dsp-gpu/workspace
 ├── DSP-GPU.code-workspace         ← VSCode multi-folder workspace
 ├── CLAUDE.md                      ← этот файл
 ├── MemoryBank/                    ← управляющие данные (в git workspace)
@@ -161,7 +161,7 @@ find_package(HIP REQUIRED)   # упадёт на Linux!
 ```
 
 ### Пресеты (local-dev)
-CMakePresets.json с `FETCHCONTENT_SOURCE_DIR_DSP*` → локальные папки `E:/DSP-GPU/`:
+CMakePresets.json с `FETCHCONTENT_SOURCE_DIR_DSP*` → локальные папки `~/DSP-GPU/`:
 ```bash
 cmake -S . -B build --preset local-dev
 ```
@@ -171,9 +171,8 @@ cmake -S . -B build --preset local-dev
 ## 📋 Рабочий процесс (workflow)
 
 ### Базовый каталог с кодом
-- **Windows**: `E:\C++\GPUWorkLib\` — старый монолит (работающий, не трогаем)
-- **Debian**: `.../C++/GPUWorkLib/` — Linux версия
-- **Новый проект**: `E:\DSP-GPU\` — этот workspace (модульный)
+- **GPUWorkLib**: `~/C++/GPUWorkLib/` — старый монолит-эталон (не трогаем!)
+- **Новый workspace**: `~/DSP-GPU/` (Windows: `E:\DSP-GPU\`) — этот workspace
 
 ### Текущая фаза: Миграция
 ```

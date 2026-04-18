@@ -7,7 +7,7 @@
       "Bash(python3*)",
       "Bash(make*)",
       "Bash(ninja*)",
-      "Bash(bash /home/alex/C++/GPUWorkLib/.claude/hooks/*)",
+      "Bash(bash .claude/hooks/*)",
       "mcp__sequential-thinking__*",
       "mcp__context7__*",
       "mcp__filesystem__*",
@@ -24,18 +24,20 @@
       "mcp__dap-debug__get-debug-state",
       "mcp__dap-debug__get-variables-scope",
       "mcp__dap-debug__get-debug-console",
-      "Bash(ls -lh /home/alex/C++/GPUWorkLib/Python_test/*/test_*.py)",
-      "Bash(grep -l \"filters\\\\|fm_correlator\\\\|FM_correlator\" /home/alex/C++/GPUWorkLib/MemoryBank/specs/*.md)",
-      "Bash(./GPUWorkLib.exe signal_generators)",
-      "Bash(\"./GPUWorkLib.exe\" drvgpu)",
-      "Bash(\"./GPUWorkLib.exe\" fft_processor)",
-      "Bash(\"./GPUWorkLib.exe\" fft_maxima)",
-      "Bash(\"F:/Program Files \\(x86\\)/Python312/python.exe\" Python_test/fft_maxima/test_spectrum_find_all_maxima.py)",
-      "Bash(\"F:/Program Files \\(x86\\)/Python312/python.exe\" -c \"import sys; sys.path.insert\\(0, ''e:/C++/GPUWorkLib/build/python''\\); import gpuworklib; print\\(''OK:'', gpuworklib.__file__\\)\")",
-      "Bash(\"F:/Program Files \\(x86\\)/Python312/python.exe\" -c \"import sys; sys.path.insert\\(0, ''e:/C++/GPUWorkLib/build/python/Debug''\\); import gpuworklib; print\\(''OK:'', gpuworklib.__file__\\)\")",
-      "Bash(\"F:/Program Files \\(x86\\)/Python312/python.exe\" -m pytest Python_test/heterodyne/ -v --tb=short --ignore=Python_test/heterodyne/test_heterodyne_rocm.py)",
-      "Bash(\"F:/Program Files \\(x86\\)/Python312/python.exe\" -m pytest Python_test/heterodyne/test_heterodyne_comparison.py Python_test/heterodyne/test_heterodyne_step_by_step.py -v --tb=short)",
-      "Bash(python -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(data[0][''text'']\\)\")"
+      "Bash(python -c \"import json,sys; data=json.load\\(sys.stdin\\); print\\(data[0][''text'']\\)\")",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(cp ./DSP/Doc/Modules/signal_generators/*.md ./signal_generators/Doc/)",
+      "Bash(cp -r ./DSP/Doc/Modules/signal_generators/images/. ./signal_generators/Doc/images/)",
+      "Bash(cp ./DSP/Doc/Modules/heterodyne/*.md ./heterodyne/Doc/)",
+      "Bash(cp ./DSP/Doc/Modules/heterodyne/Алгоритм*.md ./heterodyne/Doc/)",
+      "Bash(cp ./DSP/Doc/Modules/heterodyne/images/*.png ./heterodyne/Doc/images/)",
+      "Bash(cp ./DSP/Doc/Modules/strategies/*.md ./strategies/Doc/)",
+      "Bash(cp -r ./DSP/Doc/Modules/strategies/images/. ./strategies/Doc/images/)",
+      "Bash(cp ./DSP/Doc/DrvGPU/*.md ./core/Doc/)",
+      "Bash(cp ./DSP/Doc/DrvGPU/Services/*.md ./core/Doc/Services/)",
+      "Bash(grep -iE \"rocm\\\\.cpp$|regularizer\")",
+      "mcp__supermemory__memory",
+      "mcp__supermemory__recall"
     ]
   },
   "enableAllProjectMcpServers": true,
@@ -45,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /home/alex/C++/GPUWorkLib/.claude/hooks/on_stop.sh"
+            "command": "bash .claude/hooks/on_stop.sh"
           }
         ]
       }
@@ -56,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /home/alex/C++/GPUWorkLib/.claude/hooks/pre_bash.sh"
+            "command": "bash .claude/hooks/pre_bash.sh"
           }
         ]
       }
@@ -67,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /home/alex/C++/GPUWorkLib/.claude/hooks/post_write.sh"
+            "command": "bash .claude/hooks/post_write.sh"
           }
         ]
       }

@@ -23,28 +23,28 @@ model: sonnet
 
 ## Ссылка на эталон тестов
 
-> ℹ️ **Эталоны отлаженных Python тестов** лежат здесь:
-> **`../C++/GPUWorkLib/Python_test/{module}/`**
+> ℹ️ **Эталоны Python тестов** лежат в DSP-GPU:
+> **`DSP/Python/{module}/test_{module}.py`**
 >
-> Это **проверенные** тесты из старого монолита — оттуда **копируем** структуру, numpy-эталоны, tolerance, setup. Адаптируем импорты и пути под DSP-GPU.
+> Если теста ещё нет — создаём по шаблону ниже. Структуру, numpy-эталоны и tolerance смотрим в уже написанных тестах соседних модулей (например `DSP/Python/linalg/`).
 
-Маппинг источник → DSP-GPU:
-| GPUWorkLib Python_test | DSP-GPU репо |
-|------------------------|--------------|
-| `Python_test/statistics/` | `stats/` → `DSP/Python/stats/` |
-| `Python_test/fft_func/`, `filters/`, `lch_farrow/` | `spectrum/` → `DSP/Python/spectrum/` |
-| `Python_test/signal_generators/` | `signal_generators/` → `DSP/Python/signal_generators/` |
-| `Python_test/heterodyne/` | `heterodyne/` → `DSP/Python/heterodyne/` |
-| `Python_test/vector_algebra/`, `capon/` | `linalg/` → `DSP/Python/linalg/` |
-| `Python_test/range_angle/`, `fm_correlator/` | `radar/` → `DSP/Python/radar/` |
-| `Python_test/strategies/` | `strategies/` → `DSP/Python/strategies/` |
+Структура Python тестов в DSP-GPU:
+| Репо | Python тест |
+|------|------------|
+| `stats` | `DSP/Python/stats/test_stats.py` |
+| `spectrum` | `DSP/Python/spectrum/test_spectrum.py` |
+| `signal_generators` | `DSP/Python/signal_generators/test_signal_generators.py` |
+| `heterodyne` | `DSP/Python/heterodyne/test_heterodyne.py` |
+| `linalg` | `DSP/Python/linalg/test_linalg.py` |
+| `radar` | `DSP/Python/radar/test_radar.py` |
+| `strategies` | `DSP/Python/strategies/test_strategies.py` |
 
 ## Алгоритм
 
 1. **TodoWrite** — план (читаем эталон, пишем биндинг, регистрируем, тест, запуск)
 2. Прочитай **эталонный биндинг**: `./linalg/python/py_vector_algebra_rocm.hpp`
 3. Прочитай регистрацию: `./linalg/python/dsp_linalg_module.cpp`
-4. Прочитай эталонный Python-тест в GPUWorkLib (см. маппинг выше)
+4. Прочитай эталонный Python-тест в `DSP/Python/{module}/` (или ближайший аналог)
 5. Создай биндинг + регистрацию + тест по той же схеме
 
 ## Структура файлов в репо DSP-GPU

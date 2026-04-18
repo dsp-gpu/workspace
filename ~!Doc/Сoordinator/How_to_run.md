@@ -1,7 +1,7 @@
 # 🎛️ Как запустить `workflow-coordinator`
 
 **Дата создания**: 2026-04-14
-**Файл агента**: `/home/alex/DSP-GPU/.claude/agents/workflow-coordinator.md`
+**Файл агента**: `.claude/agents/workflow-coordinator.md`
 **Модель**: `opus` (глубокий анализ решений)
 
 ---

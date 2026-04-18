@@ -3,11 +3,11 @@
 # Order: core → модули → DSP мета (TAGFILES cross-ссылки).
 # Если в репо нет Doxyfile — пропускаем без ошибки.
 #
-# Usage: bash /home/alex/DSP-GPU/scripts/build_all_docs.sh
+# Usage: bash scripts/build_all_docs.sh
 
 set -euo pipefail
 
-DSP_ROOT="/home/alex/DSP-GPU"
+DSP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REPOS=(core spectrum stats signal_generators heterodyne linalg radar strategies DSP)
 
 echo "=== DSP-GPU Doxygen build ==="
