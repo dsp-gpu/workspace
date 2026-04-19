@@ -145,6 +145,17 @@ MemoryBank/
 
 ---
 
+## ⚠️ СЕТЕВАЯ ИЗОЛЯЦИЯ — читать перед любой задачей с SMI100
+
+| Машина | Интернет | Локальная сеть |
+|--------|----------|----------------|
+| ПК Alex | ✅ GitHub, PyPI | ✅ SMI100 |
+| SMI100  | ❌ ЗАПРЕЩЁН     | ✅ LocalProject |
+| LocalProject | ❌ ЗАПРЕЩЁН | ✅ SMI100 |
+
+> ❌ `git fetch github.com` на SMI100 или LocalProject = **ГРУБАЯ ОШИБКА**
+> ✅ Sync всегда: ПК Alex → `git push` → SMI100 (по локальной сети)
+
 ## 🏗️ CMake-соглашения
 
 ### find_package — ТОЛЬКО lowercase!

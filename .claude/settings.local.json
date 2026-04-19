@@ -37,7 +37,12 @@
       "Bash(cp ./DSP/Doc/DrvGPU/Services/*.md ./core/Doc/Services/)",
       "Bash(grep -iE \"rocm\\\\.cpp$|regularizer\")",
       "mcp__supermemory__memory",
-      "mcp__supermemory__recall"
+      "mcp__supermemory__recall",
+      "Read(//e/DSP-GPU/~!Doc/CMake-GIT/**)",
+      "Read(//e/DSP-GPU/~!Doc/CMake/**)",
+      "Read(//e/DSP-GPU/~!Doc/CMake/Version/**)",
+      "mcp__claude_ai_Context7__resolve-library-id",
+      "WebSearch"
     ]
   },
   "enableAllProjectMcpServers": true,
