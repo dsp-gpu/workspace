@@ -1,151 +1,115 @@
-# 🚧 IN PROGRESS — GPUProfiler v2 Rewrite + Фаза 4: Linux GPU тестирование
+# 🚧 IN PROGRESS — Orchestrated execution: linalg/tests → Profiler v2 → KernelCache v2
 
-**Последнее обновление**: 2026-04-17 (профайлер-таски)
-**Готовность**: 8 репо собраны, готовы к миграции профайлера
-**Координатор**: `workflow-coordinator` (при необходимости)
+**Последнее обновление**: 2026-04-20 (end of day — пауза перед Phase D×5 и KernelCache)
+**Координатор**: main session acts as mega-coordinator (sub-agents не имеют Agent tool)
+**Прогресс**: Task 1 DONE (merged+tagged v0.2.1); Task 2 — Phase A+B+C+D(spectrum) pushed, Gates 1+2+3 PASSED
 
----
+## ⏸ 2026-04-20 PAUSE — завтра продолжаем
 
-## 🆕 2026-04-17 — KernelCache v2 rewrite (параллельно с profiler, Вариант B)
+Состояние зафиксировано в `MemoryBank/orchestrator_state/STATE.md` секция "RESUME TOMORROW".
 
-**Спека**: `MemoryBank/specs/KernelCache_v2_Proposal_2026-04-16.md` (v3 clean-slate)
-**Индекс**: `MemoryBank/tasks/TASK_KernelCache_v2_INDEX.md`
-**Координация**: Phase A ждёт merge profiler'а; Phase B-D идут параллельно.
-
-### Подробные таски
-
-| Phase | TASK file | Status | Effort |
-|-------|-----------|:------:|-------:|
-| A | `TASK_KernelCache_v2_PhaseA_CoreNewApi.md` | ⏸ WAIT profiler merge | 4-6 ч |
-| B | `TASK_KernelCache_v2_PhaseB_CriticalFixes.md` | ⬜ READY after A | 4-5 ч |
-| C | `TASK_KernelCache_v2_PhaseC_LinalgStrategies.md` | ⬜ READY after A | 5-7 ч |
-| D | `TASK_KernelCache_v2_PhaseD_Cleanup.md` | ⬜ READY after C | 1-2 ч |
-| E | `TASK_KernelCache_v2_PhaseE_Polish.md` | ⬜ READY after D | 1-2 ч |
-
-**Effort total**: 15-22ч | **Ветка**: `kernel_cache_v2`
+Коротко:
+- ✅ 7 из 8 фаз Profiler v2 сделаны, все в origin на `new_profiler` (core + spectrum)
+- ⏸ Осталось: Phase D для 5 репо (stats, signal_generators, heterodyne, linalg, strategies), Phase E, merge × 7, tag v0.3.0-rc1
+- ⏸ Потом Task 3 KernelCache v2 (следующий день после финала Profiler v2)
 
 ---
 
-## 🆕 2026-04-17 — GPUProfiler v2 rewrite (НОВЫЙ поток)
+## ✅ Фаза 4 — Linux GPU тестирование (DONE 2026-04-16)
 
-**Спека**: `MemoryBank/specs/GPUProfiler_Rewrite_Proposal_2026-04-16.md`
-**Ревью**: `MemoryBank/specs/GPUProfiler_Rewrite_Proposal_2026-04-16_REVIEW.md` (Round 3 — все закрыто)
-**Индекс**: `MemoryBank/tasks/TASK_Profiler_v2_INDEX.md`
+Все 8 репо собраны на Linux (Debian + Radeon 9070 / ROCm 7.2+):
 
-### Подробные таски (исполнитель — следующая сессия Кодо)
+| Репо | libdsp*.a | Commit | Tests |
+|------|-----------|--------|-------|
+| core | libDspCore.a (10:14) | `5bbe654 docs` | ✅ |
+| spectrum | libDspSpectrum.a (11:29) | `f1839e3 docs` + `19c8efa deep review fixes` | ✅ + pocketfft |
+| stats | libDspStats.a (12:15) | `c00a82b deep review` | ✅ 21/21 + Python SNR |
+| signal_generators | libDspSignalGenerators.a (12:25) | `d933ef5 deep review` | ✅ 11/11 + Python 4 |
+| heterodyne | libDspHeterodyne.a (12:34) | `1550fae deep review` | ✅ 11/11 + Python 2 |
+| linalg | libDspLinalg.a (14:17) | `119b8f5 deep review` | ✅ C++ + Python |
+| radar | libDspRadar.a (14:50) | `a598ef0 deep review` | ✅ C++ + Python |
+| strategies | libDspStrategies.a (15:03) | `f4e945b deep review` | ✅ C++ + Python |
 
-| Phase | TASK file | Status |
-|-------|-----------|:------:|
-| A | `TASK_Profiler_v2_PhaseA_BranchRemoveOpenCL.md` | ⬜ READY |
-| B1 | `TASK_Profiler_v2_PhaseB1_ProfilingRecord.md` | ⬜ READY |
-| B2 | `TASK_Profiler_v2_PhaseB2_ProfileStore.md` | ⬜ READY |
-| B3 | `TASK_Profiler_v2_PhaseB3_ProfileAnalyzer.md` | ⬜ READY |
-| B4 | `TASK_Profiler_v2_PhaseB4_ReportPrinter.md` | ⬜ READY |
-| C | `TASK_Profiler_v2_PhaseC_Exporters.md` | ⬜ READY |
-| D | `TASK_Profiler_v2_PhaseD_CrossRepo.md` | ⬜ READY |
-| E | `TASK_Profiler_v2_PhaseE_Polish.md` | ⬜ READY |
-
-**Effort**: 28-40 часов total | **Ветка**: `new_profiler` | **Radar**: исключён
-
-### Начало работы
-1. Прочитать `TASK_Profiler_v2_INDEX.md` (overview + ключевые решения)
-2. Выполнить `TASK_Profiler_v2_PhaseA_BranchRemoveOpenCL.md` (2-3ч)
-3. После каждой Phase — сообщить Alex + дождаться OK на push/tag
+Плюс: импорт документации из GPUWorkLib (8 коммитов `docs: импорт документации`).
 
 ---
 
+## 🆕 2026-04-20 — Orchestrated execution (новый поток)
+
+**Решение Alex**: 3 задачи делать оркестрантом в Opus 4.7, ревью после каждой через `sequential-thinking` (глубокий анализ). Push/tag автоматический — только после подтверждённого ревью + тестов.
+
+### Порядок (по нарастанию сложности, с учётом зависимостей)
+
+| # | Задача | Effort | Ветка | Depends |
+|---|--------|-------:|-------|---------|
+| 1 | **linalg/tests** — 3 файла ScopedHipEvent | 1-2 ч | `linalg/cleanup` (new) | — |
+| 2 | **GPUProfiler v2** — 8 фаз (A→E) | 28-40 ч | `new_profiler` (все 7 репо: core+6) | task 1 |
+| 3 | **KernelCache v2** — 5 фаз (A→E) | 15-22 ч | `kernel_cache_v2` (core + 4 репо) | task 2 merged |
+
+**Примечание**: по effort KernelCache меньше Profiler'а, но Phase A KernelCache **блокируется** merge профайлера (см. `TASK_KernelCache_v2_INDEX.md` Q8). Итог: фактический порядок = linalg → Profiler → KernelCache.
+
+### Scope task 1 (linalg/tests — найдено grep'ом 2026-04-20)
+
+- `linalg/tests/test_benchmark_symmetrize.hpp`
+- `linalg/tests/capon_benchmark.hpp`
+- `linalg/tests/test_stage_profiling.hpp`
+
+Перевести кастомные EventGuard/t_start паттерны на унифицированный `ScopedHipEvent` из core.
+
+### Scope task 2 (Profiler v2)
+
+Spec: `MemoryBank/specs/GPUProfiler_Rewrite_Proposal_2026-04-16.md` + Round 3 review.
+Таски: `TASK_Profiler_v2_Phase{A,B1,B2,B3,B4,C,D,E}.md` (8 файлов).
+**Эмуляция** (по Alex): каркас — mock-интерфейс с fake-данными → проверка full pipeline → потом реальное подключение в `spectrum/`.
+
+### Scope task 3 (KernelCache v2)
+
+Spec: `MemoryBank/specs/KernelCache_v2_Proposal_2026-04-16.md` (v3 clean-slate).
+Таски: `TASK_KernelCache_v2_Phase{A,B,C,D,E}.md` (5 файлов).
+
 ---
 
-## ✅ Ночная сессия 2026-04-15 — огромный результат
+## 🤖 Оркестрант — дизайн (в работе)
 
-**8 репо пересобраны, 21+ коммит, ~22500 строк мусора удалено**:
+**Архитектура**: 3 temp task-агента + 1 meta-coordinator (удалить после).
 
-| Репо | Главное | Commits |
-|------|---------|---------|
-| **core** | ScopedHipEvent — generic RAII утилита | 1 |
-| **spectrum** | 38 утечек закрыто + shim удалён + read-only helper | 4 |
-| **stats** | CMake→spectrum (SNR_05 разблокирован) | 2 |
-| **signal_generators** | compile error fix + ScopedHipEvent | 1 |
-| **heterodyne** | 13 пар утечек + kernels в правильное место | 3 |
-| **linalg** | Полная миграция AMD (-13953 строк) | 1 |
-| **radar** | Полная миграция AMD (-3828 строк) | 2 |
-| **strategies** | Миграция + A3c CreateWithFlags (-4599 строк) | 1 |
-| **DSP** (meta) | stats→spectrum guard | 1 |
-| **workspace** | CLAUDE.md + агенты + MemoryBank | 6 |
-
----
-
-## 🎯 ЗАВТРА УТРОМ — сборка на Linux GPU
-
-### Быстрый старт (копипаст в chat)
-См. [prompts/2026-04-16_continue_core_spectrum.md](../prompts/2026-04-16_continue_core_spectrum.md)
-
-### Ручная команда
-```bash
-cd /home/alex/DSP-GPU
-for repo in core spectrum stats signal_generators heterodyne linalg radar strategies; do
-  cd $repo
-  cmake -S . -B build --preset debian-local-dev
-  cmake --build build --parallel 32 2>&1 | tee /tmp/${repo}_build.log
-  (cd build && ctest --output-on-failure 2>&1 | tee /tmp/${repo}_tests.log)
-  cd ..
-done
+```
+.claude/agents/
+├── mega-coordinator.md       ← оркестратор 3 задач, review-gate, push/tag
+├── task-linalg-tests.md      ← temp-агент для задачи 1
+├── task-profiler-v2.md       ← temp-агент для задачи 2 (Profiler, 8 фаз)
+└── task-kernelcache-v2.md    ← temp-агент для задачи 3 (KernelCache, 5 фаз)
 ```
 
----
+**Review через sequential-thinking**: после каждой задачи — глубокий анализ (риски, корректность, регрессии).
 
-## 📋 Что проверить завтра (по приоритету)
+**Push/tag автономный** при условиях:
+1. Все тесты зелёные (ctest + Python)
+2. sequential-thinking review = PASS
+3. Нет запрошенных CMake-правок за пределами `target_sources`
 
-### 🔴 Критично
-1. **core** — собирается чисто? (generic)
-2. **spectrum** — 4 файла с ScopedHipEvent собираются? `MakeROCmDataFromEvents` больше не destroy
-3. **stats** — build с spectrum работает? SNR_05 линкуется?
-4. **radar** — самая большая миграция, может всплыть missed #include
-5. **strategies** — A3c (sync events с `ScopedHipEvent.get()` в `hipStreamWaitEvent`)
-
-### 🟠 Важно
-6. **signal_generators** — compile error fixed? (`&ev_k_s` → `ev_k_s.Create()`)
-7. **heterodyne** — 13 пар событий корректно работают
-8. **linalg** — после WIP-миграции сестрёнки, сборка чистая?
-
-### 🟡 Проверки утечек
-9. `rocm-smi`: hipEvent_t не накапливаются после 1000 прогонов профилируемых методов
-10. Smoke SNR в stats — `ComputeSnrDb` возвращает разумные значения
+Если какое-то условие не выполнено → orchestrator STOP, пишет отчёт в `sessions/` и ждёт Alex.
 
 ---
 
-## 📝 Git tags (после OK Alex)
+## ⏸ Отложено (не блокирует поток)
 
-```bash
-# v0.2.0 — ночная сессия миграции
-for repo in core spectrum stats signal_generators heterodyne linalg radar strategies; do
-  cd /home/alex/DSP-GPU/$repo
-  git tag -a v0.2.0 -m "Ночная сессия 2026-04-15: AMD-стандарт + ScopedHipEvent RAII"
-  # git push --tags — ТОЛЬКО после явного OK Alex!
-  cd ..
-done
-```
-
----
-
-## ⏸ Отложенные задачи (не блокируют завтра)
-
-| # | Задача | Почему отложено |
-|---|--------|-----------------|
-| 1 | `linalg/tests/` — ScopedHipEvent в 3 файлах | Кастомные паттерны (`t_start`, `EventGuard8`) |
-| 2 | Глубокое ревью core (backends/, services/, logger/) | Сестрёнкины правки проверены, но core целиком не анализировался |
-| 3 | Doxygen документация (8 репо) | Фаза 5, после успешной сборки |
-| 4 | Git tag v0.2.0 | После OK Alex |
+| # | Задача | Почему |
+|---|--------|--------|
+| 1 | Doxygen Фаза 5 | После KernelCache v2 merge |
+| 2 | Git tag v0.2.0 | После KernelCache v2 merge (финальный tag на все репо) |
 
 ---
 
 ## 🔗 Сопутствующие документы
 
-- [MASTER_INDEX.md](../MASTER_INDEX.md) — полная навигация
-- [changelog/2026-04-15_*.md](../changelog/) — 3 файла подробностей
-- [specs/*_2026-04-15.md](../specs/) — 4 ревью-файла
-- [prompts/](../prompts/) — готовые промпты для новых сессий
+- [MASTER_INDEX.md](../MASTER_INDEX.md)
+- [TASK_Profiler_v2_INDEX.md](TASK_Profiler_v2_INDEX.md)
+- [TASK_KernelCache_v2_INDEX.md](TASK_KernelCache_v2_INDEX.md)
+- [changelog/2026-04-15_*.md](../changelog/)
+- [specs/GPUProfiler_Rewrite_Proposal_2026-04-16.md](../specs/)
+- [specs/KernelCache_v2_Proposal_2026-04-16.md](../specs/)
 
 ---
 
-*Created: 2026-04-14 | Updated: 2026-04-15 (night) | Maintained by: Кодо*
+*Created: 2026-04-14 | Updated: 2026-04-20 (orchestrator start) | Maintained by: Кодо*
