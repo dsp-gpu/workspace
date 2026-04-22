@@ -72,7 +72,22 @@
       "Bash(cp MemoryBank/hooks/pre-commit .git/hooks/pre-commit)",
       "Bash(chmod +x .git/hooks/pre-commit)",
       "PowerShell(Move-Item -Path \"E:\\\\DSP-GPU\\\\MemoryBank\\\\new_claude\" -Destination \"E:\\\\DSP-GPU\\\\MemoryBank\\\\archive\\\\new_claude_2026-04-21\" -Force -ErrorAction SilentlyContinue)",
-      "Bash(continue echo *)"
+      "Bash(continue echo *)",
+      "Bash(npm list *)",
+      "Bash(python -c \"import matplotlib; print\\('matplotlib', matplotlib.__version__\\)\")",
+      "Bash(python -c \"import numpy; print\\('numpy', numpy.__version__\\)\")",
+      "Bash(npm install *)",
+      "Bash(pip install *)",
+      "Bash(wait)",
+      "Bash(python -m pip show matplotlib numpy)",
+      "Bash(python -c \"import matplotlib; import numpy; print\\('OK mpl', matplotlib.__version__, 'numpy', numpy.__version__\\)\")",
+      "Bash(python -c ' *)",
+      "Bash('F:/Program Files \\(x86\\)/Python312/python.exe' -c 'import matplotlib; import numpy; print\\('\\\\''OK mpl'\\\\'', matplotlib.__version__, '\\\\''numpy'\\\\'', numpy.__version__\\)')",
+      "Bash(\"F:/Program Files \\(x86\\)/Python312/python.exe\" gen_charts.py)",
+      "Bash(node build_docx.js)",
+      "Bash(npm init *)",
+      "Bash(\"F:/Program Files \\(x86\\)/Python312/python.exe\")",
+      "Bash(rm _new_buildBrief.txt)"
     ]
   },
   "enableAllProjectMcpServers": true,
