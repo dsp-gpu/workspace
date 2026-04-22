@@ -71,7 +71,8 @@
       "Bash(python -c \"import ast; ast.parse\\(open\\('E:/DSP-GPU/MemoryBank/sync_rules.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
       "Bash(cp MemoryBank/hooks/pre-commit .git/hooks/pre-commit)",
       "Bash(chmod +x .git/hooks/pre-commit)",
-      "PowerShell(Move-Item -Path \"E:\\\\DSP-GPU\\\\MemoryBank\\\\new_claude\" -Destination \"E:\\\\DSP-GPU\\\\MemoryBank\\\\archive\\\\new_claude_2026-04-21\" -Force -ErrorAction SilentlyContinue)"
+      "PowerShell(Move-Item -Path \"E:\\\\DSP-GPU\\\\MemoryBank\\\\new_claude\" -Destination \"E:\\\\DSP-GPU\\\\MemoryBank\\\\archive\\\\new_claude_2026-04-21\" -Force -ErrorAction SilentlyContinue)",
+      "Bash(continue echo *)"
     ]
   },
   "enableAllProjectMcpServers": true,
