@@ -75,6 +75,7 @@ Canonical правил живёт в `MemoryBank/.claude/rules/`. Синхрон
 - **CMake** (пресеты `debian-*`, `find_package` lowercase, БЕЗ правок без OK) → [12](.claude/rules/12-cmake-build.md).
 - **Python bindings** (pybind11, `dsp_{repo}_module.cpp`, тесты в `DSP/Python/`) → [11](.claude/rules/11-python-bindings.md).
 - **Оптимизация HIP / ROCm** (гайды, Cheatsheet, ZeroCopy, Mermaid-палитра) → [13](.claude/rules/13-optimization-docs.md).
+- **ROCm-only стек** (hipFFT / rocPRIM / rocBLAS / rocSOLVER, никакого clFFT) → [09](.claude/rules/09-rocm-only.md).
 
 ---
 

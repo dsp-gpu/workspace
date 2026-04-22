@@ -54,6 +54,7 @@ paths:
 - **`_` суффикс** приватные поля: `buffers_`, `enabled_`.
 - **Namespace**: `dsp::{repo}` (`dsp::spectrum`, `dsp::stats`, ...).
 - **Legacy**: `drv_gpu_lib::*` остаётся только в `core/` для инфраструктуры.
+- **Имена файлов** — **snake_case** от имени класса: `FFTProcessor` → `fft_processor.hpp`, `MedianStrategy` → `median_strategy.hpp`.
 
 ## 🧱 Типовые контракты
 
