@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Pre-commit hook: синхронизация canonical правил Кодо.
+#
+# Установка:
+#     cp MemoryBank/hooks/pre-commit .git/hooks/pre-commit
+#     chmod +x .git/hooks/pre-commit
+#
+# Что делает:
+#     Если в коммите есть изменённые файлы MemoryBank/.claude/rules/*.md —
+#     запускает sync_rules.py и добавляет результат (.claude/rules/) в коммит.
+
+set -e
+
+# Выбираем python: на Debian python3, на Windows (Git Bash) обычно python
+if command -v python3 >/dev/null 2>&1; then
+    PY=python3
+elif command -v python >/dev/null 2>&1; then
+    PY=python
+else
+    echo "[pre-commit] ERROR: python not found in PATH" >&2
+    exit 1
+fi
+
+# Проверяем — есть ли в коммите canonical правила?
+if git diff --cached --name-only | grep -qE '^MemoryBank/\.claude/rules/.*\.md$'; then
+    echo "[pre-commit] Canonical rules changed → running MemoryBank/sync_rules.py"
+    "$PY" MemoryBank/sync_rules.py
+    # Подхватить все изменения в deployed → в этот же коммит
+    git add .claude/rules/
+fi
+
+# Доп. safety: проверка что нет drift
+"$PY" MemoryBank/sync_rules.py --check || {
+    echo "[pre-commit] ERROR: drift detected after sync — aborting commit" >&2
+    exit 1
+}
+
+exit 0

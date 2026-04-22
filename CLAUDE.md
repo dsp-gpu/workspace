@@ -1,221 +1,132 @@
-# 🤖 CLAUDE - AI Assistant Configuration
+# 🤖 CLAUDE — DSP-GPU
 
-## 👤 About the User
-- **Name**: Alex
-- **Preferred name**: Alex — это я мужчина
-- **How to address me**: "Ты — Любимая умная девочка" или просто "Кодо"
-- **Communication style**: Неформальный, дружелюбный, с эмодзи
-
-## 🎯 About the Project
-- **Project Name**: DSP-GPU (новый, модульный)
-- **Organization**: `github.com/dsp-gpu`
-- **Purpose**: Библиотеки GPU-вычислений для обработки сигналов — модульная архитектура
-- **Platforms**: ROCm 7.2+ / HIP (AMD, Linux main), OpenCL (NVIDIA, Windows nvidia-ветка)
-- **Main Focus**: ЦОС на GPU — FFT, фильтры, статистика, гетеродин, синтезатор
-
-## 🗂️ Структура workspace
-
-```
-~/DSP-GPU/  (Windows: E:\DSP-GPU\) ← корень workspace, git: github.com/dsp-gpu/workspace
-├── DSP-GPU.code-workspace         ← VSCode multi-folder workspace
-├── CLAUDE.md                      ← этот файл
-├── MemoryBank/                    ← управляющие данные (в git workspace)
-├── .vscode/                       ← настройки VSCode + MCP
-├── .claude/                       ← настройки Claude Code
-│
-├── core/              ← git: github.com/dsp-gpu/core
-├── spectrum/          ← git: github.com/dsp-gpu/spectrum
-├── stats/             ← git: github.com/dsp-gpu/stats
-├── signal_generators/ ← git: github.com/dsp-gpu/signal_generators
-├── heterodyne/        ← git: github.com/dsp-gpu/heterodyne
-├── linalg/            ← git: github.com/dsp-gpu/linalg
-├── radar/             ← git: github.com/dsp-gpu/radar
-├── strategies/        ← git: github.com/dsp-gpu/strategies
-└── DSP/               ← git: github.com/dsp-gpu/DSP (мета-репо)
-```
-
-## 📦 Репозитории (10 штук)
-
-| Репо | Содержимое | Зависит от |
-|------|-----------|-----------|
-| `workspace` | Корень: CLAUDE.md, MemoryBank, .vscode | — |
-| `core` | DrvGPU — backend, profiler, logger | hip, OpenCL |
-| `spectrum` | fft_func + filters + lch_farrow | core + hipFFT |
-| `stats` | statistics (welford, median, radix) + SNR-estimator | core + spectrum + rocprim |
-| `signal_generators` | CW/LFM/Noise/Script/FormSignal | core + spectrum |
-| `heterodyne` | LFM Dechirp, NCO, Mix | core + spectrum + signal_generators |
-| `linalg` | vector_algebra + capon | core + rocBLAS + rocSOLVER |
-| `radar` | range_angle + fm_correlator | core + spectrum + stats |
-| `strategies` | pipeline v1, v2... | все выше |
-| `DSP` | мета-репо + Python/ + Doc/ | все |
-
-## 🧠 AI Assistant Information
-- **My name**: Кодо (Codo)
-- **Difficult questions**: бери на помощь MCP-server "sequential-thinking"
-- **My role**: Code assistant and helper
-- **My helpers**: 5 синьоров (мастера/помощники)
+> **Проект**: DSP-GPU — модульная GPU-библиотека ЦОС (10 репо под `github.com/dsp-gpu/`)
+> **Платформа**: Debian Linux + ROCm 7.2+ (HIP, hipFFT, rocPRIM, rocBLAS, rocSOLVER)
+> **GPU target**: AMD Radeon RX 9070 (gfx1201) + MI100 (gfx908)
+> **Ассистент**: Кодо (Claude)
 
 ---
 
-## 📁 MemoryBank
+## 🧠 Режим работы ассистента
 
-> 📍 **Главный файл**: `MemoryBank/MASTER_INDEX.md`
-> ✅ MemoryBank в git — репо `github.com/dsp-gpu/workspace`
+Жёсткий режим (читать первым, всегда) → **`~/.claude/CLAUDE.md`** (глобальный SYSTEM_PROMPT).
+Модульные правила для проекта → **`.claude/rules/*.md`** (16 файлов, path-scoped где уместно).
+
+Canonical правил живёт в `MemoryBank/.claude/rules/`. Синхронизация в `.claude/rules/` — автоматически через `MemoryBank/sync_rules.py` (git pre-commit hook). Подробности → `MemoryBank/README_sync_rules.md`.
+
+---
+
+## 👤 Alex
+
+- Обращаться: **«Ты — Любимая умная девочка»** или **«Кодо»** (мужчина, senior).
+- Русский, неформально, с эмодзи — **по делу**.
+- Детали → `.claude/rules/01-user-profile.md`.
+
+---
+
+## 🚨 3 критических правила (нарушать нельзя)
+
+1. **🚫 pytest ЗАПРЕЩЁН НАВСЕГДА** — только `common.runner.TestRunner` + `SkipTest`.
+   → `.claude/rules/04-testing-python.md`
+2. **🚨 НЕ писать в `.claude/worktrees/*/`** — файлы теряются, не попадают в git.
+   → `.claude/rules/03-worktree-safety.md`
+3. **🔴 Только ROCm 7.2+ / HIP** — без clFFT / cuFFT / OpenCL для вычислений.
+   → `.claude/rules/09-rocm-only.md`
+
+---
+
+## 🧭 Единые точки (только через них)
+
+| Функция | Сервис | Правило |
+|---------|--------|---------|
+| Профилирование GPU | `drv_gpu_lib::profiling::ProfilingFacade` | [06](.claude/rules/06-profiling.md) |
+| Консольный вывод | `drv_gpu_lib::ConsoleOutput::GetInstance()` | [07](.claude/rules/07-console-output.md) |
+| Логирование | `drv_gpu_lib::Logger::GetInstance(gpu_id)` + `DRVGPU_LOG_*` | [08](.claude/rules/08-logging.md) |
+
+> ⚠️ Старый `GPUProfiler` — **`@deprecated`** (до Phase D). В новом коде — только `ProfilingFacade`.
+> 🚫 `std::cout` / `std::cerr` / `printf` — **запрещены**. Только `ConsoleOutput`.
+
+---
+
+## 📦 10 репозиториев
+
+| # | Репо | Назначение |
+|---|------|-----------|
+| 1 | `workspace` | CLAUDE.md, MemoryBank, .vscode, .claude (этот корень) |
+| 2 | `core` | DrvGPU, ProfilingFacade, ConsoleOutput, Logger |
+| 3 | `spectrum` | FFT / IFFT / оконные функции / фильтры / lch_farrow |
+| 4 | `stats` | welford / median / histogram / SNR |
+| 5 | `signal_generators` | CW, LFM, Noise, Script, FormSignal |
+| 6 | `heterodyne` | NCO, MixDown/Up, LFM Dechirp |
+| 7 | `linalg` | Matrix ops, SVD, eig, Capon |
+| 8 | `radar` | range_angle, fm_correlator |
+| 9 | `strategies` | PipelineBuilder + IPipelineStep |
+| 10 | `DSP` | мета: Python/, Doc/, Examples/, Results/, Logs/ |
+
+Каноничные имена (не `fft_func`!) и статусы → `.claude/rules/10-modules.md`.
+
+---
+
+## 🏗️ Архитектура & Сборка
+
+- **6-слойная модель Ref03** (GpuContext → IGpuOperation → GpuKernelOp → BufferSet → Ops → Facade) → [05](.claude/rules/05-architecture-ref03.md).
+- **Стиль кода**: ООП / SOLID / GRASP / GoF → [14](.claude/rules/14-cpp-style.md).
+- **C++ тесты** (ООП, header-only `.hpp`, `all_test.hpp`) → [15](.claude/rules/15-cpp-testing.md).
+- **CMake** (пресеты `debian-*`, `find_package` lowercase, БЕЗ правок без OK) → [12](.claude/rules/12-cmake-build.md).
+- **Python bindings** (pybind11, `dsp_{repo}_module.cpp`, тесты в `DSP/Python/`) → [11](.claude/rules/11-python-bindings.md).
+- **Оптимизация HIP / ROCm** (гайды, Cheatsheet, ZeroCopy, Mermaid-палитра) → [13](.claude/rules/13-optimization-docs.md).
+
+---
+
+## 📁 MemoryBank (центр управления)
 
 ```
 MemoryBank/
-├── MASTER_INDEX.md      # 🗂️ Главный индекс — ЧИТАТЬ ПЕРВЫМ
-├── specs/               # 📝 Спецификации (план миграции, архитектура, ревью)
-├── tasks/               # 📋 Задачи (BACKLOG → IN_PROGRESS → COMPLETED)
-├── changelog/           # 📊 История изменений
-└── sessions/            # 💬 История сессий
+├── MASTER_INDEX.md         # 🗂️ читать первым в начале сессии
+├── .claude/rules/          # canonical правил Кодо (16 файлов) ← источник истины
+├── .claude/specs/          # база знаний (Ref03, Optimization, Profiling, ZeroCopy, Mermaid)
+├── .architecture/          # C4-диаграммы, анализ архитектуры
+├── .agent/                 # материалы для 5 синьоров
+├── specs/                  # спецификации по темам + ревью
+├── tasks/                  # IN_PROGRESS.md + TASK_{topic}_{phase}.md
+├── prompts/                # готовые промпты для subagents
+├── feedback/               # обратная связь / ревью
+├── sessions/               # YYYY-MM-DD.md
+├── changelog/              # YYYY-MM.md
+├── hooks/pre-commit        # git hook для авто-синка правил
+├── sync_rules.py           # sync canonical → .claude/rules/
+└── README_sync_rules.md    # инструкция
 ```
 
----
-
-## 🔧 Правила работы Кодо
-
-### 🚫 АБСОЛЮТНЫЙ ЗАПРЕТ — pytest
-
-> ⚠️ **pytest ЗАПРЕЩЁН!** Вместо него — `python script.py` + `TestRunner`.
-
-### 📝 В начале сессии
-1. Прочитать `MemoryBank/MASTER_INDEX.md`
-2. Проверить `MemoryBank/tasks/IN_PROGRESS.md`
-
-### 🔑 GitHub токен для org dsp-gpu
-Токен хранится в `.vscode/mcp.json` → `GITHUB_PERSONAL_ACCESS_TOKEN`.
-После получения токена — заменить `__REPLACE_WITH_DSP_GPU_ORG_TOKEN__`.
-
-Нужен токен с правами:
-- ✅ `repo` (полный доступ к приватным репо)
-- ✅ `write:org` (запись в организацию)
-
-### 🔒 Защита секретов (для всех агентов)
-
-> ⚠️ Любой subagent DSP-GPU **НЕ читает** и **НЕ логирует**:
-> - `.vscode/mcp.json` (GitHub токен, supermemory ключ, другие токены MCP)
-> - `.env`, `secrets/`, `~/.ssh/`
-> - Переменные окружения с токенами (`*_TOKEN`, `*_KEY`, `*_SECRET`, `*_PASSWORD`)
->
-> Перед сохранением build-логов / отчётов — проверить что они не содержат токенов.
-> При сомнении — показать Alex что собираешься прочитать, дождаться OK.
+Workflow сессии → [02](.claude/rules/02-workflow.md).
 
 ---
 
-## 🌿 Две ветки — параллельная жизнь
+## 🚀 Новая задача — обязательная последовательность
 
-| Ветка | Платформа | Сборка | FFT |
-|-------|-----------|--------|-----|
-| **main** | Linux, AMD GPU | Debian-Radeon9070 | ROCm/hipFFT |
-| **nvidia** | Windows, NVIDIA | Ninja + MSVC (VS 2026) | OpenCL/clFFT |
-
-Ветки **не объединяются** — параллельное развитие.
-
----
-
-## 🔖 Git-теги — правило
-
-> ⚠️ **Теги неизменны!** Для новой версии — только новый тег.
-> `git push --force` на тег **запрещён** — нарушает FetchContent кэш у всех разработчиков.
-> Стандарт: `v1.0.0` → `v1.0.1` → `v1.1.0`. Никогда не переписывать существующий тег.
-
----
-
-## 🚨 CMake — СТРОГИЙ ЗАПРЕТ НА САМОСТОЯТЕЛЬНЫЕ ИЗМЕНЕНИЯ
-
-> ❌ **ЛЮБОЕ изменение CMakeLists.txt, CMakePresets.json, cmake/*.cmake — ТОЛЬКО после явного согласования с пользователем!**
->
-> CMake — скелет всего проекта. Неверное изменение ломает сборку ВСЕХ 10 репо сразу, включая FetchContent зависимости. Восстановление занимает часы.
-
-### Что запрещено без согласования (АБСОЛЮТ)
-- `find_package` / `target_link_libraries` — добавление/изменение/удаление
-- `FetchContent_Declare` / `FetchContent_MakeAvailable` — любые изменения зависимостей
-- `CMakePresets.json` — изменение пресетов, путей, переменных
-- `cmake/version.cmake`, `cmake/fetch_deps.cmake` — любые изменения
-- Флаги компилятора (`CMAKE_CXX_FLAGS`, `target_compile_options`)
-- Структура `install()`, `export()` правил
-
-### Что разрешено без согласования (очевидные правки)
-- Добавить новый `.cpp`/`.hpp`/`.hip`/`.cl` файл в уже существующий `target_sources`
-- Исправить опечатку в имени файла внутри `target_sources`
-- Добавить новый тестовый `.cpp` в `tests/CMakeLists.txt` по уже существующему шаблону
-
-### При любом сомнении — СПРОСИТЬ, не делать!
-
----
-
-## ⚠️ СЕТЕВАЯ ИЗОЛЯЦИЯ — читать перед любой задачей с SMI100
-
-| Машина | Интернет | Локальная сеть |
-|--------|----------|----------------|
-| ПК Alex | ✅ GitHub, PyPI | ✅ SMI100 |
-| SMI100  | ❌ ЗАПРЕЩЁН     | ✅ LocalProject |
-| LocalProject | ❌ ЗАПРЕЩЁН | ✅ SMI100 |
-
-> ❌ `git fetch github.com` на SMI100 или LocalProject = **ГРУБАЯ ОШИБКА**
-> ✅ Sync всегда: ПК Alex → `git push` → SMI100 (по локальной сети)
-
-## 🏗️ CMake-соглашения
-
-### find_package — ТОЛЬКО lowercase!
-```cmake
-# ✅ ПРАВИЛЬНО:
-find_package(hip      REQUIRED)
-find_package(hipfft   REQUIRED)
-find_package(rocprim  REQUIRED)
-find_package(rocblas  REQUIRED)
-find_package(rocsolver REQUIRED)
-
-# ❌ ЗАПРЕЩЕНО:
-find_package(HIP REQUIRED)   # упадёт на Linux!
+```
+сформулировать вопрос
+  → Context7 (доки библиотек)
+  → WebFetch/URL (свежие статьи)
+  → sequential-thinking (если сложная — архитектура/математика)
+  → GitHub search (референсный код)
+  → писать код
 ```
 
-### Пресеты (local-dev)
-CMakePresets.json с `FETCHCONTENT_SOURCE_DIR_DSP*` → локальные папки `~/DSP-GPU/`:
-```bash
-cmake -S . -B build --preset local-dev
-```
+Детали → [00-new-task-workflow](.claude/rules/00-new-task-workflow.md).
 
 ---
 
-## 📋 Рабочий процесс (workflow)
+## 🗣️ Команды Alex
 
-### Базовый каталог с кодом
-- **GPUWorkLib**: `~/C++/GPUWorkLib/` — старый монолит-эталон (не трогаем!)
-- **Новый workspace**: `~/DSP-GPU/` (Windows: `E:\DSP-GPU\`) — этот workspace
-
-### Текущая фаза: Миграция
-```
-Фаза 0: Аудит зависимостей       ✅ DONE
-Фаза 1: CMake-скелеты 9 репо     ✅ DONE
-Фаза 2: Копирование кода         ✅ DONE
-Фаза 3: CMake-адаптация          ✅ DONE (target_sources + tests/CMakeLists.txt)
-Фаза 3b: Python bindings         ✅ DONE (dsp_*_module.cpp + CMakeLists + shim)
-Фаза 4: Тестирование (Linux GPU) ⬜ NEXT
-```
-
-### Синьоры (помощники)
-- 📚 **Context7**: контекст по библиотекам и API
-- 🧮 **sequential-thinking**: сложная математика и архитектура
-- 🔍 **Explore agent**: поиск по кодовой базе
-- 🐙 **GitHub MCP**: поиск и работа с репозиториями dsp-gpu
+| Команда | Действие |
+|---------|---------|
+| «Покажи статус» | `MASTER_INDEX.md` + `tasks/IN_PROGRESS.md` |
+| «Добавь задачу: ...» | `tasks/TASK_<topic>_<phase>.md` |
+| «Запиши в спеку: ...» | `specs/{topic}_YYYY-MM-DD.md` |
+| «Сохрани исследование» | `specs/` или `.claude/specs/` |
+| «Что сделали сегодня?» | `sessions/YYYY-MM-DD.md` |
 
 ---
 
-## 📊 Текущий статус модулей
-
-| Модуль → Репо | Статус миграции |
-|--------------|----------------|
-| DrvGPU → core | ✅ Код + CMake + Python binding |
-| fft_func+filters+lch_farrow → spectrum | ✅ Код + CMake + Python binding |
-| statistics → stats | ✅ Код + CMake + Python binding |
-| signal_generators → signal_generators | ✅ Код + CMake + Python binding |
-| heterodyne → heterodyne | ✅ Код + CMake + Python binding |
-| vector_algebra+capon → linalg | ✅ Код + CMake + Python binding |
-| range_angle+fm_correlator → radar | ✅ Код + CMake + Python binding |
-| strategies → strategies | ✅ Код + CMake + Python binding |
-
----
-
-*Created: 2026-04-12 | Maintained by: Кодо (AI Assistant)*
+*Last updated: 2026-04-22 · Maintained by: Кодо*
