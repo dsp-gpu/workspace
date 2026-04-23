@@ -8,15 +8,14 @@
 ```yaml
 active_task: 3
 active_phase: CLOSED
-last_action: v030_tagged_on_6_repos_plus_v031_polish_on_core_and_SG
-last_result: KERNELCACHE_V2_SCOPE_CLOSED
+last_action: radar_T2_fix_plus_strategies_profiler_v2_phase_D_done
+last_result: RADAR_T2_PASS_AND_PROFILER_V2_PHASE_D_CLOSED
 last_review: NONE
-next_action: radar_RangeAngle_T2_triage_OR_next_alex_priority
-blockers:
-  - "radar RangeAngle [T2] pre-existing physical-math FAIL (not KC regression) — separate task"
+next_action: next_alex_priority_OR_profiler_v2_phase_E
+blockers: []
 tags_pushed:
   v030_on_6_repos: [core, spectrum, signal_generators, linalg, strategies, radar]
-  v031_on_2_repos: [core, signal_generators]  # polish: CLI + ListEntries + SG unified path
+  v031_on_4_repos: [core, signal_generators, radar, strategies]
 scope_reduction_2026-04-21: "Profiler v2 scope was: core+spectrum+stats+linalg only. SG/heterodyne/strategies deferred."
 task_1_status: DONE
 task_1_merge_sha: 450ec21
