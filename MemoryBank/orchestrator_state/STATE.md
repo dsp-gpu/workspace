@@ -7,13 +7,13 @@
 
 ```yaml
 active_task: 3
-active_phase: A2_wip
-last_action: phase_A2_wip_committed_pushed_before_reboot_2026-04-21
-last_result: WIP
-last_review: NONE
-next_action: after_reboot_build_and_test_then_review
+active_phase: POST_MERGE_VERIFIED
+last_action: build_and_test_all_5_repos_on_debian_2026-04-23
+last_result: PASS_ALL_5_REPOS  # core 113, spectrum OK, SG 44, linalg 33, strategies 4, radar 6 (1 pre-existing unrelated FAIL)
+last_review: NONE  # awaiting deep-reviewer run on session report
+next_action: await_alex_ok_to_commit_core_rocblas_link_fix_and_tag_v030
 blockers:
-  - "A2 WIP committed (db32e5d) but NOT yet built — run cmake build + test_core_main after reboot"
+  - "radar RangeAngle [T2] pre-existing physical-math FAIL (not KC regression) — separate task"
 scope_reduction_2026-04-21: "Profiler v2 scope was: core+spectrum+stats+linalg only. SG/heterodyne/strategies deferred."
 task_1_status: DONE
 task_1_merge_sha: 450ec21
@@ -126,6 +126,8 @@ task_totals:
 | 2026-04-21 t2 PhD linalg exec | linalg migrate 2 files 42 tests | PASS | — | 13a8f8d |
 | 2026-04-21 t2 PhD linalg rev | manual review (agent timeout) | PASS | PASS | 13a8f8d |
 | 2026-04-21 t2 PhD linalg push | push linalg new_profiler | PASS | — | 13a8f8d |
+| 2026-04-23 t3 verify | build+test 5 repos on Debian RX 9070 | PASS | — | (no commit yet) |
+| 2026-04-23 t3 fix | core CMake + obsolete test fix (uncommitted, OK Alex) | PASS | — | (uncommitted) |
 
 ---
 
