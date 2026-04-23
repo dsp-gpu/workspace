@@ -87,7 +87,8 @@
       "Bash(node build_docx.js)",
       "Bash(npm init *)",
       "Bash(\"F:/Program Files \\(x86\\)/Python312/python.exe\")",
-      "Bash(rm _new_buildBrief.txt)"
+      "Bash(rm _new_buildBrief.txt)",
+      "Bash(gh api *)"
     ]
   },
   "enableAllProjectMcpServers": true,
