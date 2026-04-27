@@ -37,7 +37,8 @@
 | Файл | Что | Сложность |
 |------|-----|:---------:|
 | `core/include/core/services/service_manager.hpp` | 10 мест: `Start/Stop/SetEnabled/ExportJSON/PrintSummary` обёртки переключить на `ProfilingFacade::GetInstance()` | 🟡 средне |
-| `core/tests/test_services.hpp` | `GPUProfiler::Record` → `ProfilingFacade::Record` (или удалить тест если он именно legacy) | 🟢 просто |
+| `core/include/core/gpu_manager.hpp:27,721` | `#include <core/services/gpu_profiler.hpp>` + `GPUProfiler::GetInstance().SetGPUInfo(device_index, report_info)` — auto-fill GPU info при инициализации. Заменить на `ProfilingFacade::GetInstance().SetGpuInfo(...)`. | 🟡 средне (review 2026-04-27 Low #4) |
+| `core/tests/test_services.hpp` | ✅ ЧАСТИЧНО: `Record` мигрирован 2026-04-27 (commit `9562b58`). Осталось — снять зависимость от ServiceManager.PrintProfilingSummary когда тот сам мигрирует. | 🟢 уже частично сделано |
 | `core/tests/main.cpp` | убрать `#include test_gpu_profiler_baseline.hpp` + вызов | 🟢 1 строка |
 | `core/tests/all_test.hpp` | убрать `test_gpu_profiler.hpp` include + `test_gpu_profiler::run()` | 🟢 1 строка |
 | `spectrum/src/fft_func/src/fft_processor_rocm.cpp:693` | `GPUProfiler::GetStats()` — переписать через `ProfilingFacade::GetSnapshot()` или удалить (использовался для PrintSummary) | 🟡 средне |
