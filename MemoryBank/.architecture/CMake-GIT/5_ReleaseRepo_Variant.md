@@ -38,7 +38,7 @@ dsp-release/
 ├── CMakeLists.txt          ← мастер-сборка: add_subdirectory всех включённых
 ├── CMakePresets.json       ← USE_DSP_* + GPU presets (копируется в LocalProject)
 ├── cmake/
-│   └── version.cmake       ← уже есть в ~!Doc/CMake/Version/ — переиспользуем
+│   └── version.cmake       ← уже есть в MemoryBank/.architecture/CMake/Version/ — переиспользуем
 ├── core/                   ← исходники @ конкретный коммит из DSP-GPU/core
 ├── spectrum/               ← исходники @ конкретный коммит из DSP-GPU/spectrum
 ├── linalg/

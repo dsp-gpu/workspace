@@ -738,7 +738,7 @@ Rel(core, config, "reads")
 
 - [MemoryBank/MASTER_INDEX.md](../MemoryBank/MASTER_INDEX.md) — индекс проекта
 - [CLAUDE.md](../CLAUDE.md) — конфигурация проекта и правила
-- [~!Doc/CMake-GIT/](../CMake-GIT/) — архитектура CMake + Git (DSP-GPU ↔ SMI100 ↔ LocalProject)
+- [MemoryBank/.architecture/CMake-GIT/](../CMake-GIT/) — архитектура CMake + Git (DSP-GPU ↔ SMI100 ↔ LocalProject)
 - [~!Doc/~Разобрать/DSP-GPU_Architecture_Analysis.md](DSP-GPU_Architecture_Analysis.md) — статистика и граф зависимостей
 - [~!Doc/~Разобрать/GPU_Profiling_Mechanism.md](GPU_Profiling_Mechanism.md) — механизм профилирования v2
 - [c4model.com](https://c4model.com) — C4 Model

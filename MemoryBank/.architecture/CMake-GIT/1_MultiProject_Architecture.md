@@ -275,7 +275,7 @@ build/_deps/dsp_core-subbuild/CMakeFiles/dsp_core-complete  ← STAMP
 - `FETCHCONTENT_SOURCE_DIR_DSP_*` = локальный путь `deps/`
 - FetchContent видит локальный путь → **вообще не обращается к сети**
 
-**version.cmake** (уже реализован в `~!Doc\CMake\Version\`):
+**version.cmake** (уже реализован в `MemoryBank/.architecture/CMake/Version/`):
 - Паттерн `git rev-parse HEAD` → сравнение с `.git_hash` → `return()` если совпало
 - `copy_if_different` → zero rebuild если содержимое не изменилось
 - Переиспользуем в sync-скрипте на SMI100

@@ -1,14 +1,14 @@
 # Code Review: CMake-GIT архитектура + существующее решение Version/
 
 > **Ревьюер**: Кодо | **Дата**: 2026-04-18  
-> **Объём**: 6 планируемых документов + работающее решение `~!Doc/CMake/Version/` + update_dsp.py  
+> **Объём**: 6 планируемых документов + работающее решение `MemoryBank/.architecture/CMake/Version/` + update_dsp.py  
 > **Методика**: Sequential thinking + сравнение с рабочим production-кодом в `linalg/cmake/`, `core/cmake/`, `spectrum/cmake/`
 
 ---
 
 ## 📋 Что прочитано
 
-**Планируемая архитектура** (`~!Doc/CMake-GIT/`):
+**Планируемая архитектура** (`MemoryBank/.architecture/CMake-GIT/`):
 1. `1_MultiProject_Architecture.md` — 3 зоны, bare mirrors + FetchContent override
 2. `2_Variants_Analysis.md` — 5 вариантов, рекомендация 1+5
 3. `3_GPU_Architecture.md` — GPU ось в CMakePresets
@@ -19,7 +19,7 @@
 8. `Git_ALL.md` — справочник по multi-remote Git
 9. `update_dsp.py` — Python-скрипт для автообновления
 
-**Работающее решение** (`~!Doc/CMake/Version/`):
+**Работающее решение** (`MemoryBank/.architecture/CMake/Version/`):
 - `version.cmake` (205 строк) — git-aware генерация version.h/version.json с early return
 - `CMakeLists.txt` (180 строк) — полный pipeline: project → build → test → package
 - mini-пример: `main.cpp`, `mylib.cpp`, `test_version.cpp`
@@ -419,7 +419,7 @@ done
 
 ### WARN-7 — Нет README / навигации по 6+ документам
 
-`~!Doc/CMake-GIT/` содержит 8 MD-файлов и 1 py. Читатель приходящий "первый раз" — с чего начать? `1_` первое — ок, но где overview-diagram? Где "вот Вариант 5 — это основа, Вариант 7 — альтернатива"?
+`MemoryBank/.architecture/CMake-GIT/` содержит 8 MD-файлов и 1 py. Читатель приходящий "первый раз" — с чего начать? `1_` первое — ок, но где overview-diagram? Где "вот Вариант 5 — это основа, Вариант 7 — альтернатива"?
 
 **Фикс** — создать `README.md`:
 ```markdown
@@ -747,6 +747,6 @@ endif()
   - `linalg/cmake/version.cmake`, `core/cmake/version.cmake`, `spectrum/cmake/version.cmake` — идентичны
   - `linalg/cmake/fetch_deps.cmake` — 8 fetch функций
   - `linalg/CMakePresets.json` — минимальная конфигурация
-- `~!Doc/CMake/Version/` — прототип-референс (CMakeLists.txt, version.cmake, main.cpp)
+- `MemoryBank/.architecture/CMake/Version/` — прототип-референс (CMakeLists.txt, version.cmake, main.cpp)
 
 *Review by: Кодо | Sequential thinking: применено | Context7: не потребовался (анализ внутренней архитектуры, не новой библиотеки)*

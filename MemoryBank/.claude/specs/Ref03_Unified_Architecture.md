@@ -593,7 +593,7 @@ strategies/
 - [~!Doc/~Разобрать/DSP-GPU_Architecture_Analysis.md](../~Разобрать/DSP-GPU_Architecture_Analysis.md) — статистика и граф зависимостей
 - [~!Doc/~Разобрать/DSP-GPU_Design_C4_Full.md](../~Разобрать/DSP-GPU_Design_C4_Full.md) — C4 модель
 - [~!Doc/~Разобрать/GPU_Profiling_Mechanism.md](../~Разобрать/GPU_Profiling_Mechanism.md) — профилирование v2 (BatchRecord + ScopedHipEvent)
-- [~!Doc/CMake-GIT/](../CMake-GIT/) — архитектура CMake + Git (DSP-GPU ↔ SMI100 ↔ LocalProject)
+- [MemoryBank/.architecture/CMake-GIT/](../CMake-GIT/) — архитектура CMake + Git (DSP-GPU ↔ SMI100 ↔ LocalProject)
 
 ---
 

@@ -50,7 +50,7 @@ FetchContent_MakeAvailable(DspCore)
 
 ### 🅱️ Вариант B — Python-скрипт `update_dsp.py` (✅ выбран)
 
-Существующий `update_dsp.py` (уже есть в `~!Doc/CMake-GIT/`) **дорабатывается** и вызывается из CMakeLists.txt на этапе configure. Он сам делает git fetch из SMI100, обновляет `vendor/` и `deps_state.json`. CMake после этого использует готовый `vendor/` через `FETCHCONTENT_SOURCE_DIR_*` — в сеть больше не ходит.
+Существующий `update_dsp.py` (уже есть в `MemoryBank/.architecture/CMake-GIT/`) **дорабатывается** и вызывается из CMakeLists.txt на этапе configure. Он сам делает git fetch из SMI100, обновляет `vendor/` и `deps_state.json`. CMake после этого использует готовый `vendor/` через `FETCHCONTENT_SOURCE_DIR_*` — в сеть больше не ходит.
 
 ```cmake
 # CMakeLists.txt (LP_x) — вариант B (выбран)

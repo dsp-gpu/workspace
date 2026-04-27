@@ -587,13 +587,13 @@ Layer 1 (version.cmake early-return) + Layer 2 (CMAKE_CONFIGURE_DEPENDS) раб�
 
 ## 🔗 Источники
 
-- `~!Doc/CMake-GIT/1_MultiProject_Architecture.md` — V1 (BASE)
-- `~!Doc/CMake-GIT/2_Variants_Analysis.md` — V1-V5 + сводная
-- `~!Doc/CMake-GIT/3_GPU_Architecture.md` — GPU ось (применяется ко всем)
-- `~!Doc/CMake-GIT/4_Workflow_Scenarios.md` — потоки A/B/C + тиражирование
-- `~!Doc/CMake-GIT/5_ReleaseRepo_Variant.md` — V6 (Release Repo)
-- `~!Doc/CMake-GIT/6_Zone2_Access_Variants.md` — V7A/V7B/V7C
-- `~!Doc/CMake-GIT/Review_VariantA_Kodo_2026-04-18.md` — детальный разбор V7A
+- `MemoryBank/.architecture/CMake-GIT/1_MultiProject_Architecture.md` — V1 (BASE)
+- `MemoryBank/.architecture/CMake-GIT/2_Variants_Analysis.md` — V1-V5 + сводная
+- `MemoryBank/.architecture/CMake-GIT/3_GPU_Architecture.md` — GPU ось (применяется ко всем)
+- `MemoryBank/.architecture/CMake-GIT/4_Workflow_Scenarios.md` — потоки A/B/C + тиражирование
+- `MemoryBank/.architecture/CMake-GIT/5_ReleaseRepo_Variant.md` — V6 (Release Repo)
+- `MemoryBank/.architecture/CMake-GIT/6_Zone2_Access_Variants.md` — V7A/V7B/V7C
+- `MemoryBank/.architecture/CMake-GIT/Review_VariantA_Kodo_2026-04-18.md` — детальный разбор V7A
 - `MemoryBank/specs/cmake_git_distribution_spec_2026-04-18.md` — V8 (наш выбор)
 - `MemoryBank/specs/cmake_git_aware_build.md` v2 — Layer 1/2 (совместимо со всеми)
 - [CMake BundleUtilities](https://cmake.org/cmake/help/latest/module/BundleUtilities.html) — bundled self-contained apps

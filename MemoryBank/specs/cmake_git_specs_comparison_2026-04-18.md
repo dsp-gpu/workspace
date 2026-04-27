@@ -245,7 +245,7 @@ endif()
 - `E:\DSP-GPU\MemoryBank\specs\cmake_git_aware_build.md` — v2, 2026-04-13, approved
 - `E:\DSP-GPU\MemoryBank\specs\cmake_git_aware_build_REVIEW.md` — ревью первой версии, применён
 - `E:\DSP-GPU\MemoryBank\specs\cmake_git_distribution_spec_2026-04-18.md` — новая спека, draft
-- `E:\DSP-GPU\~!Doc\CMake-GIT\Review_VariantA_Kodo_2026-04-18.md` — исходное обсуждение
+- `MemoryBank/.architecture/CMake-GIT/Review_VariantA_Kodo_2026-04-18.md` — исходное обсуждение
 - [CMake CMAKE_CONFIGURE_DEPENDS](https://cmake.org/cmake/help/latest/prop_dir/CMAKE_CONFIGURE_DEPENDS.html) — Layer 2 механизм
 - [CMake FetchContent SOURCE_DIR override](https://cmake.org/cmake/help/latest/module/FetchContent.html) — dev-preset
 - Существующий prod-код: `linalg/cmake/version.cmake`, `DSP/CMakeLists.txt` (Layer 2 должен быть там)

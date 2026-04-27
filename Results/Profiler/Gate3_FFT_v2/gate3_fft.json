@@ -1,0 +1,105 @@
+{
+  "schema_version": 2,
+  "timestamp": "2026-04-27 09:26:23",
+  "gpu": [
+    {
+      "gpu_id": 0,
+      "device_name": "AMD Radeon RX 9070",
+      "modules": [
+        {
+          "name": "spectrum/fft",
+          "pipeline": {
+            "total_avg_ms": 0.665,
+            "kernel_percent": 4.580,
+            "copy_percent": 95.420,
+            "barrier_percent": 0.000,
+            "entries": [
+              {"event": "Download", "kind": "copy", "avg_ms": 0.556, "percent": 83.535, "count": 20},
+              {"event": "Upload", "kind": "copy", "avg_ms": 0.079, "percent": 11.885, "count": 20},
+              {"event": "FFT", "kind": "kernel", "avg_ms": 0.017, "percent": 2.627, "count": 20},
+              {"event": "Pad", "kind": "kernel", "avg_ms": 0.013, "percent": 1.953, "count": 20}
+            ]
+          },
+          "events": [
+            {
+              "name": "Download",
+              "kernel_name": "",
+              "kind": 1,
+              "count": 20,
+              "avg_ms": 0.556,
+              "median_ms": 0.557,
+              "p95_ms": 0.604,
+              "p99_ms": 0.642,
+              "stddev_ms": 0.037,
+              "min_ms": 0.503,
+              "max_ms": 0.651,
+              "total_bytes": 0,
+              "avg_bw_gbps": 0.000,
+              "hardware": {
+                "sample_count": 0,
+                "avg_counters": { }
+              }
+            },
+            {
+              "name": "FFT",
+              "kernel_name": "",
+              "kind": 0,
+              "count": 20,
+              "avg_ms": 0.017,
+              "median_ms": 0.017,
+              "p95_ms": 0.018,
+              "p99_ms": 0.018,
+              "stddev_ms": 0.000,
+              "min_ms": 0.017,
+              "max_ms": 0.018,
+              "total_bytes": 0,
+              "avg_bw_gbps": 0.000,
+              "hardware": {
+                "sample_count": 0,
+                "avg_counters": { }
+              }
+            },
+            {
+              "name": "Pad",
+              "kernel_name": "",
+              "kind": 0,
+              "count": 20,
+              "avg_ms": 0.013,
+              "median_ms": 0.013,
+              "p95_ms": 0.013,
+              "p99_ms": 0.013,
+              "stddev_ms": 0.000,
+              "min_ms": 0.013,
+              "max_ms": 0.013,
+              "total_bytes": 0,
+              "avg_bw_gbps": 0.000,
+              "hardware": {
+                "sample_count": 0,
+                "avg_counters": { }
+              }
+            },
+            {
+              "name": "Upload",
+              "kernel_name": "",
+              "kind": 1,
+              "count": 20,
+              "avg_ms": 0.079,
+              "median_ms": 0.080,
+              "p95_ms": 0.097,
+              "p99_ms": 0.109,
+              "stddev_ms": 0.013,
+              "min_ms": 0.054,
+              "max_ms": 0.113,
+              "total_bytes": 0,
+              "avg_bw_gbps": 0.000,
+              "hardware": {
+                "sample_count": 0,
+                "avg_counters": { }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

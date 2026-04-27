@@ -12,7 +12,7 @@
 
 ### 1. BUILD_TIMESTAMP уничтожает zero-rebuild
 
-**Файл:** `~!Doc/CMake/Version/version.cmake`, строка 126
+**Файл:** `MemoryBank/.architecture/CMake/Version/version.cmake`, строка 126
 ```cmake
 string(TIMESTAMP BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S" UTC)
 ```
@@ -29,7 +29,7 @@ string(TIMESTAMP BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S" UTC)
 
 ### 2. Макросы в version.h.in не имеют namespace
 
-**Файл:** `~!Doc/CMake/Version/version.h.in`, строки 12-29
+**Файл:** `MemoryBank/.architecture/CMake/Version/version.h.in`, строки 12-29
 ```c
 #define VERSION_MAJOR       @VERSION_MAJOR@
 #define GIT_HASH_SHORT      "@GIT_HASH_SHORT@"

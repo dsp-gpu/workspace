@@ -4,10 +4,10 @@
 > **Дата**: 2026-04-19 | **Авторы**: Кодо + Alex
 > **Аудитория**: разработчики DSP-GPU (in the know) + коллеги LocalProject-команд (могут не владеть терминологией git/CMake)
 > **Основа**:
-> - `~!Doc/CMake-GIT/Variants_Report_2026-04-18.md` (V1-V11 + сводная)
+> - `MemoryBank/.architecture/CMake-GIT/Variants_Report_2026-04-18.md` (V1-V11 + сводная)
 > - `MemoryBank/specs/cmake_git_distribution_spec_2026-04-18.md` (V8, текущий выбор)
 > - `MemoryBank/specs/cmake_git_aware_build.md` v2 (Layer 1/2, zero-rebuild, в проде)
-> - `~!Doc/CMake-GIT/Review_VariantA_Kodo_2026-04-18.md` (детальный разбор)
+> - `MemoryBank/.architecture/CMake-GIT/Review_VariantA_Kodo_2026-04-18.md` (детальный разбор)
 
 ---
 
@@ -131,7 +131,7 @@ E:\DSP-GPU\                                ← workspace git (github.com/dsp-gpu
 │   ├── promote_breaking_change.sh
 │   ├── generate_cmake_deps.py
 │   ├── topo_sort.py
-│   ├── update_dsp.py                      ← перенести из ~!Doc/CMake-GIT/
+│   ├── update_dsp.py                      ← перенести из MemoryBank/.architecture/CMake-GIT/
 │   └── freeze_for_transfer.sh             ← 🆕 опционально для R-offline
 │
 ├── core/                   ┐
@@ -487,7 +487,7 @@ FetchContent_MakeAvailable(DspCore)
 
 #### 🅱️ Вариант B — Python-скрипт `scripts/update_dsp.py` (**✅ выбран для реализации**)
 
-Существующий `update_dsp.py` (уже есть в `~!Doc/CMake-GIT/`) **дорабатывается** и вызывается из CMakeLists.txt на этапе configure. Он сам делает git fetch из SMI100, обновляет `vendor/` и `deps_state.json`. CMake после этого использует готовый `vendor/` через `FETCHCONTENT_SOURCE_DIR_*` — в сеть больше не ходит.
+Существующий `update_dsp.py` (уже есть в `MemoryBank/.architecture/CMake-GIT/`) **дорабатывается** и вызывается из CMakeLists.txt на этапе configure. Он сам делает git fetch из SMI100, обновляет `vendor/` и `deps_state.json`. CMake после этого использует готовый `vendor/` через `FETCHCONTENT_SOURCE_DIR_*` — в сеть больше не ходит.
 
 ```cmake
 # CMakeLists.txt (LP_x) — вариант B (выбран)
@@ -517,7 +517,7 @@ FetchContent_MakeAvailable(DspCore ...)
 - ✅ Нормальное логирование в любом формате (журнал, JSON, stderr)
 - ✅ Pin / unpin / status — прямолинейные if/else, не хаки
 - ✅ Retry, timeout, graceful fallback — естественно на Python
-- ✅ **Уже есть базовый скрипт** (`~!Doc/CMake-GIT/update_dsp.py`) — доработка, не написание с нуля
+- ✅ **Уже есть базовый скрипт** (`MemoryBank/.architecture/CMake-GIT/update_dsp.py`) — доработка, не написание с нуля
 - ✅ Запускается независимо от CMake (cron / CLI), если нужно
 
 **Минусы**:
@@ -555,7 +555,7 @@ FetchContent_MakeAvailable(DspCore ...)
 | **`scripts/promote_to_smi100.sh`** | ПК Alex (Windows/Linux) | Только Alex | Тянет release-тег из public GitHub → `smi100_*.git` local bare → `git push smi100` по LAN. Уже описан в C3/C4 spec. Остаётся без изменений. |
 | **`scripts/update_dsp.py`** (доработка) | На каждом LP_x-сервере | LP-разработчики + CMake через `execute_process` | Zone 2-only: идёт в SMI100 по LAN, обновляет `vendor/<mod>/` и `deps_state.json`, держит pin-логику. |
 
-**Что доработать в существующем `~!Doc/CMake-GIT/update_dsp.py`** (перенесём в `scripts/update_dsp.py`, корень workspace):
+**Что доработать в существующем `MemoryBank/.architecture/CMake-GIT/update_dsp.py`** (перенесём в `scripts/update_dsp.py`, корень workspace):
 
 | # | Функциональность | Зачем |
 |---|------------------|-------|
@@ -1003,10 +1003,10 @@ chmod +x .git/hooks/pre-commit
 - взаимодействие V8 + freeze-tool (Фаза 8): что должно быть идемпотентно
 
 **Внутренние доки DSP-GPU** (SSOT этого документа):
-- `~!Doc/CMake-GIT/1_…6_*.md`
-- `~!Doc/CMake-GIT/Variants_Report_2026-04-18.md`
-- `~!Doc/CMake-GIT/Review_VariantA_Kodo_2026-04-18.md`
-- `~!Doc/CMake-GIT/update_dsp.py`
+- `MemoryBank/.architecture/CMake-GIT/1_…6_*.md`
+- `MemoryBank/.architecture/CMake-GIT/Variants_Report_2026-04-18.md`
+- `MemoryBank/.architecture/CMake-GIT/Review_VariantA_Kodo_2026-04-18.md`
+- `MemoryBank/.architecture/CMake-GIT/update_dsp.py`
 - `MemoryBank/specs/cmake_git_distribution_spec_2026-04-18.md`
 - `MemoryBank/specs/cmake_git_aware_build.md` v2
 - `MemoryBank/specs/cmake_git_specs_comparison_2026-04-18.md`

@@ -29,7 +29,7 @@
 ## 📐 Предлагаемая структура папки
 
 ```
-~!Doc/CMake-GIT/
+MemoryBank/.architecture/CMake-GIT/
 │
 ├── README.md                         ← ЕДИНАЯ ТОЧКА ВХОДА (≤150 строк)
 │                                       TL;DR-картинка + «кто ты → иди сюда»

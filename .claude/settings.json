@@ -4,7 +4,14 @@
       "Bash(git *)",
       "Bash(cmake *)",
       "Bash(ninja *)",
-      "Bash(\"F:/Program Files (x86)/Python314/python.exe\" *)"
+      "Bash(\"F:/Program Files (x86)/Python314/python.exe\" *)",
+      "Bash(DSP_CACHE_DIR=/home/alex/DSP-GPU/spectrum/build/tests/kernels_cache ./dsp-cache-list /home/alex/DSP-GPU/spectrum/build/tests/kernels_cache)",
+      "Bash(/home/alex/DSP-GPU/core/build/dsp-cache-list /home/alex/DSP-GPU/linalg/build/tests/kernels_cache)",
+      "Read(//home/alex/DSP-GPU/**)",
+      "Read(//home/alex/DSP-GPU/=== Stale refs to old paths \\(should be empty or only spec/audit/**)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
     ]
   }
 }

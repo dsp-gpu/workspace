@@ -1,8 +1,38 @@
-# 🚧 IN PROGRESS — Orchestrated execution: linalg/tests → Profiler v2 → KernelCache v2
+# 🚧 IN PROGRESS
 
-**Последнее обновление**: 2026-04-20 (end of day — пауза перед Phase D×5 и KernelCache)
-**Координатор**: main session acts as mega-coordinator (sub-agents не имеют Agent tool)
-**Прогресс**: Task 1 DONE (merged+tagged v0.2.1); Task 2 — Phase A+B+C+D(spectrum) pushed, Gates 1+2+3 PASSED
+**Последнее обновление**: 2026-04-27 (deep review + 12 fixes + Phase E1 wire + 7 репо зелёные)
+**Прогресс**: Task 1 DONE; Task 2 (Profiler v2) — code DONE, остался Closeout (доки + опц. CI + Q7).
+Task 3 (KernelCache v2) — code DONE, остался **Closeout** (доки + git commit + опц. acceptance).
+
+## 🟡 KernelCache v2 Closeout (1 таск)
+
+| # | Таск | Effort | GPU нужен | Статус |
+|---|------|-------:|-----------|--------|
+| 1 | [TASK_KernelCache_v2_Closeout_2026-04-27.md](TASK_KernelCache_v2_Closeout_2026-04-27.md) — MemoryBank sync + `core/Doc/Services/Full.md` + git commit (12 fixes + E1 CLI wire) + опц. tag v0.3.0 / rocm-smi leak / DSP Python smoke | 3-5 ч | ❌ нет (опц. да для leak/smoke) | 📋 готов к работе |
+
+**Что СДЕЛАНО 2026-04-27** (для контекста — детали в Closeout-таске):
+- Phase E1: `dsp-cache-list` CLI wired через `option(DSP_BUILD_CLI_TOOLS OFF)` в `core/CMakeLists.txt`
+- Deep review by `deep-reviewer` agent → 12 issues → все исправлены (2 HIGH / 6 MED / 4 LOW)
+- Golden hash regression test `TestFnv1aGoldenRegression` (G3 Gate locked: `0x937e8a99cd37b6dbULL`)
+- Build + tests на Debian + RX 9070 (gfx1201): core compile_key 6/6 + kernel_cache 8/8, spectrum 10 PASS, signal_generators 6/6, linalg "ALL TESTS PASSED", strategies, radar, stats, heterodyne — все зелёные
+
+**Архив старых TASK-файлов** (Phase A-E + INDEX + HANDOFF, 7 файлов): `MemoryBank/archive/kernel_cache_v2_2026-04-27/`. Все фазы смержены в main 5 репо ещё 2026-04-22 вечером, сборка/тесты подтверждены 2026-04-27.
+
+## 🟡 Profiler v2 Closeout (3 таска)
+
+| # | Таск | Effort | GPU нужен | Статус |
+|---|------|-------:|-----------|--------|
+| 1 | [TASK_Profiler_v2_Documentation.md](TASK_Profiler_v2_Documentation.md) — Full.md + spec archive + Doxygen + sessions_done + bench-комменты | 4-6 ч | ❌ нет (можно дома) | 📋 готов к работе |
+| 2 | [TASK_Profiler_v2_CI_RunSerial.md](TASK_Profiler_v2_CI_RunSerial.md) — RUN_SERIAL polish + опц. CI workflow | 1-2 ч | ❌ нет | 📋 ждёт OK Alex по варианту |
+| 3 | [TASK_Profiler_v2_Roctracer_Q7.md](TASK_Profiler_v2_Roctracer_Q7.md) — full 5-field GPU timing через roctracer | 16-24 ч | ✅ да (Debian + RX 9070 / MI100) | 📋 ждёт решения «когда» |
+
+**Index**: [TASK_Profiler_v2_INDEX.md](TASK_Profiler_v2_INDEX.md) (актуализирован 2026-04-27, старые Phase A-E таски удалены как мусор).
+
+## ✅ 2026-04-27 — Profiler v2 RemoveLegacy CLOSED
+
+Финальный снос `@deprecated GPUProfiler`. ProfilingFacade — единственная точка
+профилирования. core 123 PASS / 0 FAIL, все 7 dep-репо собраны зелёными.
+Подробности → `sessions/2026-04-27.md` (late section).
 
 ## ⏸ 2026-04-20 PAUSE — завтра продолжаем
 
@@ -46,7 +76,7 @@
 | 2 | **GPUProfiler v2** — 8 фаз (A→E) | 28-40 ч | `new_profiler` (все 7 репо: core+6) | task 1 |
 | 3 | **KernelCache v2** — 5 фаз (A→E) | 15-22 ч | `kernel_cache_v2` (core + 4 репо) | task 2 merged |
 
-**Примечание**: по effort KernelCache меньше Profiler'а, но Phase A KernelCache **блокируется** merge профайлера (см. `TASK_KernelCache_v2_INDEX.md` Q8). Итог: фактический порядок = linalg → Profiler → KernelCache.
+**Примечание**: по effort KernelCache меньше Profiler'а, но Phase A KernelCache **блокируется** merge профайлера (см. `archive/kernel_cache_v2_2026-04-27/TASK_KernelCache_v2_INDEX.md` Q8). Итог: фактический порядок = linalg → Profiler → KernelCache.
 
 ### Scope task 1 (linalg/tests — найдено grep'ом 2026-04-20)
 
@@ -65,7 +95,7 @@ Spec: `MemoryBank/specs/GPUProfiler_Rewrite_Proposal_2026-04-16.md` + Round 3 re
 ### Scope task 3 (KernelCache v2)
 
 Spec: `MemoryBank/specs/KernelCache_v2_Proposal_2026-04-16.md` (v3 clean-slate).
-Таски: `TASK_KernelCache_v2_Phase{A,B,C,D,E}.md` (5 файлов).
+Таски: `MemoryBank/archive/kernel_cache_v2_2026-04-27/TASK_KernelCache_v2_Phase{A,B,C,D,E}.md` (5 файлов, **completed** + смержены в main 2026-04-22, проверены 2026-04-27).
 
 ---
 
@@ -105,8 +135,9 @@ Spec: `MemoryBank/specs/KernelCache_v2_Proposal_2026-04-16.md` (v3 clean-slate).
 
 - [MASTER_INDEX.md](../MASTER_INDEX.md)
 - [TASK_Profiler_v2_INDEX.md](TASK_Profiler_v2_INDEX.md)
-- [TASK_KernelCache_v2_INDEX.md](TASK_KernelCache_v2_INDEX.md)
-- [changelog/2026-04-15_*.md](../changelog/)
+- [TASK_KernelCache_v2_Closeout_2026-04-27.md](TASK_KernelCache_v2_Closeout_2026-04-27.md) (active)
+- [archive/kernel_cache_v2_2026-04-27/](../archive/kernel_cache_v2_2026-04-27/) (closed phases)
+- [changelog/2026-04.md](../changelog/2026-04.md)
 - [specs/GPUProfiler_Rewrite_Proposal_2026-04-16.md](../specs/)
 - [specs/KernelCache_v2_Proposal_2026-04-16.md](../specs/)
 
