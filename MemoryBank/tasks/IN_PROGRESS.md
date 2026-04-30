@@ -1,8 +1,26 @@
 # 🚧 IN PROGRESS
 
-**Последнее обновление**: 2026-04-27 (deep review + 12 fixes + Phase E1 wire + 7 репо зелёные)
-**Прогресс**: Task 1 DONE; Task 2 (Profiler v2) — code DONE, остался Closeout (доки + опц. CI + Q7).
-Task 3 (KernelCache v2) — code DONE, остался **Closeout** (доки + git commit + опц. acceptance).
+**Последнее обновление**: 2026-04-30 (Python migration tasks created)
+**Прогресс**:
+- 🆕 **Python tests migration** — Phase A0 DONE, Phase A1-A5 ready (Windows), Phase B (Debian) через 4 дня
+- Task 2 (Profiler v2) — code DONE, остался Closeout (доки + опц. CI + Q7)
+- Task 3 (KernelCache v2) — code DONE, остался **Closeout** (доки + git commit + опц. acceptance)
+
+## 🆕 Python Tests Migration (2 таска) — приоритет
+
+| # | Таск | Effort | GPU нужен | Платформа | Статус |
+|---|------|-------:|-----------|-----------|--------|
+| 1 | [TASK_python_migration_phase_A_2026-04-30.md](TASK_python_migration_phase_A_2026-04-30.md) — мигрировать 51 t_*.py с `gpuworklib` на `dsp_*` модули + `GPULoader.setup_path()` + удалить shim в A5 | ~10 ч (две сессии) | ❌ нет (Windows, только редактирование) | Windows | 📋 готов к старту (A0 ✅, ждёт OK на A1) |
+| 2 | [TASK_python_migration_phase_B_debian_2026-05-03.md](TASK_python_migration_phase_B_debian_2026-05-03.md) — CMake-патч `auto-deploy` × 8 репо + проверка миграции на ROCm + снять SkipTest с heterodyne | ~3-6 ч | ✅ да (Debian + RX 9070) | Debian (работа) | 📋 ожидает 2026-05-03+, depends on Phase A |
+
+**Что СДЕЛАНО** в текущей сессии (2026-04-29 / 2026-04-30):
+- 60 переименований `test_*.py` → `t_*.py` (PyCharm autodetect fix)
+- 7 conftest.py → factories.py
+- 3 файла spectrum мигрированы на `dsp_*` API: `t_lch_farrow`, `t_lch_farrow_rocm`, `t_spectrum_find_all_maxima_rocm`
+- Phase A0 preflight DONE: `DSP/Python/libs/.gitkeep` + `gpu_loader.py` `lib`→`libs`
+- Глубокое ревью плана: `MemoryBank/specs/python/migration_plan_review_2026-04-30.md`
+
+**Документы**: план [`migration_plan_2026-04-29.md`](../specs/python/migration_plan_2026-04-29.md), аудит [`pytest_audit_2026-04-29.md`](../specs/python/pytest_audit_2026-04-29.md), ревью [`migration_plan_review_2026-04-30.md`](../specs/python/migration_plan_review_2026-04-30.md).
 
 ## 🟡 KernelCache v2 Closeout (1 таск)
 
