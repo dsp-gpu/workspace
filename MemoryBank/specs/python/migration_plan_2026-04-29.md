@@ -304,9 +304,10 @@ out = het.correct(dc, list(f_beat_hz))   # complex64 ndarray
 
 ## 📖 API Reference (Phase A1, выполнено 2026-04-30)
 
-Полный inventory всех 8 pybind модулей. Каждый модуль регистрирует **свой** `ROCmGPUContext` (не reuse из `dsp_core` — каждый pybind module независим).
+> **Вынесено в отдельный файл** для discoverability:
+> 👉 [`api_reference_2026-04-30.md`](api_reference_2026-04-30.md) — все 30 классов 8 модулей, методы, properties, enums.
 
-### dsp_core (`core/python/dsp_core_module.cpp` + `py_gpu_context.hpp`)
+### dsp_core (краткая выжимка)
 
 | Class | __init__ | Methods / Properties |
 |-------|----------|----------------------|
@@ -316,181 +317,11 @@ out = het.correct(dc, list(f_beat_hz))   # complex64 ndarray
 
 **Module-level functions**: `get_gpu_count() → int`, `list_gpus() → list[dict {index, name, memory_mb}]`
 
-### dsp_spectrum (8 классов + CPU FFT функции)
-
-| Class | __init__ | Key methods |
-|-------|----------|-------------|
-| `ROCmGPUContext` | `(device_index: int = 0)` | как в core (продублирован) |
-| `FFTProcessorROCm` | `(ctx: ROCmGPUContext)` | `process_complex(data, sample_rate=...) → np.complex64`, `process_mag_phase(data, sample_rate=...) → (mag, phase)`, `get_profiling()`, `nfft` (ro) |
-| `SpectrumMaximaFinderROCm` | `(ctx)` | `process(spectrum, ...) → list`, `find_all_maxima(spectrum, ...)`, `find_all_maxima_from_signal(...)`, `initialized` (ro), `get_params()` |
-| `ComplexToMagROCm` | `(ctx)` | `process_magnitude(data) → np.float32` |
-| `FirFilter` | `(ctx: GPUContext)` ⚠ **OpenCL** | `load_config(json)`, `set_coefficients(taps)`, `process(signal)`, `num_taps`, `coefficients` (ro) |
-| `IirFilter` | `(ctx: GPUContext)` ⚠ **OpenCL** | `load_config`, `set_sections(biquads)`, `process`, `num_sections`, `sections` (ro) |
-| `FirFilterROCm` | `(ctx: ROCmGPUContext)` | то же что FirFilter, но ROCm |
-| `IirFilterROCm` | `(ctx: ROCmGPUContext)` | то же что IirFilter, но ROCm |
-| `MovingAverageFilterROCm` | `(ctx)` | `set_params(...)`, `process(data, ...)`, `is_ready`, `get_window_size`, `get_type` |
-| `KalmanFilterROCm` | `(ctx)` | `set_params(...)`, `process(data)`, `is_ready`, `get_params()` |
-| `KaufmanFilterROCm` | `(ctx)` | `set_params(...)`, `process(data)`, `is_ready`, `get_params()` |
-| `LchFarrow` | `(ctx: GPUContext)` ⚠ **OpenCL** | `set_delays`, `set_sample_rate`, `set_noise`, `load_matrix`, `process(signal)`, `sample_rate`, `delays` (ro) |
-| `LchFarrowROCm` | `(ctx: ROCmGPUContext)` | то же что LchFarrow, но ROCm |
-
-**Module-level CPU FFT** (pocketfft): `cpu_fft_c2c(x)`, `cpu_ifft_c2c(X)`, `cpu_fft_r2c(x)`, `cpu_fft_r2c_full(x)`, `magnitude(X, kind="abs"|"abs2")`
-
-### dsp_stats
-
-| Class | __init__ | Methods |
-|-------|----------|---------|
-| `ROCmGPUContext` | `(device_index)` | как в core |
-| `BranchThresholds` | `()` | `low_to_mid_db`, `mid_to_high_db`, `hysteresis_db` (rw) |
-| `SnrEstimationConfig` | `()` | `target_n_fft`, `step_samples`, `step_antennas`, `guard_bins`, `ref_bins`, `search_full_spectrum`, `with_dechirp`, `thresholds` (rw); `validate() → ValidationResult` |
-| `SnrEstimationResult` | `()` | `snr_db_global`, `snr_db_per_antenna`, `used_antennas`, `used_bins`, `actual_step_samples`, `n_actual` (ro) |
-| `BranchSelector` | `()` | `select(snr_db) → branch`, `current()`, `reset()` |
-| `StatisticsProcessor` | `(ctx: ROCmGPUContext)` | `compute_mean(data)`, `compute_median(data)`, `compute_statistics(data, beam_count)`, `compute_all(data, ...)`, `compute_all_float(data, ...)`, `compute_statistics_float(data, ...)`, `compute_median_float(data)`, `compute_snr_db(spectrum, config) → SnrEstimationResult` |
-
-### dsp_signal_generators
-
-| Class | __init__ | Methods |
-|-------|----------|---------|
-| `ROCmGPUContext` | `(device_index)` | как в core |
-| `FormSignalGeneratorROCm` | `(ctx)` | `set_params(...)`, `set_params_from_string(json_str)`, `generate() → np.complex64`, `get_params() → dict`, `antennas`, `points` (ro) |
-| `DelayedFormSignalGeneratorROCm` | `(ctx)` | `set_params(...)`, `set_delays(delays_arr)`, `load_matrix(json_path)`, `generate() → np.complex64`, `get_params() → dict`, `antennas`, `points`, `fs`, `delays` (ro) |
-| **`LfmAnalyticalDelayROCm`** ⚠ | `(ctx, f_start: float, f_end: float, sample_rate: float)` | `set_sampling(...)`, `set_delays(d)`, `set_params(...)`, `generate_gpu()`, `generate_cpu()`, `get_params() → dict`, `antennas`, `length`, `fs`, `delays` (ro) |
-
-⚠ **Имя класса — `LfmAnalyticalDelayROCm`** (без `Generator`)! Shim `gpuworklib.py:76` импортирует `LfmAnalyticalDelayGeneratorROCm` — это **упадёт ImportError** (под try/except). Реальное имя в pybind — БЕЗ `Generator`.
-
-### dsp_heterodyne
-
-| Class | __init__ | Methods |
-|-------|----------|---------|
-| `ROCmGPUContext` | `(device_index)` | как в core |
-| `HeterodyneROCm` | `(ctx: ROCmGPUContext)` | `set_params(f_start, f_end, sample_rate, num_samples, num_antennas)`, `dechirp(rx, ref) → np.complex64`, `correct(dc, f_beat_list) → np.complex64`, `params` (ro dict) |
-
-⚠ **`HeterodyneDechirp` НЕ зарегистрирован** (закомментирован `#include "py_heterodyne.hpp"` в `dsp_heterodyne_module.cpp:18-19` — он на legacy OpenCL `GPUContext`). Только `HeterodyneROCm`.
-
-### dsp_linalg
-
-| Class | __init__ | Methods |
-|-------|----------|---------|
-| `ROCmGPUContext` | `(device_index)` | как в core |
-| `CaponParams` | `()` или `(p, n, dir, mu)` | `n_channels`, `n_samples`, `n_directions`, `mu` (rw) |
-| `CholeskyInverterROCm` | `(ctx, mode: SymmetrizeMode)` | `invert_cpu(matrix)`, `invert_batch_cpu(matrices)`, `set_symmetrize_mode(mode)`, `get_symmetrize_mode()` |
-| `CaponProcessor` | `(ctx)` | `compute_relief(...)`, `adaptive_beamform(...)`, `compute_relief_gpu(...)`, `adaptive_beamform_gpu(...)` |
-
-**Enum**: `dsp_linalg.SymmetrizeMode` — `py::enum_<vector_algebra::SymmetrizeMode>` со значениями `Roundtrip`, `GpuKernel` ([py_vector_algebra_rocm.hpp:139-143](../../../linalg/python/py_vector_algebra_rocm.hpp#L139-L143)). Использование: `dsp_linalg.CholeskyInverterROCm(ctx, dsp_linalg.SymmetrizeMode.GpuKernel)`.
-
-### dsp_radar
-
-| Class | __init__ | Methods |
-|-------|----------|---------|
-| `ROCmGPUContext` | `(device_index)` | как в core |
-| `RangeAngleParams` | `()` | `n_ant_az`, `n_ant_el`, `n_samples`, `f_start`, `f_end`, `sample_rate`, `nfft_range`, `carrier_freq`, `antenna_spacing`, `peak_mode`, `n_peaks`, `n_range_bins`, `range_res_m` (rw); `get_n_antennas()`, `get_bandwidth()`, `get_duration()`, `get_chirp_rate()` |
-| `TargetInfo` | `()` | `range_m`, `angle_az_deg`, `angle_el_deg`, `range_bin`, `az_bin`, `el_bin`, `power_db`, `snr_db` (rw) |
-| `RangeAngleResult` | `()` | (см. py_range_angle_rocm.hpp:223+, поля результата) |
-| `RangeAngleProcessor` | `(ctx)` | (см. файл; основной API процессор range-angle map) |
-| **`FMCorrelatorROCm`** ⚠ | `(ctx)` | `set_params(...)`, `generate_msequence(...)`, `prepare_reference(ref)`, `prepare_reference_from_data(rx)`, `process(rx) → result`, `run_test_pattern()` |
-
-⚠ **Имя класса — `FMCorrelatorROCm`** (FM заглавными)! Shim `gpuworklib.py:101` импортирует `FmCorrelatorROCm` (только F заглавная) — это **упадёт ImportError**. Регистр **критичен** для Python.
-
-### dsp_strategies
-
-| Class | __init__ | Methods |
-|-------|----------|---------|
-| `ROCmGPUContext` | `(device_index)` | как в core |
-| `AntennaProcessorTest` | `(ctx, n_ant: uint32, n_samples: uint32, f_start: float, f_end: float, with_diag_capon: bool)` | `step_0_prepare_input`, `step_1_debug_input`, `step_2_gemm`, `step_3_debug_post_gemm`, `step_4_window_fft`, `step_5_debug_post_fft`, `step_6_1_one_max_parabola`, `step_6_2_all_maxima`, `step_6_3_global_minmax`, `process_full(...)`, `set_external_weights(w)`, `step_0_signal_only(...)`, `process_full_managed_w(...)`, `nFFT`, `n_ant`, `n_samples`, `sample_rate` (ro) |
-
-**Module-level**: `m.def("generate_delay_and_sum_weights", ...)` — это была функция, упомянутая в shim как `WeightGenerator` (имя класса в shim **неверное**).
-
-⚠ **`WeightGenerator` НЕ зарегистрирован как класс** — в реальности это module-level function `generate_delay_and_sum_weights()`. Shim `gpuworklib.py:107` импорт `WeightGenerator` упадёт ImportError.
-
 ---
 
-## 🔁 Legacy → DSP-GPU mapping (3 критических несоответствия)
+## 🔁 Legacy → DSP-GPU mapping
 
-Сравнение shim `DSP/Python/gpuworklib.py` vs реальный API:
-
-| Legacy (`gpuworklib.X`) | Реальный API DSP-GPU | Module | Status |
-|-------------------------|----------------------|--------|--------|
-| `GPUContext` | `dsp_core.GPUContext` | core | ✅ rename only (OpenCL) |
-| `ROCmGPUContext` | `dsp_core.ROCmGPUContext` | core | ✅ rename only |
-| `HybridGPUContext` | `dsp_core.HybridGPUContext` | core | ✅ rename only |
-| `get_gpu_count()` | `dsp_core.get_gpu_count()` | core | ✅ rename |
-| `list_gpus()` | `dsp_core.list_gpus()` | core | ✅ rename |
-| `FFTProcessor` (alias) | `dsp_spectrum.FFTProcessorROCm` | spectrum | ✅ rename + suffix ROCm |
-| `FFTProcessorROCm` | `dsp_spectrum.FFTProcessorROCm` | spectrum | ✅ rename only |
-| `SpectrumMaximaFinderROCm` | `dsp_spectrum.SpectrumMaximaFinderROCm` | spectrum | ✅ rename only |
-| `ComplexToMagROCm` | `dsp_spectrum.ComplexToMagROCm` | spectrum | ✅ rename only |
-| `FirFilter` / `IirFilter` | `dsp_spectrum.FirFilter` / `IirFilter` | spectrum | ⚠ OpenCL — нужен `GPUContext`, не `ROCmGPUContext` |
-| `FirFilterROCm` / `IirFilterROCm` | `dsp_spectrum.{Fir,Iir}FilterROCm` | spectrum | ✅ rename only |
-| `LchFarrow` / `LchFarrowROCm` | `dsp_spectrum.LchFarrow` / `LchFarrowROCm` | spectrum | ✅ rename only |
-| `StatisticsProcessor` | `dsp_stats.StatisticsProcessor` | stats | ✅ rename only |
-| `FormSignalGeneratorROCm` | `dsp_signal_generators.FormSignalGeneratorROCm` | signal_generators | ✅ rename only |
-| `DelayedFormSignalGeneratorROCm` | `dsp_signal_generators.DelayedFormSignalGeneratorROCm` | signal_generators | ✅ rename only |
-| **`LfmAnalyticalDelayGeneratorROCm`** | **`dsp_signal_generators.LfmAnalyticalDelayROCm`** | signal_generators | 🔴 **rename: убрать `Generator`** |
-| `LfmAnalyticalDelayGenerator` (CPU/legacy) | **НЕ ЗАРЕГИСТРИРОВАН** в DSP-GPU | — | 🔴 заменить на `LfmAnalyticalDelayROCm.generate_cpu()` или NumPy fallback |
-| **`HeterodyneDechirp`** | **НЕ ЗАРЕГИСТРИРОВАН** в `dsp_heterodyne` | heterodyne | 🔴 **полный rewrite** на `HeterodyneROCm.dechirp/correct + np.fft + argmax` (см. §canonical pattern) |
-| `HeterodyneROCm` | `dsp_heterodyne.HeterodyneROCm` | heterodyne | ✅ rename only |
-| `CholeskyInverterROCm` | `dsp_linalg.CholeskyInverterROCm` | linalg | ⚠ конструктор требует `SymmetrizeMode` (раньше мог быть default) |
-| `CaponProcessor` (если был в shim) | `dsp_linalg.CaponProcessor` | linalg | ✅ rename only |
-| **`FmCorrelatorROCm`** | **`dsp_radar.FMCorrelatorROCm`** | radar | 🔴 **rename: `Fm` → `FM` (заглавные)** |
-| `RangeAngleProcessor` | `dsp_radar.RangeAngleProcessor` | radar | ✅ rename only |
-| `AntennaProcessorTest` | `dsp_strategies.AntennaProcessorTest` | strategies | ⚠ конструктор требует 6 параметров (ctx, n_ant, n_samples, f_start, f_end, with_diag_capon) |
-| **`WeightGenerator`** | **НЕ КЛАСС** — module-level `dsp_strategies.generate_delay_and_sum_weights()` | strategies | 🔴 **переписать импорт + вызов** |
-
-### 🔴 Реальные проблемы миграции (после grep тестов 2026-04-30)
-
-Хорошая новость: тесты **уже используют правильные имена** для большинства классов:
-- `LfmAnalyticalDelayROCm` (без `Generator`) ✅ — никто не использует legacy `LfmAnalyticalDelayGeneratorROCm`
-- `FMCorrelatorROCm` (FM заглавными) ✅ — никто не использует legacy `FmCorrelatorROCm`
-- `WeightGenerator` ✅ — никто не использует legacy имя
-
-То есть **shim был неточен**, но тесты ходили мимо — поэтому проблем не возникало.
-
-**Реальные оставшиеся проблемы** (4 несуществующих класса в legacy-тестах):
-
-| # | Класс (legacy) | Используется в | Кол-во мест | Действие в Phase A2 |
-|---|---------------|----------------|-------------|---------------------|
-| 1 | `gpuworklib.HeterodyneDechirp` | `heterodyne/t_heterodyne.py`, `t_heterodyne_comparison.py`, `t_heterodyne_step_by_step.py` (`t_heterodyne_rocm.py` — TBD) | 6 мест в 3 файлах | **A2.6**: переписать на `HeterodyneROCm.dechirp/correct + np.fft + argmax` (канонический паттерн) |
-| 2 | `gpuworklib.SignalGenerator` (legacy LFM/CW/Noise) | `integration/t_gpuworklib.py` (7 мест), `spectrum/t_ai_fir_demo.py:480` (1) | 8 мест в 2 файлах | **A2.7**: либо NumPy fallback (`np.exp(1j * phase)`), либо `FormSignalGeneratorROCm`. Для `t_gpuworklib.py` рассмотреть полный SkipTest как «legacy E2E» (см. ниже). |
-| 3 | `gpuworklib.ScriptGenerator` (legacy JSON-based) | `integration/t_gpuworklib.py:521, 680` | 2 места в 1 файле | **A2.7**: SkipTest или JSON-loader на чистом Python |
-| 4 | `gpuworklib.FIRFilter` (заглавные FIR) | `spectrum/t_ai_fir_demo.py:279` (комментарий TODO) | 0 реальных вызовов | ✅ ничего не делать — это TODO про несуществующий класс |
-
-### ⚠ Стратегия для `integration/t_gpuworklib.py` → `t_signal_to_spectrum.py`
-
-Файл `DSP/Python/integration/t_gpuworklib.py` (903 строки, 9 тестов) — legacy E2E-тест из GPUWorkLib. Имя **рудимент** старого проекта, нужно переименовать.
-
-**Финальный план** (согласовано Alex 2026-04-30, после анализа исходников GPUWorkLib):
-
-| # | Тест | API legacy | Действие |
-|---|------|------------|----------|
-| 1 | `test_multichannel_sin_fft` | `SignalGenerator.generate_cw` × 5 | Проверить дубль с `signal_generators/t_form_signal*.py`. Дубль → удалить. Уникальное → `FormSignalGeneratorROCm` (+ matplotlib сохраняем) |
-| 2 | `test_signal_types` | `generate_cw/lfm/noise` + 3×3 grid | то же |
-| 3 | `test_multibeam_cw` | `SignalGenerator` multi-beam | то же |
-| 4 | `test_generators_from_string` | `generate_from_string(json)` | Переписать на `FormSignalGeneratorROCm.set_params_from_string()` ✅ есть в API |
-| 5 | `test_multibeam_from_string` | то же | то же |
-| 6 | `test_mag_phase` | `SignalGenerator` + FFT mag/phase | проверить дубль / переписать |
-| 7 | `test_generate_from_string` | JSON DSL | переписать (как 4, 5) |
-| 8 | `test_script_generator` | `ScriptGenerator` (runtime OpenCL DSL → kernel) | **УДАЛИТЬ** + перспективный таск |
-| 9 | `test_script_fft_pipeline` | то же | **УДАЛИТЬ** + перспективный таск |
-
-**Действия по порядку**:
-
-1. **Удалить тесты 8, 9** из файла (~360 строк) — runtime DSL→kernel компилятор не переносится в ROCm-only без отдельной разработки.
-2. **Создать перспективный таск** [`MemoryBank/.future/TASK_script_dsl_rocm.md`](../../.future/TASK_script_dsl_rocm.md) с описанием варианта реализации через hipRTC.
-3. **Анализ дублей** для тестов 1, 2, 3, 6: diff против `DSP/Python/{spectrum,signal_generators}/t_*.py`. Дубль = удалить из файла. Уникальное = переписать.
-4. **Переписать 4, 5, 7** на `FormSignalGeneratorROCm.set_params_from_string()` (JSON DSL уже поддерживается в DSP-GPU).
-5. **Сохранить весь matplotlib-код** (графики нужны для документации после первого прогона на Debian).
-6. **Переименовать файл**: `integration/t_gpuworklib.py` → `integration/t_signal_to_spectrum.py`.
-7. **Обновить ссылки** в комментариях:
-   - `integration/t_fft_integration.py:5` — «из оригинального test_gpuworklib.py» → «...t_signal_to_spectrum.py»
-   - `integration/t_signal_gen_integration.py:5` — то же
-   - Старая документация `DSP/Doc/*` (5 ссылок) — оставить как историческую (legacy GPUWorkLib reference)
-
-**Время**: ~3-4 ч (вместо 10 мин SkipTest), но в результате — нет дублей, JSON DSL работает, графики на Debian создадут PNG для доков.
-
-**Ссылка на референс legacy** в GPUWorkLib (если потребуется reverse-engineering):
-- `e:/C++/GPUWorkLib/python/gpu_worklib_bindings.cpp:281+` — `PySignalGenerator` (методы `generate_cw/lfm/noise`)
-- `e:/C++/GPUWorkLib/python/gpu_worklib_bindings.cpp:507+` — `PyScriptGenerator` (DSL compiler — для перспективного таска)
-- `e:/C++/GPUWorkLib/modules/signal_generators/src/script_generator_rocm.cpp` — реализация ScriptGenerator
+> **Вынесено** → [`legacy_to_dsp_gpu_mapping_2026-04-30.md`](legacy_to_dsp_gpu_mapping_2026-04-30.md): все 25+ mappings + критические находки + NumPy SignalGenerator wrapper.
 
 ---
 

@@ -17,9 +17,12 @@
 
 1. **B0** Pull актуального состояния всех 10 репо
 2. **B1** Чистая `cmake --build` — убедиться что сборка проходит и POST_BUILD скопировал 8 `.so` в `DSP/Python/libs/`
-3. **B2** Запустить ~51 t_*.py — выявить реальные API mismatch / численные расхождения
-4. **B3** Точечные правки (tolerances, мелкие API правки в тестах)
-5. **B4** Финальный коммит + push (если были правки)
+3. **Bs** Smoke-запуск 3 эталонов (быстрая валидация паттерна миграции)
+4. **B3** Полный прогон ~54 t_*.py — выявить реальные API mismatch / численные расхождения
+5. **B4** Точечные правки (tolerances, мелкие API правки в тестах)
+6. **B5** Финальный коммит + push (если были правки)
+
+> Имя `Bs` (вместо B2) выбрано чтобы избежать коллизии с **бывшим** B2 (CMake-патч), который перенесён в Phase A6 (см. ретроспектива 2026-04-30).
 
 > **Что УЖЕ сделано в Phase A** (не делать повторно): CMake-патч (бывший B2), обновление правил (бывший B6), `lib`→`libs`, удаление shim.
 
@@ -28,7 +31,7 @@
 ## 📋 Pre-conditions (что должно быть готово до начала)
 
 После Phase A (Windows) запушено в github:
-- ✅ 51 t_*.py мигрированы (A2-A4)
+- ✅ 54 t_*.py мигрированы (A2-A4) — включая 4 sub-репо + ai_pipeline 3-уровневый
 - ✅ `DSP/Python/gpuworklib.py` удалён (A5)
 - ✅ `gpu_loader.py` обновлён `lib` → `libs` + `_load_gpuworklib()` удалён (A0+A5)
 - ✅ `DSP/Python/libs/.gitkeep` запушен (A0)
@@ -83,16 +86,30 @@ grep -q "DSP_DEPLOY_PYTHON_LIB" core/python/CMakeLists.txt && echo "OK CMake pat
 
 **Цель**: проверить что код Phase A собирается + POST_BUILD автокопирование работает.
 
-```bash
-# 1. Очистить старые артефакты
-rm -rf build/
-rm -f DSP/Python/libs/*.so
+#### B1.0 Pre-build dependency sanity (~5 мин, до основной сборки)
 
-# 2. Configure + сборка
+Проверить что dependency tree собирается по слоям. Если упадёт core — все остальные тоже упадут с непонятной ошибкой.
+
+```bash
+rm -rf build/
 cmake --preset debian-local-dev
+
+# Сначала собрать по одному, по графу зависимостей:
+cmake --build build --target dsp_core -j$(nproc)        # core (фундамент)
+cmake --build build --target dsp_spectrum -j$(nproc)    # spectrum зависит от core
+cmake --build build --target dsp_stats -j$(nproc)
+# ... и так далее
+```
+
+Если какой-то таргет упал — фиксируем сразу, не идём дальше.
+
+#### B1.1 Полная сборка
+
+```bash
+# Полная сборка (все таргеты параллельно)
 cmake --build --preset debian-release -j$(nproc)
 
-# 3. Проверка POST_BUILD автокопирования
+# Проверка POST_BUILD автокопирования
 ls -la DSP/Python/libs/
 # Ожидание: 8 .so файлов автоматически (без явного cmake --install)
 ```
@@ -102,14 +119,27 @@ ls -la DSP/Python/libs/
 2. Проверить что таргет `dsp_<X>` реально создаётся (в build/ есть `.so`).
 3. Проверить путь `${CMAKE_CURRENT_LIST_DIR}/../../DSP/Python/libs` руками.
 
+#### B1.5 Fallback (если POST_BUILD не сработал)
+
+Если автокопирование не работает (старый CMake / опечатка в пути / etc):
+
+```bash
+# Ручная установка через cmake --install (legacy way)
+cmake --install build --prefix DSP/Python
+ls DSP/Python/libs/
+# Ожидание: 8 .so файлов
+```
+
+Это **только** workaround для прохождения Phase B — потом отдельной задачей разобраться **почему** POST_BUILD не отработал.
+
 **Acceptance**:
-- [ ] `cmake --build` успешен
-- [ ] `DSP/Python/libs/` содержит 8 `.so` (автоматически через POST_BUILD)
-- [ ] Логи сборки содержат `Deploy dsp_<module>` сообщения
+- [ ] B1.0: каждый из 8 таргетов собирается отдельно (без cascade failures)
+- [ ] B1.1: `cmake --build` успешен, `DSP/Python/libs/` содержит 8 `.so`
+- [ ] B1.5: если потребовался — отметить в audit для последующего разбора
 
 ---
 
-### 🔵 B2. Smoke-запуск эталонов (~15 мин)
+### 🔵 Bs. Smoke-запуск эталонов (~15 мин)
 
 Перед полным прогоном — 2-3 эталонных теста (мигрированы первыми в Phase A, проверены руками):
 
@@ -128,6 +158,26 @@ python3 DSP/Python/signal_generators/t_lfm_analytical_delay.py
 ---
 
 ### 🔵 B3. Полный прогон + опция OFF (~1-2 ч)
+
+**Перед прогоном**: создать `expected_results_2026-05-XX.md` с ожиданиями:
+
+| Тест | Ожидание | Причина |
+|------|----------|---------|
+| `spectrum/t_lch_farrow*` (3) | PASS | эталон — мигрирован первым |
+| `spectrum/t_ai_filter_pipeline.py` | SkipTest | api_keys.json отсутствует |
+| `spectrum/t_ai_fir_demo.py` | SkipTest или PASS (CPU fallback) | api_keys.json отсутствует |
+| `linalg/t_matrix_csv_comparison.py` | PASS | data файлы скопированы в A2.0 |
+| `signal_generators/t_delayed_form_signal.py` | PASS | lagrange_matrix скопирован |
+| `heterodyne/t_*` (4) | PASS или подкрутка atol | переписаны на HeterodyneROCm в A2.6 |
+| `integration/t_signal_to_spectrum.py` | PASS | NumPy SignalGenerator + ROCm FFT |
+| `integration/t_zero_copy.py` | PASS | HybridGPUContext API |
+| `integration/t_hybrid_backend.py` | PASS | переписан на ROCm FFT (после fix shadowing) |
+| `common/*/t_smoke.py` (4) | PASS (без GPU нужен) | Python инфраструктура |
+| `{repo}/python/t_*.py` (4 sub-репо) | PASS | DSP-GPU smoke scripts |
+
+После прогона — **diff actual vs expected** покажет реальные проблемы.
+
+
 
 ```bash
 # Полный прогон по модулям
@@ -155,7 +205,7 @@ ls DSP/Python/libs/  # Ожидание: только .gitkeep, .so НЕТ
 ```
 
 **Acceptance**:
-- [ ] Все ~51 t_*.py запускаются (PASS / SkipTest / зафиксированный FAIL)
+- [ ] Все ~54 t_*.py запускаются (PASS / SkipTest / зафиксированный FAIL)
 - [ ] `DSP_DEPLOY_PYTHON_LIB=OFF` отключает автокопирование
 
 ---
@@ -171,6 +221,13 @@ ls DSP/Python/libs/  # Ожидание: только .gitkeep, .so НЕТ
    - Если FAIL по точности — подкрутить `atol` в `np.allclose(...)`.
    - Если FAIL по логике (неверная reshape, неверная axis для FFT) — поправить точечно.
 
+   **Heterodyne acceptance — конкретные числа** (для сверки на gfx1201):
+   - `t_heterodyne.py:50`: `F_BEAT_TOL_HZ = 5000.0` Hz (текущий tolerance)
+   - Ожидаемые f_beat: `MU * delay_us * 1e-6` где `MU=3e9 Hz/s`, delays=[100..500] us → 300..1500 kHz
+   - Допустимое расхождение: **до 5×** (т.е. до 25 kHz) — больше = пересмотр алгоритма
+   - SNR: ожидание `> 0 dB` для clean LFM (test_snr_positive); если < 0 — fail логики, не tolerance
+   - Range: `R = c * f_beat / (2 * MU)` — 15..75 m для delays 100..500 us
+
 2. **`integration/t_*.py`** — пайплайны через несколько репо. Возможны cascade failures: если модуль X сломан → все зависящие падают.
 
 3. **Tests с tight tolerance** — на gfx1201 (RDNA4) численная точность float32 может отличаться от gfx908 (CDNA1) или Windows-моделей. Стратегия: при первом FAIL по точности — увеличить `atol` в **2-5×** от исходного, не больше.
@@ -182,11 +239,14 @@ ls DSP/Python/libs/  # Ожидание: только .gitkeep, .so НЕТ
 **Стратегия**:
 - Запускать тесты по одному, читать stack trace.
 - Поправить точечно (одно изменение → перезапуск).
-- **НЕ править pybind C++** — если нужна правка pybind, фиксируем в новом таске и SkipTest для затронутых тестов.
+- **НЕ править pybind C++** — если нужна правка pybind, дописать в `MemoryBank/.future/TASK_pybind_review.md` (заготовка) и SkipTest для затронутых тестов.
+
+> Если pybind issues окажется > 5 — поднять `MemoryBank/.future/TASK_pybind_review.md` в активный таск. Если 1-2 — оставить в `.future/`.
 
 **Acceptance**:
-- [ ] Все ~51 t_*.py запускаются → PASS или явный SKIP с понятной причиной
-- [ ] Список «надо переписать pybind» (если есть) — в новый файл `MemoryBank/tasks/TASK_pybind_fixes_<date>.md`
+- [ ] Все ~54 t_*.py запускаются → PASS или явный SKIP с понятной причиной
+- [ ] Diff actual vs `expected_results_2026-05-XX.md` записан в audit
+- [ ] Pybind issues (если есть) — в `MemoryBank/.future/TASK_pybind_review.md`
 
 ---
 
@@ -224,7 +284,7 @@ git -C DSP commit -m "test(<module>): tune atol / fix path on gfx1201 (Phase B v
 |---------|-------|
 | B0. Pull + sanity setup | ~15 мин |
 | B1. Чистая сборка с CMake-патчем | ~30-60 мин |
-| B2. Smoke-запуск эталонов | ~15 мин |
+| Bs. Smoke-запуск эталонов | ~15 мин |
 | B3. Полный прогон + OFF-опция | ~1-2 ч |
 | B4. Исправление API mismatches | ~1-2 ч (зависит) |
 | B5. Финальный коммит + push (если нужен) | ~15 мин + переспрос |
@@ -275,7 +335,7 @@ git -C DSP commit -m "test(<module>): tune atol / fix path on gfx1201 (Phase B v
 - Свежий pull всех 10 репо на Debian
 - ROCm 7.2+ работает
 
-**Порядок**: B0 (sanity) → B1 (build) → B2 (smoke 3 эталона) → B3 (полный прогон) → B4 (точечные правки) → B5 (commit + push если нужно)
+**Порядок**: B0 (sanity) → B1 (build) → Bs (smoke 3 эталона) → B3 (полный прогон) → B4 (точечные правки) → B5 (commit + push если нужно)
 
 **Первый шаг**: B0 — `git pull` + sanity-чек 5 артефактов Phase A (libs/, отсутствие shim, libs в gpu_loader.py, CMake-патч).
 

@@ -18,7 +18,10 @@
       "Bash(sed -n '510,520p' e:/DSP-GPU/DSP/Python/integration/t_gpuworklib.py)",
       "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/integration/t_gpuworklib.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
       "Bash(awk 'NR==__TRACKED_VAR__ {print NR, \"|\", $0}' e:/DSP-GPU/DSP/Python/integration/t_gpuworklib.py)",
-      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/common/gpu_context.py'\\).read\\(\\)\\); print\\('OK'\\)\")"
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/common/gpu_context.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(grep -n \"^### dsp_spectrum\\\\|^---$\\\\|^## 🔁 Legacy\\\\|^### 🔴 Реальные\\\\|^---\" e:/DSP-GPU/MemoryBank/specs/python/migration_plan_2026-04-29.md)",
+      "Bash(sed -i '320,405d' e:/DSP-GPU/MemoryBank/specs/python/migration_plan_2026-04-29.md)",
+      "Bash(sed -n '317,325p' e:/DSP-GPU/MemoryBank/specs/python/migration_plan_2026-04-29.md)"
     ],
     "additionalDirectories": [
       "/tmp"
