@@ -17,16 +17,17 @@ paths:
 
 ### Использование
 
+**Вариант A: class-based (TestRunner)** — для группы связанных тестов:
+
 ```python
 from common.runner import TestRunner, SkipTest
 
 class TestSpectrumFFT:
     def setUp(self):
-        if not has_rocm():
-            raise SkipTest("ROCm GPU не доступен")
+        if not HAS_GPU:
+            raise SkipTest("dsp_core/dsp_spectrum не найдены")
 
     def test_basic_fft(self):
-        # assert-style или вернуть TestResult
         assert fft.process(...) == expected
 
     def tearDown(self):
@@ -38,7 +39,27 @@ if __name__ == "__main__":
     runner.print_summary(results)
 ```
 
-### Обнаружение тестов
+**Вариант B: top-level def (legacy-style)** — для standalone-тестов с matplotlib:
+
+```python
+from common.runner import SkipTest
+
+def _require_gpu():
+    """Helper: единая точка проверки GPU."""
+    if not HAS_GPU:
+        raise SkipTest("dsp_core/dsp_<module> not found")
+
+def test_basic_fft():
+    _require_gpu()
+    assert fft.process(...) == expected
+
+if __name__ == "__main__":
+    test_basic_fft()
+```
+
+Оба варианта валидны. Variant B был использован при миграции legacy GPUWorkLib-тестов (Phase A2 2026-04-30) для сохранения исторической структуры.
+
+### Обнаружение тестов (для class-based варианта A)
 
 - Все методы объекта с префиксом `test_*` — в алфавитном порядке.
 - `setUp` / `tearDown` (camelCase, как в runner.py) — вокруг каждого теста.
@@ -62,21 +83,24 @@ if __name__ == "__main__":
 
 ```bash
 # Debian (основная платформа):
-python3 DSP/Python/{module}/test_<name>.py
+python3 DSP/Python/{module}/t_<name>.py
 
 # Windows (dev/моделирование):
-python DSP\Python\{module}\test_<name>.py
+python DSP\Python\{module}\t_<name>.py
 ```
 
 ## Размещение тестов
 
 | Что | Где |
 |-----|-----|
-| Python unit-тесты | `DSP/Python/{module}/test_*.py` |
+| Python unit-тесты | `DSP/Python/{module}/t_*.py` |
 | C++ unit-тесты | `{repo}/tests/*.hpp` (см. `15-cpp-testing.md`) |
 | README тестов | `{repo}/tests/README.md` |
 | Графики из тестов | `DSP/Results/Plots/{module}/*.png` |
 | JSON результаты | `DSP/Results/JSON/` |
+| Data-файлы (json/csv/npy) | `DSP/Python/{module}/data/` |
+
+> ⚠ **Префикс файла**: с 2026-04-29 принят `t_*.py` (короче чем `test_*.py`, легче глазу). Старое именование `test_*.py` deprecated — все файлы переименованы.
 
 ## Python интерпретатор
 

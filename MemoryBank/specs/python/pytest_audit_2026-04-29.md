@@ -187,11 +187,48 @@ find E:/DSP-GPU -name 'factories.py' -not -path '*/.git/*' -not -path '*/.claude
 |-----------|----------|
 | `import pytest` / `@pytest.*` в .py | **0** ✅ |
 | Упоминания "pytest" в комментариях/docstring | **0** ✅ |
-| `conftest.py` файлы | **0** ✅ (все → factories.py) |
+| `conftest.py` файлы | **1** (proxy на factories.py для legacy импортов) |
 | `test_*.py` файлы | **0** ✅ (все → t_*.py) |
 | Worktrees | **0** ✅ (удалены) |
 | 3 теста спектра — рабочие импорты `dsp_*` | ✅ |
 | `HeterodyneDechirp` API → `HeterodyneROCm.dechirp` | ✅ переписано |
 | Матрица Lagrange в `DSP/Python/spectrum/data/` | ✅ |
+
+---
+
+## 🎯 Phase A2-A3 миграция — DONE 2026-04-30
+
+После Phase A2 (миграция файлов) + A3 (verify):
+
+| Группа | Файлов | Статус |
+|--------|--------|--------|
+| A2.1 signal_generators | 4 | ✅ DONE (~30 мин) |
+| A2.2 spectrum (12 + ai_pipeline) | 12 | ✅ DONE |
+| A2.3 stats | 4 | ✅ DONE |
+| A2.4 linalg | 3 | ✅ DONE |
+| A2.5 radar | 3 | ✅ DONE |
+| A2.6 heterodyne (rewrite) | 4 | ✅ DONE (HeterodyneROCm + np.fft) |
+| A2.7 strategies + integration + common | 11 | ✅ DONE (incl. микро-проект t_signal_to_spectrum.py) |
+| A2.8 sub-репо python/ | 4 | ✅ уже были чистые (smoke scripts) |
+| **Итого** | **45 + 4 sub + 5 common** = **54** | **✅ ВСЕ** |
+
+**A3 Verify результаты**:
+- ✅ `0` файлов с `import gpuworklib` / `from gpuworklib`
+- ✅ `0` файлов где `sys.exit(1)` используется как замена SkipTest (только legitimate exit codes остались)
+- ✅ `54/54` файлов проходят `python -c "import ast; ast.parse(...)"` (syntax OK)
+
+**Дополнительные артефакты**:
+- ✅ `MemoryBank/.future/TASK_script_dsl_rocm.md` — перспективная задача под ScriptGenerator
+- ✅ `MemoryBank/specs/python/sub_repo_tests_diff_2026-04-30.md` — A2.0 pre-scan
+- ✅ `DSP/Python/integration/factories.py` — обновлён под NumPy SignalGenerator + dsp_spectrum.FFTProcessorROCm
+- ✅ `DSP/Python/integration/conftest.py` — proxy на factories.py
+- ✅ `DSP/Python/{linalg,signal_generators,heterodyne,radar,stats}/data/` — папки + .gitkeep + 5 data файлов скопированы
+- ✅ `DSP/Python/integration/t_gpuworklib.py` → `t_signal_to_spectrum.py` (микро-проект, удалены тесты 8-9 ScriptGenerator)
+- ✅ `.gitignore` (workspace + DSP) — добавлены api_keys.json, *.key, *.pem, .env*, Python/libs/*.so
+
+**TODO для Debian (Phase B)**:
+- Heterodyne 4 файла переписаны на `HeterodyneROCm.dechirp + np.fft`, нужна валидация на gfx1201 (TODO-маркеры в docstring)
+- Подкрутить `atol` в np.allclose если float32 разойдётся
+- 4 sub-репо smoke-scripts (linalg/radar/spectrum/strategies/python/t_*.py) — sys.exit как process exit code, не TestRunner
 
 **Готово к коммиту и push в 10 репо.**

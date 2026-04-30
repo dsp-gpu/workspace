@@ -51,9 +51,16 @@
 
 ---
 
-### 🔵 A1. Inventory API (~2-3 ч) — расширен
+### ✅ A1. Inventory API — DONE 2026-04-30 (~30 мин, не 2-3 ч)
 
-**Цель**: Полная reference таблица «Класс → конструктор → методы → properties» для **всех** 8 модулей. Это база для механической миграции в A2.
+**Результат**: раздел `## API Reference` + `## Legacy → DSP-GPU mapping` + `## Реальные проблемы миграции` в [migration_plan_2026-04-29.md](../specs/python/migration_plan_2026-04-29.md). Зафиксировано **30 классов** + 1 enum + module-level functions для 8 модулей.
+
+**Главные находки**:
+- 4 несуществующих в DSP-GPU класса используются в legacy-тестах: `HeterodyneDechirp` (6 мест), `SignalGenerator` (8 мест), `ScriptGenerator` (2 места), `FIRFilter` (только TODO-комментарий).
+- Тесты **уже** используют правильные имена для `LfmAnalyticalDelayROCm`, `FMCorrelatorROCm` — shim был неточен, но никто его mismatch-полей не использовал.
+- `t_gpuworklib.py` (887 строк, 9 проблемных мест) — рекомендация: SkipTest файл целиком (вариант A в плане).
+
+**Цель** (для справки): Полная reference таблица «Класс → конструктор → методы → properties» для **всех** 8 модулей. Это база для механической миграции в A2.
 
 **КРИТИЧНО**: `dsp_*_module.cpp` часто только зовёт `register_*(m)` — реальный API внутри `py_*.hpp`. Пример: `dsp_heterodyne_module.cpp:25` зовёт `register_heterodyne_rocm(m)` → нужно читать `py_heterodyne_rocm.hpp` для методов.
 
@@ -114,7 +121,18 @@
 
 ---
 
-### 🔵 A2.0. Pre-migration scan (~30 мин) — НОВАЯ подфаза
+### ✅ A2.0. Pre-migration scan — DONE 2026-04-30
+
+**Результаты** → [`MemoryBank/specs/python/sub_repo_tests_diff_2026-04-30.md`](../specs/python/sub_repo_tests_diff_2026-04-30.md)
+
+Краткая сводка:
+- Sub-репо тесты (4 файла) — все **уникальные**, не дубли
+- Data файлы — скопированы в `DSP/Python/{linalg,signal_generators}/data/` (5 файлов: 4 R_*.csv + lagrange_matrix.json); создан `.gitkeep` в `{heterodyne,radar,stats}/data/`
+- Cross-test imports — только `t_params.py` (helper, не тест) → переименовать в `_params.py` в A2.7
+- ⚠ `api_keys.json` — найден в 2 тестах (`spectrum/t_ai_*`); добавлен в `.gitignore` обоих репо (workspace + DSP)
+- Безопасность: добавлены `*.key`, `*.pem`, `.env*` в .gitignore
+
+### 📚 Оригинальный план A2.0 (для справки)
 
 **Цель**: устранить «слепые пятна» до начала механической миграции.
 
@@ -158,7 +176,27 @@ grep -rn "from t_\|import t_" --include='t_*.py' E:/DSP-GPU/
 
 ---
 
-### 🔵 A2. Migration files (~6-8 ч, две сессии)
+### ✅ A2. Migration files — DONE 2026-04-30 (~3 ч, не 6-8)
+
+Все 8 групп (A2.1 - A2.8) мигрированы за один сеанс. Сводка:
+- A2.1 signal_generators (4 файла) — стандартный паттерн
+- A2.2 spectrum (12 файлов) — включая ai_pipeline/ (3 уровня глубины)
+- A2.3 stats (4 файла) — 2 Python runners для C++ binary + 2 pybind тестов
+- A2.4 linalg (3 файла) — copy R_*.csv в DSP/Python/linalg/data/
+- A2.5 radar (3 файла) — `FMCorrelatorROCm` правильное имя в pybind (не FmCorrelatorROCm)
+- A2.6 heterodyne (4 файла) — переписаны на `HeterodyneROCm.dechirp + np.fft + argmax` (см. helper `heterodyne_pipeline`)
+- A2.7 strategies (2) + integration (5) + common (4) — в т.ч. микро-проект `t_signal_to_spectrum.py` (удалены тесты ScriptGenerator → перспективная задача)
+- A2.8 sub-репо python/ (4 файла) — уже DSP-GPU smoke-scripts, не требуют миграции
+
+**Результаты A3 Verify**:
+- ✅ `0` файлов с `import gpuworklib`
+- ✅ `0` файлов с `sys.exit(1)` как замена SkipTest
+- ✅ `54/54` файлов syntax OK
+- ✅ всё проверено через grep + ast.parse
+
+Подробности → [pytest_audit_2026-04-29.md](../specs/python/pytest_audit_2026-04-29.md) §«Phase A2-A3 миграция»
+
+### 📚 Оригинальный план A2 (для справки)
 
 **Шаблон правок** для каждого файла (5 точечных Edit'ов):
 
@@ -360,8 +398,19 @@ HeterodyneROCm.dechirp/correct + np.fft. Подкрутить atol если floa
 - `t_strategies_pipeline.py`, `t_strategies_step_by_step.py`
 
 **integration** (5 файлов):
-- `t_fft_integration.py`, `t_gpuworklib.py`, `t_hybrid_backend.py`, `t_signal_gen_integration.py`, `t_zero_copy.py`
-- ⚠️ `t_gpuworklib.py` — **рассмотреть переименование** в `t_e2e.py` (имя файла содержит `gpuworklib`). После переименования обновить ссылки.
+- `t_fft_integration.py`, `t_hybrid_backend.py`, `t_signal_gen_integration.py`, `t_zero_copy.py` — стандартная миграция
+- `t_gpuworklib.py` → **`t_signal_to_spectrum.py`** (отдельный микро-проект, см. ниже)
+
+**Микро-план для `t_gpuworklib.py` → `t_signal_to_spectrum.py`** (согласовано Alex 2026-04-30, ~3-4 ч):
+
+1. **Удалить тесты 8, 9** (`test_script_generator`, `test_script_fft_pipeline`, ~360 строк) — runtime DSL→kernel компилятор. Перспективная задача → [`MemoryBank/.future/TASK_script_dsl_rocm.md`](../.future/TASK_script_dsl_rocm.md) ✅ создан.
+2. **Анализ дублей** для тестов 1, 2, 3, 6 — diff с `DSP/Python/{spectrum,signal_generators}/t_*.py`. Дубль = удалить из файла. Уникальное = переписать.
+3. **Переписать 4, 5, 7** на `FormSignalGeneratorROCm.set_params_from_string(json)` (DSL уже есть в DSP-GPU API).
+4. **matplotlib-код сохранить** — графики на Debian создадут PNG для документации.
+5. **Переименовать**: `t_gpuworklib.py` → `t_signal_to_spectrum.py`.
+6. **Обновить ссылки** в `t_fft_integration.py:5` и `t_signal_gen_integration.py:5` (комментарии «из оригинального test_gpuworklib.py» → «...t_signal_to_spectrum.py»).
+
+Полный план в [migration_plan_2026-04-29.md §«Стратегия для integration/t_gpuworklib.py»](../specs/python/migration_plan_2026-04-29.md).
 
 **common smoke** (4 файла, без GPU):
 - `common/io/t_smoke.py`, `common/plotting/t_smoke.py`, `common/validators/t_smoke.py`, `common/references/t_references_smoke.py`
@@ -390,7 +439,9 @@ if _DSP_PYTHON not in sys.path:
 
 ---
 
-### 🔵 A3. Verify (~30 мин)
+### ✅ A3. Verify — DONE 2026-04-30 (см. A2 итоги выше)
+
+### 📚 Оригинальный план A3 (для справки)
 
 ```bash
 # 1. Нет import gpuworklib в t_*.py

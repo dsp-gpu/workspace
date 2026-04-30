@@ -1,6 +1,6 @@
 # DSP-GPU — C4 Model (полный проект)
 
-> **Дата**: 2026-04-22
+> **Дата создания**: 2026-04-22 · **Обновлено**: 2026-04-30 (Python migration in progress)
 > **Организация**: `github.com/dsp-gpu`
 > **Ветка**: `main` (Linux / AMD / ROCm 7.2+ / HIP)
 > **Референс**: [c4model.com](https://c4model.com)
@@ -21,7 +21,8 @@
                     │                                                         │
   Engineer ────────►│                DSP-GPU System                            │
   (C++/Python)      │  ЦОС на GPU: FFT, фильтры, генераторы, гетеродин,       │
-                    │  LCH Farrow, линалгебра, радар-пайплайны                 │
+                    │  LCH Farrow, линалгебра, радар-пайплайны.                │
+                    │  10 репо `github.com/dsp-gpu/*`                          │
                     │                                                         │
                     └──────────────┬──────────────────────┬───────────────────┘
                                    │                      │
@@ -37,12 +38,12 @@
 
 | Актор / Система | Описание |
 |-----------------|----------|
-| **Engineer** | Разработчик или инженер — использует C++ приложение или Python (`gpuworklib`) |
+| **Engineer** | Разработчик или инженер — использует C++ приложение или Python (`dsp_*` модули напрямую; legacy `gpuworklib` shim deprecated, удаляется в Phase A5) |
 | **DSP-GPU System** | 10 репо: core + 7 compute + strategies + DSP (мета+Python) |
-| **GPU Hardware** | AMD ROCm (main) — RDNA3/RDNA4. Ветка `nvidia` — OpenCL на Windows |
+| **GPU Hardware** | AMD ROCm-only (main) — RDNA3/RDNA4 (gfx1100 / gfx1201) + CDNA1 (gfx908). Windows/OpenCL не поддерживаются |
 | **configGPU.json** | Конфигурация GPU, выбор устройств, `is_prof` |
 | **Logs/** | Per-GPU логи (plog) |
-| **Results/** | Графики, JSON, Markdown отчёты профилирования |
+| **Results/** | Графики, JSON, Markdown отчёты профилирования (через `ProfilingFacade`) |
 
 ---
 
@@ -82,13 +83,15 @@
 │           ▼                                                                         │
 │  ┌──────────────────────────────────────────────────────────────────────┐          │
 │  │               DSP (мета-репо + Python API)                            │          │
-│  │  DSP/Python/gpuworklib.py  ← фасад                                    │          │
+│  │  DSP/Python/libs/  ← .so из 8 pybind модулей (auto-deploy в Phase B)  │          │
 │  │  dsp_core, dsp_spectrum, dsp_stats, ... ← pybind11 модули из каждого  │          │
 │  │  репо (core/python/, spectrum/python/, ...)                           │          │
+│  │  DSP/Python/{module}/t_*.py ← Python тесты (мигрируются в Phase A)    │          │
+│  │  DSP/Python/gpuworklib.py ⚠ DEPRECATED — удаляется в Phase A5         │          │
 │  └──────────────────────────────────────────────────────────────────────┘          │
 │                                                                                     │
 │  ┌──────────────────────────────────────────────────────────────────────┐          │
-│  │               workspace (CLAUDE.md, MemoryBank, ~!Doc, .vscode)       │          │
+│  │            workspace (CLAUDE.md, MemoryBank, .vscode, .claude)        │          │
 │  │  Не содержит C++ кода — только управляющие данные и документация      │          │
 │  └──────────────────────────────────────────────────────────────────────┘          │
 │                                                                                     │
@@ -105,8 +108,8 @@
 | `linalg` | C++ + rocBLAS/rocSOLVER | VectorAlgebra, CaponProcessor (MVDR) |
 | `radar` | C++ + hipFFT | RangeAngleProcessor, FMCorrelator |
 | `strategies` | C++ | Pipeline + PipelineBuilder, композиция модулей |
-| `DSP` | Python (pybind11) | `gpuworklib.py` фасад + интеграционные тесты + Doc/ |
-| `workspace` | — | CLAUDE.md, MemoryBank, ~!Doc, .vscode/, .claude/ |
+| `DSP` | Python (pybind11) | 8 `dsp_*` модулей (auto-deploy в `libs/`) + Python тесты `t_*.py` + Doc/. Legacy `gpuworklib.py` shim — deprecated (удаляется в Phase A5) |
+| `workspace` | — | CLAUDE.md, MemoryBank, .vscode/, .claude/ |
 
 ---
 
@@ -151,7 +154,7 @@
 | `dsp_linalg` | linalg | `linalg/python/dsp_linalg_module.cpp` |
 | `dsp_radar` | radar | `radar/python/dsp_radar_module.cpp` |
 | `dsp_strategies` | strategies | `strategies/python/dsp_strategies_module.cpp` |
-| `gpuworklib` (фасад) | DSP | `DSP/Python/gpuworklib.py` |
+| `gpuworklib` ⚠ DEPRECATED | DSP | `DSP/Python/gpuworklib.py` (удаляется в Phase A5 после миграции 51 t_*.py) |
 
 ### 3.4 Tests (в каждом репо)
 
@@ -160,7 +163,9 @@
 | **main** | `{repo}/tests/main.cpp` | Точка входа тестов каждого репо |
 | **all_test** | `{repo}/tests/all_test.hpp` | Агрегатор тестов репо |
 | **Benchmark tests** | `{repo}/tests/*_benchmark_rocm.hpp` | Наследники GpuBenchmarkBase |
-| **Python tests** | `DSP/Python/{repo}/`, `DSP/Python/integration/` | Python-тесты по репо + интеграция |
+| **Python tests (новые)** | `DSP/Python/{module}/t_*.py`, `DSP/Python/integration/t_*.py` | TestRunner-style; запуск через `python3 t_*.py` (имена не triggers pytest autodetect) |
+| **Test framework** | `DSP/Python/common/runner.py` (TestRunner + SkipTest), `common/base.py` (TestBase Template Method), `{module}/{module}_base.py` (специализации) | После переименования: `*_test_base.py` → `*_base.py`, `conftest.py` → `factories.py` |
+| **Python tests (sub-repo)** | `{repo}/python/t_*.py` (4 файла: linalg, radar, spectrum, strategies) | Standalone smoke-тесты в каждом репо |
 
 ---
 
@@ -207,30 +212,51 @@ Caller     FormSignalGenerator    FFTProcessorROCm    SpectrumMaximaFinder
   │◄────────────────────────────────────────────────────────│
 ```
 
-### 4.3 HeterodyneDechirp (репо `heterodyne`)
+### 4.3 HeterodyneROCm (репо `heterodyne`)
+
+> ⚠ **API изменён** (2026): legacy `HeterodyneDechirp.process()` → dict с `f_beat` **убран**.
+> В DSP-GPU pybind зарегистрирован **только** `HeterodyneROCm` с раздельными методами `dechirp/correct`.
+> Поиск максимума спектра делает пользователь сам (FFT + argmax по NumPy).
 
 ```cpp
-namespace heterodyne {
+namespace drv_gpu_lib {
 
-class HeterodyneDechirp {
+class HeterodyneROCm {
 public:
-    HeterodyneResult process(const InputData& input);
-    // Вход: complex<float>[antennas × samples]
-    // Выход: f_beat, R (дальность), SNR per antenna
+    void SetParams(float f_start, float f_end, float sample_rate,
+                   uint32_t num_samples, uint32_t num_antennas);
 
+    // Dechirp: s_dc = rx * conj(ref) на GPU
+    std::vector<std::complex<float>> Dechirp(
+        const std::vector<std::complex<float>>& rx,
+        const std::vector<std::complex<float>>& ref);
+
+    // Correct: коррекция фазы exp(j * 2π * f_beat / fs * n) на GPU
+    std::vector<std::complex<float>> Correct(
+        const std::vector<std::complex<float>>& dc,
+        const std::vector<float>& f_beat_hz);
+
+    HeterodyneParams GetParams() const;
 private:
-    void dechirp_multiply();   // s_rx × conj(s_tx) → HIP kernel
-    void dechirp_correct();    // коррекция фазы
-    // Использует: signal_gen::LfmGenerator, spectrum::SpectrumMaximaFinder
-};
-
-struct HeterodyneResult {
-    std::vector<float> f_beat;
-    std::vector<float> range_m;
-    std::vector<float> snr_db;
+    HeterodyneProcessorROCm proc_;
 };
 
 }
+```
+
+**Python-паттерн** (после миграции legacy `HeterodyneDechirp.process()`):
+
+```python
+import dsp_heterodyne as het_mod
+import numpy as np
+
+het = het_mod.HeterodyneROCm(ctx)
+het.set_params(f_start=0.0, f_end=2e6, sample_rate=12e6,
+               num_samples=8000, num_antennas=5)
+dc = het.dechirp(rx, ref)                                 # GPU
+spec = np.fft.fft(dc.reshape(N_ant, N_samp), axis=-1)     # CPU FFT (validation)
+f_beat = np.argmax(np.abs(spec), axis=-1) * (sample_rate / num_samples)
+out = het.correct(dc, list(f_beat))                       # GPU
 ```
 
 ### 4.4 FirFilterROCm (репо `spectrum`)
@@ -736,14 +762,23 @@ Rel(core, config, "reads")
 
 ## Ссылки
 
-- [MemoryBank/MASTER_INDEX.md](../MemoryBank/MASTER_INDEX.md) — индекс проекта
-- [CLAUDE.md](../CLAUDE.md) — конфигурация проекта и правила
-- [MemoryBank/.architecture/CMake-GIT/](../CMake-GIT/) — архитектура CMake + Git (DSP-GPU ↔ SMI100 ↔ LocalProject)
-- [~!Doc/~Разобрать/DSP-GPU_Architecture_Analysis.md](DSP-GPU_Architecture_Analysis.md) — статистика и граф зависимостей
-- [~!Doc/~Разобрать/GPU_Profiling_Mechanism.md](GPU_Profiling_Mechanism.md) — механизм профилирования v2
+- [../MASTER_INDEX.md](../MASTER_INDEX.md) — индекс проекта
+- [../../CLAUDE.md](../../CLAUDE.md) — конфигурация проекта и правила
+- [./CMake-GIT/](./CMake-GIT/) — архитектура CMake + Git (DSP-GPU ↔ LocalProject)
+- [./DSP-GPU_Architecture_Analysis.md](./DSP-GPU_Architecture_Analysis.md) — статистика и граф зависимостей
+- [../specs/python/migration_plan_2026-04-29.md](../specs/python/migration_plan_2026-04-29.md) — план миграции Python-тестов
+- [../tasks/TASK_python_migration_phase_A_2026-04-30.md](../tasks/TASK_python_migration_phase_A_2026-04-30.md) — таск Phase A (Windows)
+- [../tasks/TASK_python_migration_phase_B_debian_2026-05-03.md](../tasks/TASK_python_migration_phase_B_debian_2026-05-03.md) — таск Phase B (Debian)
 - [c4model.com](https://c4model.com) — C4 Model
 
 ---
 
-*Updated: 2026-04-22 | Source: по образцу старого GPUWorkLib C4, переписано под репо-архитектуру DSP-GPU*
-*Changes from GPUWorkLib C4: "модули" → "репо-контейнеры" (C2); пути `DrvGPU/…` → `core/…`; OpenCL вынесен в ветку `nvidia`; добавлен Profiler v2 (BatchRecord) + ScopedHipEvent; Python API распределён по репо + фасад в `DSP`.*
+## 📜 Changelog
+
+| Дата | Изменение |
+|------|-----------|
+| 2026-04-22 | Создан C4-документ (по образцу старого GPUWorkLib C4, переписан под репо-архитектуру DSP-GPU) |
+| 2026-04-22 | Changes from GPUWorkLib C4: "модули" → "репо-контейнеры" (C2); пути `DrvGPU/…` → `core/…`; OpenCL вынесен в ветку `nvidia`; добавлен Profiler v2 (BatchRecord) + ScopedHipEvent; Python API распределён по репо + фасад в `DSP`. |
+| 2026-04-27 | `GPUProfiler` (legacy v1) удалён — `ProfilingFacade` единственная точка профилирования. core 123 PASS / 0 FAIL. |
+| 2026-04-29 | Worktrees зачищены (739 MB). Python тесты переименованы `test_*.py` → `t_*.py` (54 файла) + `*_test_base.py` → `*_base.py` (5 framework-классов) + `conftest.py` → `factories.py` (7 файлов). 3 spectrum-теста мигрированы на `dsp_*` API как эталон. |
+| 2026-04-30 | Phase A0 (Preflight): `DSP/Python/lib/` → `libs/` + `.gitkeep`; `gpu_loader.py` обновлён. План миграции зафиксирован: ~51 t_*.py остаётся мигрировать (Phase A на Windows + Phase B CMake auto-deploy на Debian через 4 дня). API breaking: `HeterodyneDechirp.process()` → `HeterodyneROCm.dechirp/correct` + ручной FFT/argmax. `gpuworklib.py` shim deprecated (удаляется в Phase A5). |

@@ -1,8 +1,8 @@
 # DSP-GPU — Архитектурный анализ проекта
 
-> **Версия**: 2.0.0 | **Дата анализа**: 2026-04-22
+> **Версия**: 2.1.0 | **Создан**: 2026-04-22 · **Обновлён**: 2026-04-30 (Python migration in progress)
 > **Организация**: `github.com/dsp-gpu`
-> **Инструмент**: Claude Code (Explore agent) + repomix
+> **Инструмент**: Claude Code (Explore agent) + repomix + Grep
 > **Ветка**: `main` (Linux / AMD GPU / ROCm 7.2+ / HIP)
 > **Предшественник**: GPUWorkLib (монолит) → разбит на 10 независимых репозиториев
 
@@ -10,17 +10,18 @@
 
 ## 1. Общая статистика
 
-### 1.1 По типам файлов (актуально 2026-04-22)
+### 1.1 По типам файлов (актуально 2026-04-30)
 
 | Тип файла | Кол-во |
 |-----------|--------|
-| Заголовки (*.hpp) | 418 |
-| Исходники (*.cpp) | 90 |
+| Заголовки (*.hpp) | 388 |
+| Исходники (*.cpp) | 95 |
 | HIP kernels (*.hip) | 10 |
-| Python (*.py) | 118 |
+| Python (*.py) | 123 |
 | CMake (CMakeLists.txt, *.cmake, CMakePresets.json) | ~80 |
 
-> Ветка `main` — только HIP/ROCm.
+> Ветка `main` — только HIP/ROCm. Windows/OpenCL не поддерживается (даже в отдельной ветке — после переноса наследия из GPUWorkLib).
+> Δ vs 2026-04-22: hpp -30 (cleanup в core/spectrum после Profiler v2 RemoveLegacy + KernelCache v2), cpp +5, py +5 (миграция/factories).
 
 ### 1.2 По репозиториям
 
@@ -34,8 +35,8 @@
 | `linalg` | 31 | 7 | 0 | 1 | vector_algebra + capon (rocBLAS + rocSOLVER) |
 | `radar` | 25 | 5 | 3 | 1 | range_angle + fm_correlator |
 | `strategies` | 40 | 4 | 0 | 1 | Pipeline композиция (v1, v2...) |
-| `DSP` | 5 | 6 | 0 | 114 | Мета-репо + Python API + Doc |
-| **ИТОГО** | **418** | **90** | **10** | **118** | |
+| `DSP` | 5 | 6 | 0 | 115 | Мета-репо + Python API + Doc + 51 `t_*.py` тестов |
+| **ИТОГО** | **388** | **95** | **10** | **123** | |
 
 ---
 
@@ -59,10 +60,10 @@ github.com/dsp-gpu/
 
 **Workspace (`workspace`)** — не содержит C++ кода. Включает:
 - `CLAUDE.md` — конфигурация ассистента
-- `MemoryBank/` — управляющие данные (specs, tasks, changelog, архитектура, агенты, инструкуции для них)
-- `.vscode/` — VSCode multi-folder workspace + MCP
-- `.claude/` — настройки Claude Code
-- `~!Doc/` — документация (CMake-GIT, архитектура, примеры)
+- `MemoryBank/` — управляющие данные (specs, tasks, changelog, архитектура, агенты, инструкции)
+- `.vscode/` — VSCode multi-folder workspace + MCP + extensions.json (Continue)
+- `.claude/` — настройки Claude Code (rules, agents, hooks)
+- `.continue/rules/` — правила для Continue/Qwen (parallel to .claude/rules/)
 
 ---
 
@@ -102,7 +103,7 @@ github.com/dsp-gpu/
 | `linalg` | VectorAlgebra, CaponProcessor, CholeskyInverter | `vector_algebra`, `capon` | core + rocBLAS + rocSOLVER |
 | `radar` | RangeAngleProcessor, FMCorrelator | `range_angle`, `fm_correlator` | core + spectrum + stats |
 | `strategies` | Pipeline, PipelineBuilder, IPipelineStep | `strategies` | все выше |
-| `DSP` | `gpuworklib.py` (fасад Python API) | — | все |
+| `DSP` | 8 `dsp_*` модулей (auto-deploy в `libs/`) + `t_*.py` тесты + `gpuworklib.py` shim ⚠ DEPRECATED | — | все |
 
 ---
 
@@ -164,8 +165,7 @@ class IBackend {
 
 | Сервис | Файл | Назначение |
 |--------|------|-----------|
-| `GPUProfiler` | `gpu_profiler.hpp` | Профилирование GPU (legacy v1) |
-| `ProfilingFacade` | `profiling/profiling_facade.hpp` | **Profiler v2** — `BatchRecord()` (меньше contention) |
+| `ProfilingFacade` | `profiling/profiling_facade.hpp` | **Profiler v2** — `BatchRecord()` (единственная точка профилирования; `GPUProfiler` legacy v1 удалён 2026-04-27) |
 | `ProfileStore` | `profiling/profile_store.hpp` | Хранилище измерений |
 | `ReportPrinter` | `profiling/report_printer.hpp` | Консольный вывод отчётов |
 | `JSONExporter` / `MarkdownExporter` | `profiling/` | Экспорт результатов |
@@ -272,24 +272,34 @@ core/include/core/
 | `radar` | `dsp_radar` | `radar/python/dsp_radar_module.cpp` | 1 |
 | `strategies` | `dsp_strategies` | `strategies/python/dsp_strategies_module.cpp` | 1 |
 
-### 8.2 Фасад (репо `DSP`)
-
-Единый Python API — `DSP/Python/gpuworklib.py`. Агрегирует все `dsp_*` модули под одним именем для совместимости с приложениями-потребителями.
+### 8.2 Структура `DSP/Python/`
 
 ```
 DSP/Python/
-├── gpuworklib.py          ← фасад (backward compat)
-├── common/                ← общие утилиты
-├── spectrum/              ← тесты/примеры spectrum
-├── stats/                 ← тесты/примеры stats
-├── signal_generators/     ← ...
-├── heterodyne/
-├── linalg/
-├── radar/
-├── strategies/
-├── integration/           ← интеграционные тесты
-└── lib/                   ← shared Python utilities
+├── libs/                  ← .so из 8 pybind модулей (auto-deploy в Phase B на Debian)
+│   └── .gitkeep           ← пустая папка попадает в git
+├── gpuworklib.py          ⚠ DEPRECATED — backward-compat shim, удаляется в Phase A5
+├── common/                ← инфраструктура тестов
+│   ├── runner.py          ← TestRunner + SkipTest (правило 04)
+│   ├── base.py            ← TestBase (Template Method) — был test_base.py
+│   ├── gpu_loader.py      ← GPULoader (Singleton, ищет dsp_* в libs/ или build/python/)
+│   ├── result.py, configs.py, validators/, references/, io/, plotting/
+│   └── {io,plotting,validators,references}/t_smoke.py ← smoke-тесты common-инфраструктуры
+├── {module}/              ← {heterodyne, integration, linalg, radar, signal_generators, spectrum, stats, strategies}
+│   ├── factories.py       ← factory functions (был conftest.py — pytest-магическое имя)
+│   ├── {module}_base.py   ← специализация TestBase (был {module}_test_base.py)
+│   ├── data/              ← test fixtures (json/csv/npy) — например spectrum/data/lagrange_matrix_48x5.json
+│   └── t_*.py             ← Python тесты (TestRunner-style, top-level def test_*)
+└── integration/           ← e2e пайплайны через несколько модулей
 ```
+
+**Ключевые паттерны:**
+- Файлы `t_*.py` (не `test_*.py`) — имя НЕ триггерит PyCharm pytest autodetect
+- Загрузка модулей: `GPULoader.setup_path()` добавляет `libs/` в `sys.path`, потом `import dsp_<module> as <alias>`
+- `class TestX:` НЕ обязателен — top-level `def test_*()` сохранён (как в legacy)
+- Правило 04: `pytest` запрещён навсегда; используется `common.runner.TestRunner`
+
+**Sub-репо тесты** (`{repo}/python/t_*.py`, 4 файла) — standalone smoke в каждом репо `linalg`/`radar`/`spectrum`/`strategies`. Импортят `common.runner` через путь `../../DSP/Python/`.
 
 ---
 
@@ -364,7 +374,7 @@ DSP/Python/
 
 ---
 
-## 12. Параллельных веток нет - одна главная
+## 12. Параллельных веток нет — одна главная
 
 | Ветка | Платформа | Сборка | FFT | BLAS |
 |-------|-----------|--------|-----|------|
@@ -372,5 +382,57 @@ DSP/Python/
 
 ---
 
-*Обновлено: 2026-04-22 | Version: 2.0.0 | Маппинг: GPUWorkLib монолит → DSP-GPU 10 репо*
-*Changes from v1.1.0 (GPUWorkLib): "модули" → "репозитории"; удалён OpenCL (перенесён в ветку `nvidia`); добавлен `ProfilingFacade` v2 и `ScopedHipEvent`; обновлены пути (`DrvGPU/…` → `core/…`); маппинг legacy-модулей → новые репо.*
+## 13. Python tests migration (in progress, 2026-04-29 / 2026-04-30)
+
+### 13.1 Что уже сделано
+
+| Действие | Статус | Когда |
+|----------|--------|-------|
+| Удаление worktrees (`E:/DSP-GPU/.claude/worktrees/`, ~739 MB legacy pytest-кода) | ✅ done | 2026-04-29 |
+| Переименование `test_*.py` → `t_*.py` (PyCharm autodetect fix) | ✅ done (54 файла) | 2026-04-29 |
+| Переименование `*_test_base.py` → `*_base.py` (5 framework-классов) | ✅ done | 2026-04-29 |
+| Переименование `conftest.py` → `factories.py` (7 файлов) | ✅ done | 2026-04-29 |
+| Миграция 3 spectrum-тестов на `dsp_*` API (эталоны) | ✅ done | 2026-04-29 |
+| Phase A0 Preflight: `lib/` → `libs/`, `.gitkeep`, `gpu_loader.py` обновлён | ✅ done | 2026-04-30 |
+| Phase A1 Inventory API (8 pybind binding) | ✅ done | 2026-04-30 |
+| `GPUProfiler` legacy v1 удалён | ✅ done | 2026-04-27 |
+
+### 13.2 Что осталось
+
+| Фаза | Описание | Платформа | Время |
+|------|----------|-----------|-------|
+| Phase A2 | Миграция 51 `t_*.py` (8 групп: stats, signal_generators, spectrum, linalg, radar, heterodyne, strategies/integration/common, sub-репо) | Windows | ~6-8 ч |
+| Phase A3 | Verify (grep `gpuworklib`/`sys.exit` → 0) | Windows | ~30 мин |
+| Phase A4 | Commit (без push) | Windows | ~30 мин |
+| Phase A5 | Cleanup: удалить `gpuworklib.py` shim + выпилить `_load_gpuworklib()` из `gpu_loader.py` + общий push 6 репо | Windows | ~20 мин |
+| Phase B1-B2 | CMake `auto-deploy` блок в 8 `{repo}/python/CMakeLists.txt` (PRE_BUILD remove + POST_BUILD copy в `DSP/Python/libs/`) | Debian | ~30 мин |
+| Phase B3 | Реальный запуск 51 `t_*.py` на ROCm gfx1201 + tolerances/API fixes | Debian | ~1-3 ч |
+
+### 13.3 Известные API breaking changes (legacy → DSP-GPU)
+
+| Legacy `gpuworklib.X` | DSP-GPU | Статус |
+|----------------------|---------|--------|
+| `ROCmGPUContext` | `dsp_core.ROCmGPUContext` | ✅ rename only |
+| `LchFarrowROCm` (`set_sample_rate`/`set_delays`/`process`) | `dsp_spectrum.LchFarrowROCm` | ✅ полное совпадение API |
+| `LfmAnalyticalDelayROCm` | `dsp_signal_generators.LfmAnalyticalDelayROCm` | ✅ совпадение |
+| **`HeterodyneDechirp.process(rx)`** → `dict {success, antennas[].f_beat_hz}` | **`HeterodyneROCm.dechirp/correct`** + ручной `np.fft + argmax` | ⚠ API rewrite (4 теста) |
+| `SignalGenerator.generate_lfm()` (legacy общий) | NumPy fallback `np.exp(1j * phase)` или `LfmAnalyticalDelayROCm` | ⚠ убран (использовать NumPy) |
+| `ScriptGenerator` (runtime DSL → kernel) | ❌ не портирован | SkipTest + `MemoryBank/.future/TASK_script_dsl_rocm.md` |
+
+### 13.4 Документы
+
+- План: [`MemoryBank/specs/python/migration_plan_2026-04-29.md`](../specs/python/migration_plan_2026-04-29.md)
+- Аудит pytest: [`MemoryBank/specs/python/pytest_audit_2026-04-29.md`](../specs/python/pytest_audit_2026-04-29.md)
+- Ревью плана: [`MemoryBank/specs/python/migration_plan_review_2026-04-30.md`](../specs/python/migration_plan_review_2026-04-30.md)
+- Sub-репо diff: [`MemoryBank/specs/python/sub_repo_tests_diff_2026-04-30.md`](../specs/python/sub_repo_tests_diff_2026-04-30.md)
+- Tasks: [`TASK_python_migration_phase_A_2026-04-30.md`](../tasks/TASK_python_migration_phase_A_2026-04-30.md), [`TASK_python_migration_phase_B_debian_2026-05-03.md`](../tasks/TASK_python_migration_phase_B_debian_2026-05-03.md)
+
+---
+
+## 📜 Changelog
+
+| Версия | Дата | Изменение |
+|--------|------|-----------|
+| 1.1.0 | (legacy) | GPUWorkLib монолит — анализ модулей |
+| 2.0.0 | 2026-04-22 | "модули" → "репозитории" (10 репо `github.com/dsp-gpu/`); удалён OpenCL (перенесён в ветку `nvidia`); добавлен `ProfilingFacade` v2 и `ScopedHipEvent`; обновлены пути (`DrvGPU/…` → `core/…`); маппинг legacy-модулей → новые репо |
+| 2.1.0 | 2026-04-30 | `GPUProfiler` legacy v1 удалён (2026-04-27); `lib/` → `libs/`; Python tests миграция в процессе (54 переименований + 3 spectrum мигрированы как эталон + 51 осталось); `gpuworklib.py` shim deprecated; ветка `nvidia` упразднена (полностью ROCm-only); статистика обновлена (388 hpp / 95 cpp / 123 py); добавлен раздел 13 «Python tests migration» |

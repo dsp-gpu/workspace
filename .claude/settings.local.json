@@ -88,7 +88,12 @@
       "Bash(npm init *)",
       "Bash(\"F:/Program Files \\(x86\\)/Python312/python.exe\")",
       "Bash(rm _new_buildBrief.txt)",
-      "Bash(gh api *)"
+      "Bash(gh api *)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/linalg/t_matrix_csv_comparison.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/radar/t_fm_correlator.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/radar/t_fm_correlator_rocm.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/radar/t_range_angle.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/heterodyne/t_heterodyne.py'\\).read\\(\\)\\); print\\('OK'\\)\")"
     ]
   },
   "enableAllProjectMcpServers": true,

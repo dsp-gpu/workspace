@@ -8,7 +8,17 @@
       "Bash(DSP_CACHE_DIR=/home/alex/DSP-GPU/spectrum/build/tests/kernels_cache ./dsp-cache-list /home/alex/DSP-GPU/spectrum/build/tests/kernels_cache)",
       "Bash(/home/alex/DSP-GPU/core/build/dsp-cache-list /home/alex/DSP-GPU/linalg/build/tests/kernels_cache)",
       "Read(//home/alex/DSP-GPU/**)",
-      "Read(//home/alex/DSP-GPU/=== Stale refs to old paths \\(should be empty or only spec/audit/**)"
+      "Read(//home/alex/DSP-GPU/=== Stale refs to old paths \\(should be empty or only spec/audit/**)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/integration/t_signal_gen_integration.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/integration/t_zero_copy.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/integration/t_hybrid_backend.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(sed -n '513,517p' e:/DSP-GPU/DSP/Python/integration/t_gpuworklib.py)",
+      "Bash(sed -n '873,883p' e:/DSP-GPU/DSP/Python/integration/t_gpuworklib.py)",
+      "Bash(sed -i '514,877d' e:/DSP-GPU/DSP/Python/integration/t_gpuworklib.py)",
+      "Bash(sed -n '510,520p' e:/DSP-GPU/DSP/Python/integration/t_gpuworklib.py)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/integration/t_gpuworklib.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(awk 'NR==__TRACKED_VAR__ {print NR, \"|\", $0}' e:/DSP-GPU/DSP/Python/integration/t_gpuworklib.py)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/common/gpu_context.py'\\).read\\(\\)\\); print\\('OK'\\)\")"
     ],
     "additionalDirectories": [
       "/tmp"

@@ -11,6 +11,12 @@ DSP/
 
 # ── Секреты — НИКОГДА в git ───────────────────────────────────────
 .vscode/mcp.json
+api_keys.json
+**/api_keys.json
+*.key
+*.pem
+.env
+.env.*
 
 # ── Claude Code / IDE (временные) ────────────────────────────────
 .claude/worktrees/
