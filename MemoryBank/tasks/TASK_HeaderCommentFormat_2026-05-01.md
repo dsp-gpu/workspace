@@ -2,7 +2,7 @@
 
 **Дата создания:** 2026-05-01
 **Автор:** Кодо
-**Статус:** ✅ Phase A DONE → готов к Phase B (4 эталона в `core/`)
+**Статус:** 🔄 Phase D9 IN PROGRESS (2026-05-02) — tests/*.hpp шапки; после → Phase E
 **План-источник:** [`MemoryBank/specs/Header_Comment_Format_Plan_2026-05-01.md`](../specs/Header_Comment_Format_Plan_2026-05-01.md)
 **Связанный план:** [`MemoryBank/specs/LLM_and_RAG/00_Master_Plan_2026-04-30.md`](../specs/LLM_and_RAG/00_Master_Plan_2026-04-30.md)
 
@@ -39,7 +39,7 @@
 
 ---
 
-### Phase B — Эталоны на 4 классах в `core/` (≈ 2ч)
+### Phase B — Эталоны на 4 классах в `core/` ✅ DONE (2026-05-01)
 
 **B1.** `ScopedHipEvent` (`core/include/core/services/scoped_hip_event.hpp`) — RAII move-only.
 
@@ -55,7 +55,12 @@
 
 ---
 
-### Phase C — Обновление инструкций (≈ 1ч)
+### Phase C — Обновление инструкций ✅ DONE (2026-05-01)
+
+`.claude/commands/comment.md` переписан под новый формат (workspace commit `b513f5a`).
+`.claude/rules/14-cpp-style.md` — раздел будет добавлен отдельно (не блокирует Phase D/E).
+
+### Phase C-old (план — для истории)
 
 **C1.** Обновить `.claude/commands/comment.md`:
 - зафиксировать трёхчастный формат для `.hpp` (сейчас там `//` без Doxygen);
@@ -70,20 +75,58 @@
 
 ---
 
-### Phase D — Раскатка на 9 репо (поэтапно, ≈ 8-12ч)
+### Phase D — Раскатка на 8 репо ✅ DONE (2026-05-01)
 
-Порядок (по графу зависимостей):
+Все публичные `.hpp` (без `tests/` и `python/`) в 8 модулях обработаны и запушены.
 
-| # | Репо | ETA | Кол-во `.hpp` файлов |
-|---|------|-----|---------------------|
-| D1 | `core` (остальные классы кроме B1-B4) | ≈ 1.5ч | ≈ 15 |
-| D2 | `spectrum` | ≈ 1.5ч | ≈ 12 |
-| D3 | `stats` | ≈ 1ч | ≈ 8 |
-| D4 | `signal_generators` | ≈ 1ч | ≈ 8 |
-| D5 | `heterodyne` | ≈ 1ч | ≈ 6 |
-| D6 | `linalg` | ≈ 1.5ч | ≈ 12 |
-| D7 | `radar` | ≈ 1.5ч | ≈ 10 |
-| D8 | `strategies` | ≈ 1ч | ≈ 6 |
+| # | Репо | Файлов | Commit |
+|---|------|--------|--------|
+| D1 | `core` (включая 4 эталона из B) | **69** | `b624522` |
+| D2 | `spectrum` | **45** | `651d544` |
+| D3 | `stats` | **14** | `6e58523` |
+| D4 | `signal_generators` | **29** | `11c3441` |
+| D5 | `heterodyne` | **5** | `de80184` |
+| D6 | `linalg` | **16** | `f584712` |
+| D7 | `radar` | **13** | `338fef8` |
+| D8 | `strategies` | **23** | `3be3b1c` |
+| | **ИТОГО** | **214** | |
+
+Все 10 репо синхронизированы с GitHub (`origin/main`).
+
+---
+
+### Phase D9 — tests/*.hpp шапки (⏳ СЛЕДУЮЩИЙ СЕАНС 2026-05-02)
+
+**Что:** добавить шапки `// ====` во все `tests/*.hpp` у которых их нет (~80 файлов в 8 репо).
+
+**Сделано сегодня (partial):**
+- `core/tests/all_test.hpp` — шапка добавлена ✅
+
+**Осталось:**
+| Репо | Файлов без шапки |
+|------|-----------------|
+| `core/tests/` | 8: `example_external_context_usage.hpp`, `single_gpu.hpp`, `test_compile_key.hpp`, `test_kernel_cache_service.hpp`, `test_profiling_conversions.hpp`, `test_quality_gates.hpp`, `test_services.hpp`, `test_storage_services.hpp` |
+| `spectrum/tests/` | 19 файлов |
+| `stats/tests/` | 8 файлов |
+| `signal_generators/tests/` | 5 файлов |
+| `heterodyne/tests/` | 6 файлов |
+| `linalg/tests/` | 10 файлов |
+| `radar/tests/` | 9 файлов |
+| `strategies/tests/` | 15 файлов |
+
+**Команда для проверки (bash):**
+```bash
+for f in core/tests/*.hpp spectrum/tests/*.hpp stats/tests/*.hpp signal_generators/tests/*.hpp heterodyne/tests/*.hpp linalg/tests/*.hpp radar/tests/*.hpp strategies/tests/*.hpp; do
+  [ -f "$f" ] && first=$(head -5 "$f" | grep -c "// ===="); [ "$first" -eq "0" ] && echo "NO_HEADER: $f"
+done
+```
+
+**Формат шапки** — из спеки + эталон `core/tests/test_profiling_facade.hpp`.
+**После завершения** → коммит по каждому репо → затем Phase E (dsp-asst проверка).
+
+---
+
+### Phase D-old (план — для истории)
 
 **Кол-во .hpp** — оценка, уточнить через `Glob` в начале каждого подэтапа.
 
