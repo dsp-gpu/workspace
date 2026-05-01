@@ -1,0 +1,1027 @@
+{
+  "config": {
+    "mode": "hybrid",
+    "use_rerank": false,
+    "candidates": 50,
+    "top_k": 10,
+    "stage": "1_home"
+  },
+  "metrics": {
+    "n": 50,
+    "recall_1": 0.44,
+    "recall_5": 0.52,
+    "recall_10": 0.56,
+    "mrr_10": 0.4784444444444444
+  },
+  "duration_s": 21.595035076141357,
+  "timestamp": "2026-05-01_11-41-02",
+  "per_item": [
+    {
+      "id": "001",
+      "query": "ScopedHipEvent",
+      "category": "exact_name",
+      "expected_fqn": [
+        "drv_gpu_lib::ScopedHipEvent"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::ScopedHipEvent",
+        "drv_gpu_lib::ScopedHipEvent::ScopedHipEvent",
+        "drv_gpu_lib::ScopedHipEvent::ScopedHipEvent",
+        "drv_gpu_lib::ScopedHipEvent::ScopedHipEvent",
+        "drv_gpu_lib::ScopedHipEvent::~ScopedHipEvent"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 11634.055614471436
+    },
+    {
+      "id": "002",
+      "query": "RAII обертка для hipEvent",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "drv_gpu_lib::ScopedHipEvent"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::ScopedHipEvent",
+        "drv_gpu_lib::ScopedHipEvent::ScopedHipEvent",
+        "drv_gpu_lib::ROCmBackend",
+        "fft_func_utils::MakeROCmDataFromEvents",
+        "test_capon_rocm_bench::MakeROCmFromHipEvents"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 200.1197338104248
+    },
+    {
+      "id": "003",
+      "query": "RAII wrapper for hipEvent_t",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "drv_gpu_lib::ScopedHipEvent"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::ROCmCore",
+        "drv_gpu_lib::ScopedHipEvent",
+        "fft_func_utils::MakeROCmDataFromEvents",
+        "drv_gpu_lib::ScopedHipEvent::get",
+        "test_capon_rocm_bench::MakeROCmFromHipEvents"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 0.5,
+      "duration_ms": 200.74772834777832
+    },
+    {
+      "id": "004",
+      "query": "FFTProcessorROCm",
+      "category": "exact_name",
+      "expected_fqn": [
+        "fft_processor::FFTProcessorROCm"
+      ],
+      "top_fqns": [
+        "fft_processor::FFTProcessorROCm::~FFTProcessorROCm",
+        "fft_processor::FFTProcessorROCm::FFTProcessorROCm",
+        "fft_processor::FFTProcessorROCm::ProcessComplex",
+        "fft_processor::FFTProcessorROCm::ProcessMagPhase",
+        "fft_processor::FFTProcessorROCm::ProcessComplex"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 230.4067611694336
+    },
+    {
+      "id": "005",
+      "query": "FFT процессор на ROCm hipFFT",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "fft_processor::FFTProcessorROCm"
+      ],
+      "top_fqns": [
+        "antenna_fft::SpectrumProcessorROCm",
+        "fft_processor::FFTProfilingData",
+        "antenna_fft::SpectrumProcessorROCm::ExecuteFFT",
+        "test_fft_matrix_rocm::run",
+        "drv_gpu_lib::ROCmBackend"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 211.73524856567383
+    },
+    {
+      "id": "006",
+      "query": "fast fourier transform GPU",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "fft_processor::FFTProcessorROCm"
+      ],
+      "top_fqns": [
+        "test_strategies::LfmFarrowStrategy",
+        "configs.FilterConfig",
+        "t_ai_filter_pipeline.apply_filter_gpu",
+        "lch_farrow::LchFarrow",
+        "fft_processor::MagPhaseOp::Execute"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 208.35161209106445
+    },
+    {
+      "id": "007",
+      "query": "ProfilingFacade",
+      "category": "exact_name",
+      "expected_fqn": [
+        "drv_gpu_lib::profiling::ProfilingFacade"
+      ],
+      "top_fqns": [
+        "test_profiling_facade::MockRecorder",
+        "drv_gpu_lib::GpuBenchmarkBase::Report",
+        "test_strategies::ProfilingConfig",
+        "test_profiling_facade::TestFacade_EnableDisable",
+        "test_profiling_facade::TestFacade_IProfilerRecorder_DI"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 195.21546363830566
+    },
+    {
+      "id": "008",
+      "query": "профилирование GPU ядер batch record",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "drv_gpu_lib::profiling::ProfilingFacade"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::DataRecord",
+        "test_profiling_facade::MockRecorder::Record",
+        "plog::Record",
+        "configs.ProcessorConfig",
+        "drv_gpu_lib::ProfilingRecord"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 200.8211612701416
+    },
+    {
+      "id": "009",
+      "query": "MovingAverageFilterROCm",
+      "category": "exact_name",
+      "expected_fqn": [
+        "filters::MovingAverageFilterROCm"
+      ],
+      "top_fqns": [
+        "filters::MovingAverageFilterROCm",
+        "filters::MovingAverageFilterROCm",
+        "filters::MovingAverageFilterROCm::~MovingAverageFilterROCm",
+        "filters::MovingAverageFilterROCm::MovingAverageFilterROCm",
+        "filters::MovingAverageFilterROCm::MovingAverageFilterROCm"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 231.85420036315918
+    },
+    {
+      "id": "010",
+      "query": "moving average filter signal smoothing",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "filters::MovingAverageFilterROCm"
+      ],
+      "top_fqns": [
+        "filters::MovingAverageFilterROCm",
+        "filters::MovingAverageParams",
+        "filters::MovingAverageFilterROCm",
+        "filters::MovingAverageFilterROCm::~MovingAverageFilterROCm",
+        "filters::MovingAverageFilterROCm::~MovingAverageFilterROCm"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 241.77169799804688
+    },
+    {
+      "id": "011",
+      "query": "KalmanFilterROCm",
+      "category": "exact_name",
+      "expected_fqn": [
+        "filters::KalmanFilterROCm"
+      ],
+      "top_fqns": [
+        "filters::KalmanFilterROCm",
+        "filters::KalmanFilterROCm",
+        "filters::KalmanFilterROCm::~KalmanFilterROCm",
+        "filters::KalmanFilterROCm::KalmanFilterROCm",
+        "filters::KalmanFilterROCm::KalmanFilterROCm"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 155.2870273590088
+    },
+    {
+      "id": "012",
+      "query": "фильтр Калмана",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "filters::KalmanFilterROCm"
+      ],
+      "top_fqns": [
+        "filters::KalmanFilterROCm::SetParams",
+        "plot_report_filters.kalman_ref_scalar",
+        "filters::KalmanParams",
+        "filters::KaufmanParams",
+        "filters::KalmanFilterROCm"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 0.2,
+      "duration_ms": 203.06849479675293
+    },
+    {
+      "id": "013",
+      "query": "LchFarrow дробная задержка Лагранжа",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "lch_farrow::LchFarrow",
+        "lch_farrow::LchFarrowROCm"
+      ],
+      "top_fqns": [
+        "lch_farrow::LchFarrow",
+        "lch_farrow::LchFarrowROCm",
+        "t_lch_farrow_rocm.cpu_lch_farrow",
+        "lch_farrow::LchFarrowROCm::SetDelays",
+        "lch_farrow::LchFarrowROCm::SetDelays"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 209.6273899078369
+    },
+    {
+      "id": "014",
+      "query": "fractional delay lagrange interpolation",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "lch_farrow::LchFarrow",
+        "lch_farrow::LchFarrowROCm"
+      ],
+      "top_fqns": [
+        "farrow_delay.FarrowDelay",
+        "t_lch_farrow.test_fractional_delay",
+        "t_delayed_form_signal.test_fractional_delay",
+        "t_lfm_analytical_delay.test_fractional_delay_boundary",
+        "t_lch_farrow_rocm.test_fractional_delay_vs_cpu"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 1.0,
+      "mrr_10": 0.1111111111111111,
+      "duration_ms": 220.48211097717285
+    },
+    {
+      "id": "015",
+      "query": "SNREstimator",
+      "category": "exact_name",
+      "expected_fqn": [
+        "statistics::SNREstimator"
+      ],
+      "top_fqns": [
+        "test_snr_estimator::SnrEstimatorBenchmark",
+        "t_snr_estimator.TestSnrEstimator",
+        "statistics::SnrEstimationResult",
+        "statistics::SnrEstimatorOp",
+        "statistics::SnrEstimationConfig"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 236.13381385803223
+    },
+    {
+      "id": "016",
+      "query": "оценка отношения сигнал шум",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "statistics::SNREstimator"
+      ],
+      "top_fqns": [
+        "numeric.RmseValidator",
+        "t_kalman_rocm.test_kalman_noise_reduction",
+        "t_spectrum_maxima_finder_rocm.TestNumPyReference.test_noise_floor_no_strong_peaks",
+        "t_form_signal_rocm.TestNumPyReference.test_noise_snr_degradation",
+        "signal_factory.CwNoiseSignalSource"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 210.90984344482422
+    },
+    {
+      "id": "017",
+      "query": "WelfordOnline",
+      "category": "exact_name",
+      "expected_fqn": [
+        "statistics::WelfordOnline"
+      ],
+      "top_fqns": [
+        "statistics::WelfordFloatOp",
+        "statistics::WelfordFusedOp",
+        "statistics::StatisticsResult",
+        "statistics::FullStatisticsResult",
+        "t_statistics_rocm.test_gpu_vs_numpy_welford"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 202.34990119934082
+    },
+    {
+      "id": "018",
+      "query": "online running mean variance computation",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "statistics::WelfordOnline"
+      ],
+      "top_fqns": [
+        "statistics::StatisticsResult",
+        "t_compute_all.ref_statistics",
+        "test_moving_average_rocm::run",
+        "test_moving_average_rocm::run",
+        "t_moving_average_rocm.TestMovingAverageROCm"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 201.04169845581055
+    },
+    {
+      "id": "019",
+      "query": "RadixSortGPU",
+      "category": "exact_name",
+      "expected_fqn": [
+        "gpu_sort::RadixSortGPU"
+      ],
+      "top_fqns": [
+        "t_spectrum_find_all_maxima_rocm.test_rocm_context_available",
+        "t_iir_filter_rocm.make_ctx_iir",
+        "filters::KaufmanFilterROCm::KaufmanFilterROCm",
+        "filters::FirFilterROCm::ProcessCpu",
+        "filters::KalmanFilterROCm::KalmanFilterROCm"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 197.31712341308594
+    },
+    {
+      "id": "020",
+      "query": "GPU параллельная сортировка radix",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "gpu_sort::RadixSortGPU"
+      ],
+      "top_fqns": [
+        "statistics::MedianRadixSortOp",
+        "test_strategies::StrategiesProfilingBenchmark",
+        "gpu_mellanox::ServerTopology",
+        "statistics::gpu_sort::ExecuteSort",
+        "gpu_mellanox::detail::PairInSlot"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 212.78977394104004
+    },
+    {
+      "id": "021",
+      "query": "LfmGenerator",
+      "category": "exact_name",
+      "expected_fqn": [
+        "signal_gen::LfmGenerator"
+      ],
+      "top_fqns": [
+        "signal_gen::LfmConjugateGenerator",
+        "signal_gen::LfmGenerator",
+        "signal_gen::LfmGeneratorAnalyticalDelay",
+        "signal_gen::LfmGeneratorROCm",
+        "signal_gen::LfmGenerator::LfmGenerator"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 0.5,
+      "duration_ms": 201.1728286743164
+    },
+    {
+      "id": "022",
+      "query": "генератор линейно-частотно-модулированного сигнала",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "signal_gen::LfmGenerator"
+      ],
+      "top_fqns": [
+        "signal_gen::ISignalGenerator",
+        "signal_gen::FormSignalGenerator",
+        "signal_gen::LfmConjugateGeneratorROCm::LfmConjugateGeneratorROCm",
+        "signal_gen::LfmConjugateGenerator::LfmConjugateGenerator",
+        "signal_gen::LfmGenerator::LfmGenerator"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 219.48909759521484
+    },
+    {
+      "id": "023",
+      "query": "CW signal generator continuous wave",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "signal_gen::CwGenerator"
+      ],
+      "top_fqns": [
+        "signal_gen::CwGenerator",
+        "signal_gen::ISignalGenerator",
+        "signal_gen::CwGenerator::CwGenerator",
+        "signal_gen::CwGeneratorROCm",
+        "signal_gen::CwGenerator::CwGenerator"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 207.45348930358887
+    },
+    {
+      "id": "024",
+      "query": "HeterodyneDechirp",
+      "category": "exact_name",
+      "expected_fqn": [
+        "heterodyne::HeterodyneDechirp"
+      ],
+      "top_fqns": [
+        "PyHeterodyneDechirp",
+        "configs.HeterodyneConfig",
+        "drv_gpu_lib::HeterodyneDechirp",
+        "drv_gpu_lib::HeterodyneDechirp::HeterodyneDechirp",
+        "drv_gpu_lib::HeterodyneDechirp::Process"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 195.21141052246094
+    },
+    {
+      "id": "025",
+      "query": "LFM dechirp NCO mix гетеродин",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "heterodyne::HeterodyneDechirp",
+        "heterodyne::HeterodyneROCm"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::HeterodyneProcessorROCm::Dechirp",
+        "heterodyne_base.HeterodyneTestBase.dechirp_numpy",
+        "drv_gpu_lib::HeterodyneProcessorROCm::Dechirp",
+        "PyHeterodyneROCm::dechirp",
+        "signal_refs.SignalReferences.dechirp"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 202.7914524078369
+    },
+    {
+      "id": "026",
+      "query": "CaponProcessor",
+      "category": "exact_name",
+      "expected_fqn": [
+        "capon::CaponProcessor"
+      ],
+      "top_fqns": [
+        "capon::CaponProcessor::~CaponProcessor",
+        "capon::CaponProcessor",
+        "capon::CaponProcessor::CaponProcessor",
+        "capon::CaponProcessor::CaponProcessor",
+        "capon::CaponProcessor::CaponProcessor"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 0.5,
+      "duration_ms": 195.8026885986328
+    },
+    {
+      "id": "027",
+      "query": "Capon adaptive beamforming",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "capon::CaponProcessor"
+      ],
+      "top_fqns": [
+        "capon::AdaptBeamformOp",
+        "PyCaponProcessor::adaptive_beamform",
+        "t_capon.capon_beamform_ref",
+        "PyCaponProcessor::adaptive_beamform_gpu",
+        "capon::CaponProcessor::AdaptiveBeamform"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 199.16939735412598
+    },
+    {
+      "id": "028",
+      "query": "VectorAlgebra",
+      "category": "exact_name",
+      "expected_fqn": [
+        "vector_algebra::VectorAlgebra"
+      ],
+      "top_fqns": [
+        "vector_algebra::CholeskyResult",
+        "vector_algebra::MatrixOpsROCm",
+        "vector_algebra::SymmetrizeMode",
+        "vector_algebra::CholeskyResult::~CholeskyResult",
+        "vector_algebra::CholeskyResult::~CholeskyResult"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 197.8895664215088
+    },
+    {
+      "id": "029",
+      "query": "rocBLAS rocSOLVER линейная алгебра GPU",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "vector_algebra::VectorAlgebra",
+        "capon::CaponProcessor",
+        "capon::CholeskyInverter"
+      ],
+      "top_fqns": [
+        "vector_algebra::DiagonalLoadRegularizer::DiagonalLoadRegularizer",
+        "vector_algebra::MatrixOpsROCm::CGEMM",
+        "vector_algebra::MatrixOpsROCm",
+        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm",
+        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 211.79628372192383
+    },
+    {
+      "id": "030",
+      "query": "RangeAngleProcessor",
+      "category": "exact_name",
+      "expected_fqn": [
+        "range_angle::RangeAngleProcessor"
+      ],
+      "top_fqns": [
+        "range_angle::RangeAngleProcessor",
+        "t_range_angle.TestRangeAngle",
+        "range_angle::RangeAngleProcessor::RangeAngleProcessor",
+        "range_angle::RangeAngleProcessor::~RangeAngleProcessor",
+        "PyRangeAngleProcessor"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 198.06289672851562
+    },
+    {
+      "id": "031",
+      "query": "FMCorrelator",
+      "category": "exact_name",
+      "expected_fqn": [
+        "fm_correlator::FMCorrelator"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::FMCorrelator",
+        "drv_gpu_lib::FMCorrelator::Process",
+        "drv_gpu_lib::FMCorrelator::FMCorrelator",
+        "drv_gpu_lib::FMCorrelator::FMCorrelator",
+        "drv_gpu_lib::FMCorrelator::ProcessWithBatching"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 194.59795951843262
+    },
+    {
+      "id": "032",
+      "query": "PipelineBuilder",
+      "category": "exact_name",
+      "expected_fqn": [
+        "strategies::PipelineBuilder"
+      ],
+      "top_fqns": [
+        "strategies::PipelineBuilder",
+        "pipeline_runner.PipelineRunner",
+        "strategies::PipelineBuilder::build",
+        "strategies::PipelineBuf",
+        "strategies::PipelineContext"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 188.43936920166016
+    },
+    {
+      "id": "033",
+      "query": "композиция pipeline DSP стратегия",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "strategies::Pipeline",
+        "strategies::PipelineBuilder",
+        "strategies::IPipelineStep"
+      ],
+      "top_fqns": [
+        "strategies::Pipeline",
+        "strategies::PipelineContext",
+        "strategies::PipelineContext",
+        "strategies::PipelineBuilder",
+        "strategies::PipelineBuf"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 199.80311393737793
+    },
+    {
+      "id": "034",
+      "query": "ROCmBackend",
+      "category": "exact_name",
+      "expected_fqn": [
+        "drv_gpu_lib::ROCmBackend"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::ROCmBackend",
+        "drv_gpu_lib::ROCmBackend::ROCmBackend",
+        "drv_gpu_lib::ROCmBackend::~ROCmBackend",
+        "drv_gpu_lib::ROCmBackend::ROCmBackend",
+        "drv_gpu_lib::ROCmBackend::ROCmBackend"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 194.4427490234375
+    },
+    {
+      "id": "035",
+      "query": "AMD ROCm HIP backend driver",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "drv_gpu_lib::ROCmBackend"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::ROCmBackend",
+        "drv_gpu_lib::ROCmBackend::~ROCmBackend",
+        "drv_gpu_lib::ROCmBackend::ROCmBackend",
+        "drv_gpu_lib::ROCmBackend::ROCmBackend",
+        "drv_gpu_lib::ROCmBackend::ROCmBackend"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 206.76827430725098
+    },
+    {
+      "id": "036",
+      "query": "ServiceManager",
+      "category": "exact_name",
+      "expected_fqn": [
+        "drv_gpu_lib::ServiceManager"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::ServiceManager",
+        "drv_gpu_lib::GPUManager",
+        "drv_gpu_lib::ServiceManager::ServiceManager",
+        "test_services::TestServiceManager",
+        "drv_gpu_lib::ServiceManager::GetStatus"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 193.50028038024902
+    },
+    {
+      "id": "037",
+      "query": "service locator pattern dependency injection",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "drv_gpu_lib::ServiceManager"
+      ],
+      "top_fqns": [
+        "llm_parser.OllamaParser.__init__",
+        "PyDelayedFormSignalGeneratorROCm::load_matrix",
+        "vector_algebra::MatrixOpsROCm::CovarianceMatrix",
+        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm",
+        "vector_algebra::MatrixOpsROCm::CovarianceMatrix"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 199.9650001525879
+    },
+    {
+      "id": "038",
+      "query": "MemoryManager",
+      "category": "exact_name",
+      "expected_fqn": [
+        "drv_gpu_lib::MemoryManager"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::MemoryManager",
+        "drv_gpu_lib::MemoryManager::MemoryManager",
+        "drv_gpu_lib::MemoryManager::~MemoryManager",
+        "drv_gpu_lib::MemoryManager::MemoryManager",
+        "drv_gpu_lib::MemoryManager::MemoryManager"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 188.30609321594238
+    },
+    {
+      "id": "039",
+      "query": "GPU memory allocation buffer management",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "drv_gpu_lib::MemoryManager"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::MemoryManager",
+        "drv_gpu_lib::BufferSet::AllocatedCount",
+        "drv_gpu_lib::MemoryManager::CreateBuffer",
+        "drv_gpu_lib::MemoryManager::CreateBuffer",
+        "drv_gpu_lib::MemoryManager::~MemoryManager"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 196.34032249450684
+    },
+    {
+      "id": "040",
+      "query": "KernelCacheService",
+      "category": "exact_name",
+      "expected_fqn": [
+        "drv_gpu_lib::KernelCacheService"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::KernelCacheService",
+        "drv_gpu_lib::KernelCacheService",
+        "drv_gpu_lib::KernelCacheService::KernelCacheService",
+        "drv_gpu_lib::KernelCacheService::Save",
+        "drv_gpu_lib::KernelCacheService::Load"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 195.81174850463867
+    },
+    {
+      "id": "041",
+      "query": "compiled kernel cache compile-once",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "drv_gpu_lib::KernelCacheService"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::CompileCopyKernels",
+        "capon::CaponInvertOp::CompileKernels",
+        "vector_algebra::CholeskyInverterROCm::CompileKernels",
+        "test_kernel_cache_service::run",
+        "antenna_fft::AllMaximaPipelineROCm::CompileKernels"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 212.36538887023926
+    },
+    {
+      "id": "042",
+      "query": "GpuBenchmarkBase",
+      "category": "exact_name",
+      "expected_fqn": [
+        "drv_gpu_lib::GpuBenchmarkBase"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::GpuBenchmarkBase",
+        "drv_gpu_lib::GpuBenchmarkBase::GpuBenchmarkBase",
+        "drv_gpu_lib::GpuBenchmarkBase::~GpuBenchmarkBase",
+        "drv_gpu_lib::GpuBenchmarkBase::GpuBenchmarkBase",
+        "test_strategies::StrategiesProfilingBenchmark"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 199.37705993652344
+    },
+    {
+      "id": "043",
+      "query": "Template Method base class for benchmarks",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "drv_gpu_lib::GpuBenchmarkBase"
+      ],
+      "top_fqns": [
+        "base.TestBase",
+        "strategy_base.StrategyTestBase",
+        "heterodyne_base.HeterodyneTestBase",
+        "t_scenario_builder.TestWeightMatrix",
+        "filter_base.FilterTestBase"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 195.23239135742188
+    },
+    {
+      "id": "044",
+      "query": "ConsoleOutput многопоточный вывод GPU",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "drv_gpu_lib::ConsoleOutput"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::ConsoleOutput",
+        "drv_gpu_lib::ConsoleMessage",
+        "drv_gpu_lib::ConsoleOutput::ConsoleOutput",
+        "drv_gpu_lib::ConsoleOutput::SetEnabled",
+        "drv_gpu_lib::ConsoleOutput::IsEnabled"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 200.74844360351562
+    },
+    {
+      "id": "045",
+      "query": "GpuKernelOp",
+      "category": "exact_name",
+      "expected_fqn": [
+        "drv_gpu_lib::GpuKernelOp"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::GpuKernelOp",
+        "drv_gpu_lib::GpuKernelOp::~GpuKernelOp",
+        "drv_gpu_lib::GpuKernelOp::stream",
+        "drv_gpu_lib::GpuKernelOp::kernel",
+        "drv_gpu_lib::GpuCopyKernels"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 195.90234756469727
+    },
+    {
+      "id": "046",
+      "query": "BatchManager пакетная обработка",
+      "category": "semantic_ru",
+      "expected_fqn": [
+        "drv_gpu_lib::BatchManager"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::BatchManager",
+        "drv_gpu_lib::BatchManager::AllItemsFit",
+        "drv_gpu_lib::BatchManager::PrintBatchInfo",
+        "drv_gpu_lib::BatchManager::CreateBatches",
+        "drv_gpu_lib::BatchManager::CalculateOptimalBatchSize"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 200.07610321044922
+    },
+    {
+      "id": "047",
+      "query": "AsyncServiceBase",
+      "category": "exact_name",
+      "expected_fqn": [
+        "drv_gpu_lib::AsyncServiceBase"
+      ],
+      "top_fqns": [
+        "drv_gpu_lib::AsyncServiceBase",
+        "drv_gpu_lib::AsyncServiceBase::AsyncServiceBase",
+        "drv_gpu_lib::AsyncServiceBase::AsyncServiceBase",
+        "drv_gpu_lib::AsyncServiceBase::~AsyncServiceBase",
+        "drv_gpu_lib::AsyncServiceBase::IsRunning"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 195.52183151245117
+    },
+    {
+      "id": "048",
+      "query": "async task queue background worker",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "drv_gpu_lib::AsyncServiceBase"
+      ],
+      "top_fqns": [
+        "push_back",
+        "operator==",
+        "ordered_map",
+        "array",
+        "swap"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 0.0,
+      "mrr_10": 0.0,
+      "duration_ms": 198.42147827148438
+    },
+    {
+      "id": "049",
+      "query": "FirFilterROCm",
+      "category": "exact_name",
+      "expected_fqn": [
+        "filters::FirFilterROCm"
+      ],
+      "top_fqns": [
+        "filters::FirFilterROCm",
+        "filters::FirFilterROCm",
+        "filters::FirFilterROCm::~FirFilterROCm",
+        "filters::FirFilterROCm::FirFilterROCm",
+        "filters::FirFilterROCm::Process"
+      ],
+      "recall_1": 1.0,
+      "recall_5": 1.0,
+      "recall_10": 1.0,
+      "mrr_10": 1.0,
+      "duration_ms": 203.3212184906006
+    },
+    {
+      "id": "050",
+      "query": "FIR filter finite impulse response GPU",
+      "category": "semantic_en",
+      "expected_fqn": [
+        "filters::FirFilterROCm"
+      ],
+      "top_fqns": [
+        "configs.FilterConfig",
+        "filters::FirParams",
+        "t_ai_filter_pipeline.apply_filter_gpu",
+        "t_moving_average_rocm.TestMovingAverageROCm.test_impulse_response",
+        "t_fir_filter_rocm.test_fir_single_channel_basic"
+      ],
+      "recall_1": 0.0,
+      "recall_5": 0.0,
+      "recall_10": 1.0,
+      "mrr_10": 0.1111111111111111,
+      "duration_ms": 203.16839218139648
+    }
+  ]
+}

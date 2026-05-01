@@ -93,7 +93,8 @@
       "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/radar/t_fm_correlator.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
       "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/radar/t_fm_correlator_rocm.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
       "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/radar/t_range_angle.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
-      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/heterodyne/t_heterodyne.py'\\).read\\(\\)\\); print\\('OK'\\)\")"
+      "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/heterodyne/t_heterodyne.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "mcp__dsp-asst__dsp_search"
     ]
   },
   "enableAllProjectMcpServers": true,

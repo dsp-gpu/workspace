@@ -1,0 +1,223 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-04-30",
+  "source": "MemoryBank/.architecture/DSP-GPU_Architecture_Analysis.md v2.1.0",
+  "description": "Метаданные 10 репо DSP-GPU. Используется индексером для тегирования каждого чанка (repo, namespace, layer, patterns). Используется retrieval для фильтров.",
+
+  "organization": "github.com/dsp-gpu",
+  "language_main": "C++17",
+  "gpu_api": "HIP/ROCm 7.2+",
+  "branch": "main",
+
+  "repos": [
+    {
+      "name": "core",
+      "path": "E:/DSP-GPU/core",
+      "purpose": "DrvGPU ядро — backend, memory, profiler, logger, services",
+      "namespaces": ["drv_gpu_lib", "drv_gpu_lib::profiling"],
+      "layer": "infrastructure",
+      "depends_on": [],
+      "stats": {"hpp": 133, "cpp": 36, "hip": 0, "py": 0},
+      "key_classes": [
+        "DrvGPU", "ROCmBackend", "HybridBackend", "MemoryManager",
+        "ProfilingFacade", "ProfileStore", "ReportPrinter",
+        "GpuBenchmarkBase", "GpuKernelOp", "KernelCacheService",
+        "ServiceManager", "BatchManager", "AsyncServiceBase",
+        "BufferSet", "ConsoleOutput", "ScopedHipEvent", "GPUConfig"
+      ],
+      "patterns": ["Bridge", "Facade", "Service Locator", "RAII", "Template Method"],
+      "deprecated_classes": ["GPUProfiler"],
+      "notes": "Все остальные репо зависят от core. Profiler v1 (GPUProfiler) удалён 2026-04-27, замена ProfilingFacade::BatchRecord."
+    },
+    {
+      "name": "spectrum",
+      "path": "E:/DSP-GPU/spectrum",
+      "purpose": "FFT + filters + LCH Farrow",
+      "namespaces": ["fft_processor", "filters", "lch_farrow", "antenna_fft", "spectrum_utils"],
+      "layer": "processor",
+      "depends_on": ["core"],
+      "external_deps": ["hipFFT"],
+      "stats": {"hpp": 105, "cpp": 13, "hip": 4, "py": 1},
+      "key_classes": [
+        "FFTProcessorROCm", "ComplexToMagPhaseROCm",
+        "FirFilterROCm", "IirFilterROCm", "KalmanFilterROCm",
+        "MovingAverageFilterROCm", "LchFarrow", "SpectrumMaximaFinder",
+        "SpectrumProcessorFactory"
+      ],
+      "patterns": ["Factory", "Operation"],
+      "kernels": ["fft_processor_kernels.hip", "c2mp_kernels.hip"]
+    },
+    {
+      "name": "stats",
+      "path": "E:/DSP-GPU/stats",
+      "purpose": "Statistics + SNR estimator",
+      "namespaces": ["statistics", "gpu_sort", "snr_defaults"],
+      "layer": "processor",
+      "depends_on": ["core", "spectrum"],
+      "external_deps": ["rocprim"],
+      "stats": {"hpp": 26, "cpp": 3, "hip": 1, "py": 0},
+      "key_classes": [
+        "StatisticsProcessor", "WelfordOnline", "RadixSortGPU", "SNREstimator"
+      ],
+      "kernels": ["statistics_sort_gpu.hip"]
+    },
+    {
+      "name": "signal_generators",
+      "path": "E:/DSP-GPU/signal_generators",
+      "purpose": "Генераторы сигналов CW/LFM/Noise/FormSignal",
+      "namespaces": ["signal_gen"],
+      "layer": "processor",
+      "depends_on": ["core", "spectrum"],
+      "stats": {"hpp": 39, "cpp": 12, "hip": 2, "py": 0},
+      "key_classes": [
+        "SignalGenerator", "LfmGenerator", "CwGenerator",
+        "NoiseGenerator", "ScriptGenerator", "FormSignalGenerator",
+        "DelayedFormSignalGenerator", "SignalGeneratorFactory"
+      ],
+      "patterns": ["Factory", "Strategy"],
+      "kernels": ["form_signal.hip"],
+      "notes": "ScriptGenerator (runtime DSL) не портирован в Python API — см. .future/TASK_script_dsl_rocm.md."
+    },
+    {
+      "name": "heterodyne",
+      "path": "E:/DSP-GPU/heterodyne",
+      "purpose": "LFM Dechirp / NCO / Mix",
+      "namespaces": ["heterodyne"],
+      "layer": "processor",
+      "depends_on": ["core", "spectrum", "signal_generators"],
+      "stats": {"hpp": 14, "cpp": 4, "hip": 0, "py": 0},
+      "key_classes": ["HeterodyneDechirp", "HeterodyneROCm", "NCO", "Mix"],
+      "patterns": ["Facade"]
+    },
+    {
+      "name": "linalg",
+      "path": "E:/DSP-GPU/linalg",
+      "purpose": "Vector algebra + Capon + Cholesky",
+      "namespaces": ["vector_algebra", "capon"],
+      "layer": "processor",
+      "depends_on": ["core"],
+      "external_deps": ["rocBLAS", "rocSOLVER"],
+      "stats": {"hpp": 31, "cpp": 7, "hip": 0, "py": 1},
+      "key_classes": ["VectorAlgebra", "CaponProcessor", "CholeskyInverter"],
+      "patterns": ["Facade", "Strategy"]
+    },
+    {
+      "name": "radar",
+      "path": "E:/DSP-GPU/radar",
+      "purpose": "Range-angle + FM correlator",
+      "namespaces": ["range_angle", "fm_correlator"],
+      "layer": "processor",
+      "depends_on": ["core", "spectrum", "stats"],
+      "stats": {"hpp": 25, "cpp": 5, "hip": 3, "py": 1},
+      "key_classes": ["RangeAngleProcessor", "FMCorrelator"],
+      "kernels": [
+        "dechirp_window_kernel.hip",
+        "fftshift2d_kernel.hip",
+        "transpose_kernel.hip"
+      ]
+    },
+    {
+      "name": "strategies",
+      "path": "E:/DSP-GPU/strategies",
+      "purpose": "Pipeline композиция (v1, v2…)",
+      "namespaces": ["strategies"],
+      "layer": "pipeline",
+      "depends_on": ["core", "spectrum", "stats", "signal_generators", "heterodyne", "linalg", "radar"],
+      "stats": {"hpp": 40, "cpp": 4, "hip": 0, "py": 1},
+      "key_classes": ["Pipeline", "PipelineBuilder", "IPipelineStep", "IPostFftScenario", "IMatrixRegularizer"],
+      "patterns": ["Pipeline", "Builder", "Strategy"]
+    },
+    {
+      "name": "DSP",
+      "path": "E:/DSP-GPU/DSP",
+      "purpose": "Мета-репо + Python API (8 dsp_* модулей) + Doc + 51 t_*.py тестов",
+      "namespaces": [],
+      "layer": "python_api",
+      "depends_on": ["core", "spectrum", "stats", "signal_generators", "heterodyne", "linalg", "radar", "strategies"],
+      "stats": {"hpp": 5, "cpp": 6, "hip": 0, "py": 115},
+      "python_modules": [
+        "dsp_core", "dsp_spectrum", "dsp_stats",
+        "dsp_signal_generators", "dsp_heterodyne",
+        "dsp_linalg", "dsp_radar", "dsp_strategies"
+      ],
+      "deprecated_files": ["gpuworklib.py"],
+      "test_framework": {
+        "name": "common.runner.TestRunner",
+        "path": "E:/DSP-GPU/DSP/Python/common/runner.py",
+        "test_file_pattern": "t_*.py",
+        "skip_exception": "common.runner.SkipTest",
+        "pytest_forbidden": true,
+        "rule": "Правило 04 — pytest запрещён навсегда"
+      }
+    },
+    {
+      "name": "workspace",
+      "path": "E:/DSP-GPU",
+      "purpose": "Корень: CLAUDE.md, MemoryBank, .vscode, .claude — без C++ кода",
+      "layer": "meta",
+      "depends_on": [],
+      "stats": {"hpp": 0, "cpp": 0, "hip": 0, "py": 0},
+      "indexable_subdirs": [
+        "MemoryBank/specs/",
+        "MemoryBank/.architecture/",
+        "CLAUDE.md"
+      ],
+      "non_indexable_subdirs": [
+        "MemoryBank/changelog/",
+        "MemoryBank/tasks/",
+        "MemoryBank/sessions/",
+        "MemoryBank/orchestrator_state/",
+        "MemoryBank/feedback/",
+        "MemoryBank/prompts/",
+        ".claude/",
+        ".vscode/",
+        ".continue/",
+        ".git/",
+        "build/"
+      ]
+    }
+  ],
+
+  "global_patterns": [
+    {"name": "Bridge",          "where": "IBackend → ROCm/Hybrid"},
+    {"name": "Factory",         "where": "SpectrumProcessorFactory, SignalGeneratorFactory"},
+    {"name": "Strategy",        "where": "IPipelineStep, IPostFftScenario, IMatrixRegularizer"},
+    {"name": "Pipeline",        "where": "Pipeline + PipelineBuilder (strategies)"},
+    {"name": "Builder",         "where": "PipelineBuilder"},
+    {"name": "Template Method", "where": "GpuBenchmarkBase, AsyncServiceBase"},
+    {"name": "Service Locator", "where": "ServiceManager, ModuleRegistry"},
+    {"name": "Facade",          "where": "DrvGPU, CaponProcessor, HeterodyneDechirp"},
+    {"name": "Operation",       "where": "GpuKernelOp → все *Op классы"},
+    {"name": "RAII",            "where": "ScopedHipEvent (обязателен для hipEvent_t)"}
+  ],
+
+  "build_order": [
+    "core", "spectrum", "stats", "signal_generators",
+    "heterodyne", "linalg", "radar", "strategies", "DSP"
+  ],
+
+  "forbidden_in_generated_code": {
+    "cpp": [
+      {"item": "std::cout", "why": "правило проекта — использовать ConsoleOutput::GetInstance()"},
+      {"item": "std::cerr", "why": "то же"},
+      {"item": "printf",    "why": "то же"},
+      {"item": "GPUProfiler", "why": "@deprecated, удалён 2026-04-27 — использовать ProfilingFacade"},
+      {"item": "GetStats() + ручной цикл вывода", "why": "использовать ProfilingFacade::Export*"}
+    ],
+    "python": [
+      {"item": "import pytest",   "why": "Правило 04 — pytest запрещён, использовать TestRunner"},
+      {"item": "@pytest.fixture", "why": "то же"},
+      {"item": "@pytest.mark.*",  "why": "то же"},
+      {"item": "import gpuworklib", "why": "@deprecated shim, использовать dsp_* модули"}
+    ]
+  },
+
+  "api_breaking_changes_legacy_to_dspgpu": [
+    {"legacy": "gpuworklib.ROCmGPUContext", "new": "dsp_core.ROCmGPUContext", "kind": "rename"},
+    {"legacy": "gpuworklib.LchFarrowROCm",  "new": "dsp_spectrum.LchFarrowROCm", "kind": "rename"},
+    {"legacy": "gpuworklib.LfmAnalyticalDelayROCm", "new": "dsp_signal_generators.LfmAnalyticalDelayROCm", "kind": "rename"},
+    {"legacy": "HeterodyneDechirp.process(rx) → dict", "new": "HeterodyneROCm.dechirp/correct + np.fft + argmax", "kind": "api_rewrite"},
+    {"legacy": "SignalGenerator.generate_lfm()", "new": "NumPy fallback np.exp(1j * phase) или LfmAnalyticalDelayROCm", "kind": "removed"},
+    {"legacy": "ScriptGenerator (runtime DSL)", "new": null, "kind": "not_ported", "reference": ".future/TASK_script_dsl_rocm.md"}
+  ]
+}

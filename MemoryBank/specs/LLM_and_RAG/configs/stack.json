@@ -1,0 +1,316 @@
+{
+  "schema_version": "1.1",
+  "generated": "2026-04-30",
+  "description": "Машиночитаемая версия 01_Stack_Decisions. Используется dsp_assistant/config/loader.py. ИТЕРАЦИЯ 2: SQLite убран, везде PostgreSQL + Qdrant.",
+
+  "stages": {
+    "1_home": {
+      "label": "Дома (отладка) — Windows. Только PostgreSQL (без Qdrant — на Win нет нативной сборки).",
+      "runtime_dir": "C:/finetune-env/.dsp_assistant",
+      "llm": {
+        "provider": "ollama",
+        "model": "qwen3:8b",
+        "quantization": "Q4_K_M",
+        "endpoint": "http://localhost:11434",
+        "api_compat": "openai"
+      },
+      "embeddings": {
+        "provider": "FlagEmbedding",
+        "model": "BAAI/bge-m3",
+        "device": "cuda",
+        "max_length": 8192,
+        "batch_size": 16
+      },
+      "reranker": {
+        "provider": "FlagEmbedding",
+        "model": "BAAI/bge-reranker-v2-m3",
+        "device": "cuda",
+        "top_k_input": 50,
+        "top_k_output": 5
+      },
+      "vector_db": {
+        "provider": "pgvector",
+        "table": "dsp_gpu.embeddings",
+        "vector_size": 1024,
+        "distance": "cosine",
+        "index": "hnsw",
+        "hnsw_m": 16,
+        "hnsw_ef_construction": 200,
+        "comment": "Все vectors хранятся в Postgres через pgvector. Qdrant НЕ используется на этом этапе."
+      },
+      "metadata_db": {
+        "provider": "postgresql",
+        "host": "localhost",
+        "port": 5432,
+        "database": "dsp_assistant",
+        "schema": "dsp_gpu",
+        "user": "dsp_asst",
+        "password_env": "DSP_ASST_PG_PASSWORD",
+        "extensions": ["pg_trgm", "btree_gin", "vector"]
+      },
+      "sparse_index": {
+        "provider": "postgres_tsvector",
+        "table": "symbols.search_vector",
+        "language": "english"
+      },
+      "symbol_graph": {
+        "provider": "clangd",
+        "executable": "clangd",
+        "min_version": "18.0",
+        "storage": "postgresql"
+      }
+    },
+
+    "2_work_local": {
+      "label": "Работа (твой Debian, локально). PostgreSQL + Qdrant (полный стек как на сервере).",
+      "runtime_dir": "~/.dsp_assistant",
+      "llm": {
+        "provider": "ollama",
+        "model": "qwen3:32b",
+        "quantization": "Q4_K_M",
+        "endpoint": "http://localhost:11434",
+        "api_compat": "openai"
+      },
+      "embeddings": "same_as_stage_1",
+      "reranker": "same_as_stage_1",
+      "vector_db": {
+        "provider": "qdrant",
+        "mode": "standalone_binary",
+        "endpoint": "http://localhost:6333",
+        "collection_name": "dsp_gpu_code_v1",
+        "vector_size": 1024,
+        "distance": "cosine"
+      },
+      "metadata_db": {
+        "provider": "postgresql",
+        "host": "localhost",
+        "port": 5432,
+        "database": "dsp_assistant",
+        "schema": "dsp_gpu",
+        "user": "dsp_asst",
+        "password_env": "DSP_ASST_PG_PASSWORD",
+        "extensions": ["pg_trgm", "btree_gin"],
+        "comment": "pgvector НЕ нужен — vectors в Qdrant"
+      },
+      "sparse_index": "same_as_stage_1",
+      "symbol_graph": "same_as_stage_1"
+    },
+
+    "3_mini_server": {
+      "label": "Мини-сервер Ubuntu (отладочный, копия работы). PostgreSQL + Qdrant (как на работе).",
+      "runtime_dir": "~/.dsp_assistant (на сервере)",
+      "llm": {
+        "provider": "vllm",
+        "model": "Qwen/Qwen3-32B",
+        "quantization": "AWQ",
+        "endpoint": "http://<mini-server-ip>:8000",
+        "api_compat": "openai",
+        "deployment": "systemd-сервис"
+      },
+      "client_access": "Continue + Claude Code на dev-машинах через SSH-туннель к MCP-серверу dsp-asst на мини-сервере",
+      "vector_db": {
+        "provider": "qdrant",
+        "deployment": "systemd-сервис",
+        "endpoint": "http://localhost:6333"
+      },
+      "metadata_db": {
+        "provider": "postgresql",
+        "deployment": "systemd-сервис (apt install postgresql-16 postgresql-contrib)",
+        "schema": "dsp_gpu",
+        "extensions": ["pg_trgm", "btree_gin"]
+      }
+    },
+
+    "4_production": {
+      "label": "Production (общий сервер работы / A100, +3-4 мес)",
+      "llm": {
+        "provider": "vllm",
+        "model": "TBD (DeepSeek-V3 671B / Qwen Max когда выйдет)",
+        "quantization": "AWQ или FP8",
+        "concurrent_users": 5
+      },
+      "metadata_db": "общий PostgreSQL, схемы per-проект (dsp_gpu, project2, ...)",
+      "vector_db": "общий Qdrant, коллекции per-проект",
+      "notes": "Решение по железу — после прихода. Архитектура и схема БД не меняются."
+    }
+  },
+
+  "indexer": {
+    "chunkers": {
+      "cpp": {
+        "provider": "tree-sitter",
+        "grammar": "tree-sitter-cpp",
+        "extensions": [".hpp", ".h", ".cpp", ".cc", ".hip", ".cuh", ".cu"],
+        "split_by": ["class_specifier", "function_definition", "namespace_definition"],
+        "max_chunk_chars": 4000,
+        "include_doxygen_block_above": true
+      },
+      "python": {
+        "provider": "ast",
+        "extensions": [".py"],
+        "split_by": ["ClassDef", "FunctionDef", "AsyncFunctionDef"],
+        "max_chunk_chars": 4000,
+        "include_docstring": true
+      },
+      "cmake": {
+        "provider": "naive",
+        "extensions": [".cmake", ".in"],
+        "filenames": ["CMakeLists.txt", "CMakePresets.json"],
+        "split_by_blocks": ["target_*", "find_*", "add_*", "install_*", "option(", "FetchContent_*"],
+        "max_chunk_chars": 3000
+      },
+      "configs_text": {
+        "filenames": ["pyproject.toml", "requirements.txt", "setup.py", "Doxyfile", "configGPU.json"],
+        "extensions": [".json"],
+        "strategy": "whole_file_plus_keys",
+        "exclude_data_dirs": ["**/data/**", "**/fixtures/**"]
+      },
+      "test_data": {
+        "extensions": [".json", ".npy", ".csv"],
+        "include_only_dirs": ["**/data/**", "**/fixtures/**"],
+        "strategy": "metadata_only"
+      },
+      "markdown": {
+        "extensions": [".md"],
+        "include_dirs": ["MemoryBank/specs/", "MemoryBank/.architecture/", "."],
+        "split_by": ["heading_h2", "heading_h3"],
+        "max_chunk_chars": 2000
+      },
+      "rules": {
+        "filenames": ["CLAUDE.md"],
+        "include_dirs": [".claude/rules/", ".continue/rules/"],
+        "strategy": "whole_file"
+      },
+      "workspace_meta": {
+        "extensions": [".code-workspace"],
+        "strategy": "whole_file"
+      }
+    },
+    "skip_dirs": [
+      "build", "__pycache__", ".venv", ".git", "vcpkg", "node_modules",
+      ".claude/worktrees", "MemoryBank/changelog", "MemoryBank/sessions",
+      "MemoryBank/orchestrator_state", "MemoryBank/feedback",
+      "Results", "Output", "Profiler"
+    ],
+    "skip_files_pattern": ["**/CMakeFiles/**", "**/*.bak", "**/*.so", "**/*.a", "**/*.o", "**/*.lib", "**/*.dll", "**/*.exe", "**/*.pyc"],
+    "incremental": {
+      "enabled": true,
+      "hash_algo": "blake3",
+      "hash_storage": "postgresql_files_table"
+    }
+  },
+
+  "symbol_graph_strategy": {
+    "primary_collection": {
+      "name": "public_api",
+      "scope": "public methods + public fields + free functions + macros",
+      "use_for_modes": ["explain", "find", "test", "doxy"]
+    },
+    "internal_collection": {
+      "name": "internal",
+      "scope": "private + protected + implementation details",
+      "use_for_modes": ["refactor", "agent"]
+    },
+    "ai_summary_strategy": "hybrid_C",
+    "ai_summary_fast_path": {
+      "enabled": false,
+      "description": "Опциональный режим: 5 параллельных Qwen-агентов для pre-compute всех методов",
+      "concurrency": 5
+    }
+  },
+
+  "test_params": {
+    "storage_postgres": "test_params table",
+    "storage_git": "MemoryBank/specs/LLM_and_RAG/test_params/<repo>_<class>.json",
+    "editor": "json_in_vscode",
+    "auto_extracted_default": true,
+    "human_verified_default": false
+  },
+
+  "retrieval": {
+    "default_top_k": 5,
+    "hybrid_weights": {
+      "dense": 0.6,
+      "sparse": 0.4
+    },
+    "rerank_after_hybrid": true,
+    "filter_modes": ["repo", "namespace", "layer", "file_ext", "language", "pattern", "is_deprecated", "human_verified"],
+    "context_window_mode": {
+      "description": "Альтернативный режим: текущий файл + соседи по include-графу + same-namespace",
+      "max_neighbors": 8
+    }
+  },
+
+  "modes": {
+    "explain":  {"system_prompt": "prompts/explain_system.md",   "temperature": 0.2, "max_tokens": 1500, "collection": "public_api"},
+    "find":     {"system_prompt": "prompts/find_system.md",      "temperature": 0.0, "max_tokens": 800,  "collection": "public_api"},
+    "test":     {"system_prompt": "prompts/002_test_python_runner.md", "temperature": 0.3, "max_tokens": 2000, "collection": "public_api"},
+    "doxy":     {"system_prompt": "prompts/doxy_system.md",      "temperature": 0.2, "max_tokens": 1500, "collection": "public_api"},
+    "refactor": {"system_prompt": "prompts/refactor_system.md",  "temperature": 0.3, "max_tokens": 3000, "collection": "internal"},
+    "agent":    {"system_prompt": "prompts/agent_system.md",     "temperature": 0.4, "max_tokens": 4000, "collection": "internal", "tools": ["read_file", "grep", "list_symbols", "context7", "web_fetch", "sequential_thinking"]}
+  },
+
+  "server": {
+    "mcp": {
+      "enabled": true,
+      "transport": "stdio",
+      "name": "dsp-asst"
+    },
+    "http": {
+      "enabled": false,
+      "host": "127.0.0.1",
+      "port": 7821
+    },
+    "cli": {
+      "enabled": true,
+      "entry_point": "dsp-asst"
+    }
+  },
+
+  "training": {
+    "method": "QLoRA",
+    "base_model": "C:/finetune-env/qwen3-8b",
+    "quantization": {
+      "load_in_4bit": true,
+      "bnb_4bit_compute_dtype": "float16",
+      "bnb_4bit_quant_type": "nf4",
+      "bnb_4bit_use_double_quant": true
+    },
+    "lora": {
+      "r": 16,
+      "alpha": 32,
+      "dropout": 0.05,
+      "target_modules": ["q_proj", "v_proj", "k_proj", "o_proj"],
+      "task_type": "CAUSAL_LM"
+    },
+    "training_args": {
+      "num_train_epochs": 3,
+      "per_device_train_batch_size": 1,
+      "gradient_accumulation_steps": 8,
+      "learning_rate": 2e-4,
+      "warmup_steps": 10,
+      "lr_scheduler_type": "cosine",
+      "fp16": true,
+      "save_steps": 50,
+      "logging_steps": 10
+    },
+    "output_dir": "C:/finetune-env/output",
+    "post_training": {
+      "merge_lora": true,
+      "convert_to_gguf": true,
+      "gguf_quantization": "Q4_K_M",
+      "deploy_to_ollama": true,
+      "ollama_model_name": "qwen3-8b-dsp"
+    }
+  },
+
+  "eval": {
+    "golden_set_path": "MemoryBank/specs/LLM_and_RAG/golden_set/qa_v1.jsonl",
+    "metrics": {
+      "retrieval": ["recall@1", "recall@5", "recall@10", "mrr@10"],
+      "generation": ["llm_judge_score_1_5", "exact_match_count", "passes_runtime_check"]
+    },
+    "llm_judge_model": "qwen3:32b (когда доступна) или внешняя через Кодо",
+    "passes_runtime_check": "сгенерированный тест выполняется через TestRunner без ошибок"
+  }
+}
