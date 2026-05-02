@@ -2,7 +2,7 @@
 
 **Дата создания:** 2026-05-01
 **Автор:** Кодо
-**Статус:** 🔄 Phase D9 IN PROGRESS (2026-05-02) — tests/*.hpp шапки; после → Phase E
+**Статус:** ✅ Phase D9 DONE (2026-05-02) — все tests/*.hpp шапки добавлены; следующий → Phase E
 **План-источник:** [`MemoryBank/specs/Header_Comment_Format_Plan_2026-05-01.md`](../specs/Header_Comment_Format_Plan_2026-05-01.md)
 **Связанный план:** [`MemoryBank/specs/LLM_and_RAG/00_Master_Plan_2026-04-30.md`](../specs/LLM_and_RAG/00_Master_Plan_2026-04-30.md)
 
