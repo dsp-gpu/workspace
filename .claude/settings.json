@@ -21,7 +21,15 @@
       "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/common/gpu_context.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
       "Bash(grep -n \"^### dsp_spectrum\\\\|^---$\\\\|^## 🔁 Legacy\\\\|^### 🔴 Реальные\\\\|^---\" e:/DSP-GPU/MemoryBank/specs/python/migration_plan_2026-04-29.md)",
       "Bash(sed -i '320,405d' e:/DSP-GPU/MemoryBank/specs/python/migration_plan_2026-04-29.md)",
-      "Bash(sed -n '317,325p' e:/DSP-GPU/MemoryBank/specs/python/migration_plan_2026-04-29.md)"
+      "Bash(sed -n '317,325p' e:/DSP-GPU/MemoryBank/specs/python/migration_plan_2026-04-29.md)",
+      "Read(//mnt/e/DSP-GPU/core/**)",
+      "Read(//mnt/e/**)",
+      "PowerShell(Get-ChildItem \"e:\\\\DSP-GPU\\\\core\\\\tests\" | ForEach-Object { $_.Name })",
+      "PowerShell(Get-Content \"C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\e--DSP-GPU\\\\af6f181d-f849-45f9-9a09-4f226b8d05e8\\\\tasks\\\\b2sc4rk1x.output\" -Wait -Tail 30 2>&1)",
+      "PowerShell(git -C \"e:\\\\DSP-GPU\\\\strategies\" push origin main 2>&1)",
+      "PowerShell(git -C \"e:\\\\DSP-GPU\\\\spectrum\" push origin main 2>&1)",
+      "PowerShell(git -C \"e:\\\\DSP-GPU\\\\stats\" push origin main 2>&1)",
+      "mcp__dsp-asst__dsp_find"
     ],
     "additionalDirectories": [
       "/tmp"
