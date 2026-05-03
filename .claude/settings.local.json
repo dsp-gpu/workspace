@@ -94,7 +94,16 @@
       "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/radar/t_fm_correlator_rocm.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
       "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/radar/t_range_angle.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
       "Bash(python -c \"import ast; ast.parse\\(open\\('e:/DSP-GPU/DSP/Python/heterodyne/t_heterodyne.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
-      "mcp__dsp-asst__dsp_search"
+      "mcp__dsp-asst__dsp_search",
+      "Bash(./.venv/Scripts/python.exe smoke_patcher.py)",
+      "Bash(./.venv/Scripts/python.exe smoke_patcher_spectrum.py)",
+      "Bash(./.venv/Scripts/python.exe *)",
+      "Bash(grep -v \":0$\")",
+      "Bash(awk -F: '{sum+=$2; print} END {print \"===\\\\nTOTAL:\", sum}')",
+      "Bash(awk -F: '{print $NF, $1}')",
+      "Bash(sort -t: -k2 -rn)",
+      "Bash(awk -F: '{print $NF\":\"$1}')",
+      "Bash(awk -F'/include/core/' '{ split\\($2, a, \":\"\\); count = a[length\\(a\\)]; path = \"\"; for \\(i=1; i<length\\(a\\); i++\\) path = path \\(i>1?\":\":\"\"\\) a[i]; printf \"%4d  %s\\\\n\", count, path }')"
     ]
   },
   "enableAllProjectMcpServers": true,

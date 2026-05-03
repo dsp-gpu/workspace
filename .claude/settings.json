@@ -29,10 +29,23 @@
       "PowerShell(git -C \"e:\\\\DSP-GPU\\\\strategies\" push origin main 2>&1)",
       "PowerShell(git -C \"e:\\\\DSP-GPU\\\\spectrum\" push origin main 2>&1)",
       "PowerShell(git -C \"e:\\\\DSP-GPU\\\\stats\" push origin main 2>&1)",
-      "mcp__dsp-asst__dsp_find"
+      "mcp__dsp-asst__dsp_find",
+      "Read(//c/finetune-env/dsp_assistant/**)",
+      "Read(//c/finetune-env/**)",
+      "Bash(grep \"^  ///\")",
+      "Bash(awk 'NR>=95 && NR<=135 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/heterodyne/include/heterodyne/heterodyne_dechirp.hpp\")",
+      "Bash(awk 'NR>=113 && NR<=122 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/heterodyne/include/heterodyne/heterodyne_dechirp.hpp\")",
+      "Bash(awk 'NR>=75 && NR<=160 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/signal_generators/include/signal_generators/signal_generator_factory.hpp\")",
+      "Bash(awk 'NR>=75 && NR<=170 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/signal_generators/include/signal_generators/generators/script_generator_rocm.hpp\")",
+      "Bash(python C:/finetune-env/clean_doxytags_dups.py --root E:/DSP-GPU/linalg/include)",
+      "Bash(awk 'NR>=200 && NR<=220 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/linalg/include/linalg/matrix_ops_rocm.hpp\")",
+      "Bash(python C:/finetune-env/clean_doxytags_dups.py --root E:/DSP-GPU/strategies/include)",
+      "Bash(awk 'NR>=82 && NR<=140 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/strategies/include/strategies/pipeline_builder.hpp\")",
+      "Bash(awk 'NR>=405 && NR<=420 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/spectrum/include/spectrum/processors/spectrum_processor_rocm.hpp\")"
     ],
     "additionalDirectories": [
-      "/tmp"
+      "/tmp",
+      "C:\\finetune-env"
     ]
   }
 }
