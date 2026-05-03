@@ -9,11 +9,14 @@
 | 1 | [TASK_python_migration_phase_B_debian_2026-05-03.md](TASK_python_migration_phase_B_debian_2026-05-03.md) — реальный прогон 54 t_*.py на gfx1201 + точечные tolerance | 📋 ожидает (стартует 2026-05-03+) | ~3-5 ч | Debian + RX 9070 |
 | 2 | [TASK_KernelCache_v2_Closeout_2026-04-27.md](TASK_KernelCache_v2_Closeout_2026-04-27.md) — MemoryBank sync + core/Doc/Services/Full.md + опц. tag v0.3.0 | 📋 готов | 3-5 ч | Windows |
 | 3 | [TASK_Profiler_v2_INDEX.md](TASK_Profiler_v2_INDEX.md) — 3 закрывающих таска (доки, CI, Q7 roctracer) | 📋 ждёт OK | 4-30 ч | Windows + опц. Debian |
+| 4 | [TASK_validators_port_from_GPUWorkLib_2026-05-03.md](TASK_validators_port_from_GPUWorkLib_2026-05-03.md) — `MaxRelError/RmseError/Validators` → `core/test_utils/` + Python зеркало | 📋 active | ~4-6 ч | Windows |
 
 ## Перспективные (`.future/`)
 
 - [TASK_script_dsl_rocm.md](../.future/TASK_script_dsl_rocm.md) — runtime HIP DSL (заменяет удалённый ScriptGenerator)
 - [TASK_pybind_review.md](../.future/TASK_pybind_review.md) — заготовка под pybind issues, наполняется в Phase B
+- [TASK_gtest_variant_for_external_projects.md](../.future/TASK_gtest_variant_for_external_projects.md) — GTest вариант AI-генератора (для проектов на GoogleTest)
+- [TASK_namespace_migration_legacy_to_dsp.md](../.future/TASK_namespace_migration_legacy_to_dsp.md) — `fft_processor::*` → `dsp::spectrum::*` (после стабилизации doxytags + первого обучения AI)
 
 ## ✅ Закрыто 2026-04-30 — Phase A Python migration
 
