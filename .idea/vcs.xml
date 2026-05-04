@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/DSP" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build/_deps/dspcore-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/core" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/heterodyne" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/linalg" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/radar" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/signal_generators" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/spectrum" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/stats" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/strategies" vcs="Git" />
+  </component>
+</project>
