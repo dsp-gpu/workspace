@@ -1,9 +1,10 @@
 # TASK — doxytags Phase 2 на оставшихся файлах core/
 
 > **Создан**: 2026-05-03
-> **Статус**: TODO (отложено в отдельную сессию)
+> **Обновлён**: 2026-05-05 (ночь) — **✅ DONE** за одну вечернюю/ночную сессию.
+> **Статус**: ✅ DONE (774 / 775 закрыто; последний — реальный TODO в коде, не doxytags).
 > **Контекст**: продолжение doxytags-проекта; 7 репо завершены, core частично сделан
-> **Триггер реактивации**: «продолжи doxytags core» / «доделай core remaining»
+> **Триггер реактивации**: ~~«продолжи doxytags core»~~ — задача закрыта.
 
 ## 🎯 Цель
 
@@ -19,7 +20,16 @@
 - **Commit**: частичная работа закоммичена (см. git log core).
 - 7 других репо полностью завершены (spectrum/stats/heterodyne/signal_generators/linalg/radar/strategies — ~1322 правки).
 
-## ❌ Что осталось — 52 файла, 781 TODO
+В сессии 2026-05-04 — **Подсессия 1 ✅ DONE**:
+- `services/profiling/*` — 10 файлов, **132 TODO → 0**:
+  - `i_profile_exporter.hpp` (4), `i_profiler_recorder.hpp` (5), `scoped_profile_timer.hpp` (1)
+  - `console_exporter.hpp` (9), `json_exporter.hpp` (9), `markdown_exporter.hpp` (9)
+  - `report_printer.hpp` (15), `profile_store.hpp` (20)
+  - `profiling_facade.hpp` (28), `profile_analyzer.hpp` (32)
+- Стиль: content-aware русские описания (НЕ shotgun), `@brief` 1-2 строки + `@param/@return/@test_check`.
+- Commit: см. git log core (2026-05-04).
+
+## ❌ Что осталось — 42 файла, 643 TODO
 
 Сортировано по убыванию TODO:
 
