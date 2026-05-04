@@ -1,9 +1,20 @@
 # TASK — Портирование валидаторов из GPUWorkLib в DSP-GPU
 
 > **Создано**: 2026-05-03
-> **Статус**: 📋 active (нужно до запуска AI-генератора тестов)
-> **Effort**: ~2-3 ч (C++) + 1-2 ч (Python зеркало) + 1 ч (тесты)
-> **Платформа**: Windows (написать) → Debian (проверить)
+> **Статус**: ≈90% ✅ (2026-05-04 ревизия) — **C++ free functions перенесены, Python независим, правило 15 обновлено**.
+> Осталось: раскатить использование `gpu_test_utils::*` по 8 модулям (см. под-таск).
+> **Effort**: ~2-3 ч (C++) + 1-2 ч (Python) + 1 ч (тесты) — **выполнено до 2026-05-04**.
+> **Платформа**: Debian (RX 9070).
+
+---
+
+## ⚠️ Правки 2026-05-04 (важно — отличие от первоначального плана)
+
+1. **API в C++ — НЕ Strategy-классы**, а **template free functions** (`MaxRelError/AbsError/RmseError/ScalarRelError/ScalarAbsError/CheckPeakFreq/CheckPower`). Strategy-классы (`IValidator/RelativeValidator/AbsoluteValidator/RmseValidator`) **не нужны** — конфиги в C++ тестах хардкодятся, шаблоны заменяют DI. Раздел «Strategy-pattern классы» убран из правила `15-cpp-testing.md`.
+2. **Python validators (`DSP/Python/common/validators/`)** — **независимый** инструмент. **Не зеркало** C++. В коде C++ нет include на Python и наоборот. Файловые комменты numeric.hpp / signal.hpp обновлены: «Самостоятельный модуль (не связан с Python)».
+3. **Раскатка по модулям** — **отдельная** задача. Создан под-таск-пилот: `TASK_validators_linalg_pilot_2026-05-04.md`. После него — 7 параллельных подтасков для остальных модулей.
+
+---
 
 ---
 

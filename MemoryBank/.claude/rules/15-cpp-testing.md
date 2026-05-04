@@ -78,40 +78,43 @@ src/main.cpp → core/tests/all_test.hpp
 
 ## Валидаторы (`gpu_test_utils::*` — `core/test_utils/validators/`)
 
-Готовые helper'ы вместо ручного epsilon-сравнения. Зеркальный API в Python
-(`DSP/Python/common/validators/`).
+> **C++ test infrastructure**, самостоятельный модуль. **Не связан** с Python-валидаторами
+> из `DSP/Python/common/validators/` — это другой инструмент в другом языке для других задач.
 
-### Free functions (одна строка)
+Готовые helper'ы вместо ручного epsilon-сравнения. Только **template free functions** — никаких
+Strategy-классов / DI / factory: в C++ тестах DSP-GPU они не нужны (конфиги хардкодятся,
+шаблоны заменяют DI).
+
+### API (free functions, одна строка вместо `if` на 4 строки)
 
 ```cpp
 #include "core/test_utils/validators/numeric.hpp"
-using gpu_test_utils::MaxRelError;     // max|a-r| / max|r| < tol
-using gpu_test_utils::AbsError;        // max|a-r| < tol
-using gpu_test_utils::RmseError;       // sqrt(mean((a-r)^2)) / rms(r) < tol
-using gpu_test_utils::ScalarRelError;  // |a-e|/|e| < tol для скаляров
-using gpu_test_utils::ScalarAbsError;  // |a-e| < tol для скаляров
+using gpu_test_utils::MaxRelError;     // max|a-r| / max|r| < tol  — main GPU vs CPU
+using gpu_test_utils::AbsError;        // max|a-r| < tol            — индексы бинов, частоты в Гц
+using gpu_test_utils::RmseError;       // sqrt(mean((a-r)^2)) / rms(r) < tol — шумные данные, фильтры
+using gpu_test_utils::ScalarRelError;  // |a-e|/|e| < tol           — скаляр относительно
+using gpu_test_utils::ScalarAbsError;  // |a-e| < tol               — скаляр абсолютно
+
+#include "core/test_utils/validators/signal.hpp"
+using gpu_test_utils::CheckPeakFreq;        // пик FFT-спектра на ожидаемой частоте
+using gpu_test_utils::CheckPeakFreqComplex; // пик из complex spectrum
+using gpu_test_utils::CheckPower;           // мощность сигнала ~ ожидаемой
 
 auto v = MaxRelError(gpu.data(), cpu.data(), gpu.size(),
                      /*tol=*/1e-5, /*name=*/"fft_magnitude");
 tr.add(v);  // ValidationResult: passed/metric_name/actual_value/threshold
 ```
 
-Шаблонные — работают с `float`, `double`, `std::complex<T>`. Для near-zero
-reference (rms_ref < 1e-15) переключаются на абсолютную проверку (1e-10).
-
-### Strategy-pattern классы (через DI)
-
-```cpp
-RelativeValidator v(1e-5);
-tr.add(v.Validate(gpu, cpu, "fft_magnitude"));
-```
-
-`AbsoluteValidator`, `RmseValidator` — с тем же интерфейсом `IValidator`.
+Шаблонные — работают с `float`, `double`, `std::complex<T>`. Для near-zero reference
+(`rms_ref < 1e-15`) переключаются на абсолютную проверку (1e-10) — **fail-soft fallback**,
+не молчаливый pass.
 
 ### Запрет
 
-- ❌ `if (std::abs(a - b) > tol) { fail; }` — плодит баги с near-zero ref.
-- ✅ `MaxRelError(a.data(), b.data(), n, tol)` — единый путь, согласованный с Python.
+- ❌ `if (std::abs(a - b) > tol) { fail; }` — плодит баги с near-zero ref, тулинг и
+   reporters не получают `ValidationResult`.
+- ✅ `MaxRelError(a.data(), b.data(), n, tol, "metric_name")` — единый путь, отчёт получает
+   `actual_value` и `threshold` для всех тестов.
 
 ## 🚫 Запрещено
 
