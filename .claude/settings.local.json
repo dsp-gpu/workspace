@@ -127,7 +127,15 @@
       "Bash(grep -E \"^\\(SQ_BUSY|VALUInsts|SALUInsts|VALUBusy|MemUnitBusy|L2.*Hit|LDS.*Conflict|GPUBusy|GRBM_GUI_ACTIVE|CU_OCCUPANCY|FETCH_SIZE|WRITE_SIZE\\):$\" /opt/rocm/share/rocprofiler-sdk/counter_defs.yaml)",
       "Bash(grep -A 8 \"^GPUBusy:$\" /opt/rocm/share/rocprofiler-sdk/counter_defs.yaml)",
       "Bash(grep -nA 0 \"gfx12\\\\|gfx1201\" /opt/rocm/share/rocprofiler-sdk/counter_defs.yaml)",
-      "Bash(awk '/^  - name:/ {name=$3} /architectures:/ {arch=1; next} arch && /^      - gfx12/ {print name; arch=0} /^    [a-z]/ {arch=0}' /opt/rocm/share/rocprofiler-sdk/counter_defs.yaml)"
+      "Bash(awk '/^  - name:/ {name=$3} /architectures:/ {arch=1; next} arch && /^      - gfx12/ {print name; arch=0} /^    [a-z]/ {arch=0}' /opt/rocm/share/rocprofiler-sdk/counter_defs.yaml)",
+      "Bash(grep -rnA 5 \"struct rocprofiler_counter_record\\\\|typedef.*rocprofiler_counter_record\" /opt/rocm/include/rocprofiler-sdk/)",
+      "Bash(grep -nA 10 \"struct rocprofiler_counter_record_t\" /opt/rocm/include/rocprofiler-sdk/fwd.h /opt/rocm/include/rocprofiler-sdk/counters.h)",
+      "Bash(grep -B 2 -A 10 \"rocprofiler_counter_record_t$\" /opt/rocm/include/rocprofiler-sdk/fwd.h)",
+      "Bash(grep -nA 6 \"rocprofiler_query_record_counter_id\" /opt/rocm/include/rocprofiler-sdk/counters.h)",
+      "Bash(chmod +x /home/alex/DSP-GPU/core/spike/q7b_rocprofiler/build_counters.sh)",
+      "Bash(./build_counters.sh)",
+      "Bash(./spike_counters)",
+      "Bash(xargs -I{} git ls-files -s {})"
     ]
   },
   "enableAllProjectMcpServers": true,

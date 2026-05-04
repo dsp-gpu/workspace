@@ -39,24 +39,33 @@
 - ✅ 252 counter definitions в `/opt/rocm/share/rocprofiler-sdk/counter_defs.yaml`
 - ✅ gfx1201 поддерживает все основные: GPUBusy, L2CacheHit, LDSBankConflict, FetchSize, ...
 
-### Q7.F.A — API + RocprofilerTimingSource extension (1.5-2 ч)
+### Q7.F.A — API hook (DONE 2026-05-04, ~30 мин)
 
-1. `IProfilingTimingSource::SetCounters(vec<string>)` — virtual метод (default no-op для HipEvent).
-2. `ProfilingFacade::SetCounters(vec<string>)` — passthrough в текущий source.
-3. `RocprofilerTimingSource`:
-   - В `Impl` добавить `std::vector<std::string> counter_names_`, `unordered_map<uint64_t, vector<rocprofiler_counter_id_t>> agent_counters_`
-   - В `Start()`:
-     - Если `counter_names_` не пуст — для каждого agent резолвить counter_id (callback `rocprofiler_iterate_agent_supported_counters`)
-     - Создать `rocprofiler_counter_config_id_t` через `rocprofiler_create_counter_config`
-     - Регистрировать `rocprofiler_configure_callback_dispatch_counting_service`
-   - В `record_callback` — заполнять `ProfilingRecord.counters[name] = value` (через id→name lookup)
+1. ✅ `IProfilingTimingSource::SetCounters(vec<string>)` — virtual метод (default no-op для HipEvent).
+2. ✅ `ProfilingFacade::SetCounters(vec<string>)` — passthrough в текущий source.
+3. ✅ `RocprofilerTimingSource`: store в `Impl::counter_names`, refuse post-Start changes.
 
-### Q7.F.B — Tests (1 ч)
+### Q7.F.A2 — Real counter resolver + dispatch_counting_service (DONE 2026-05-04, ~2 ч)
 
-`core/tests/test_rocprofiler_counters.hpp`:
-- `TestSetCountersEmpty_NoOp` — default behavior без counters: ProfilingRecord.counters пуст
-- `TestSetCounters_HipEventNoOp` — `SetCounters(...)` на HipEvent — silent ignore
-- `TestSetCounters_SkippedWithoutFlag` — без `DSP_PROFILING_ROCTRACER=ON` — fallback graceful
+1. ✅ `CounterDispatchCallback` — резолвит agent counters через `rocprofiler_iterate_agent_supported_counters` + `rocprofiler_query_counter_info` (name match), создаёт config через `rocprofiler_create_counter_config`. Кешируется per agent.
+2. ✅ `CounterRecordCallback` — `rocprofiler_query_record_counter_id` (instance → counter_id), aggregation values по dimensions (sum), сохранение в `Impl::counter_results[cid]`.
+3. ✅ В `RocprofilerToolInit` добавлен `rocprofiler_configure_callback_dispatch_counting_service` — only if `counter_names` не пуст.
+4. ✅ В `OnBuffer` (kernel_dispatch case) — приклеиваем `counter_results[cid]` к `ProfilingRecord.counters` (best-effort, без блокировки kernel'а).
+5. ✅ Spike `core/spike/q7b_rocprofiler/spike_counters.cpp` — verified на gfx1201:
+   - `GRBM_GUI_ACTIVE` (cycles GUI active) и `SQ_WAVES` (waves dispatched) собраны для 6 kernel'ов
+   - Cold start: `GRBM_GUI_ACTIVE=32856, SQ_WAVES=232` (init overhead)
+   - Hot-path: `GRBM_GUI_ACTIVE≈22000, SQ_WAVES≈2128` (стабильно)
+
+### Q7.F.B — Tests (DONE 2026-05-04, ~30 мин)
+
+`core/tests/test_timing_source.hpp` (расширен) — **12/12 PASS** на ON и OFF:
+- ✅ `TestSetCountersEmpty` — empty list silent ok
+- ✅ `TestSetCountersOnHipEvent` — HipEvent ignores SetCounters
+- ✅ `TestSetCountersGraceful` — graceful behavior (Rocprofiler ON или fallback OFF — оба валидны)
+
+Тесты переписаны без `#if DSP_PROFILING_ROCTRACER` (PRIVATE define не виден в test target) — принимают оба сценария.
+
+**Реальная GPU-валидация** — через `core/spike/q7b_rocprofiler/spike_counters.cpp` (см. Q7.F.A2 выше).
 
 ### Q7.F.C — Doc polish (15-30 мин)
 
