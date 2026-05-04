@@ -112,7 +112,8 @@
       "Bash(sed -i 's/        spectrum = fft\\\\.process_complex/        spec_data = fft.process_complex/g' t_signal_to_spectrum.py)",
       "Bash(sed -i 's/            spectrum = fft\\\\.process_complex/            spec_data = fft.process_complex/g' t_signal_to_spectrum.py)",
       "Bash(sed -n '215,230p' /home/alex/DSP-GPU/DSP/Python/signal_generators/t_form_signal_rocm.py)",
-      "Bash(sed -n '82,95p' /home/alex/DSP-GPU/DSP/Python/integration/t_fft_integration.py)"
+      "Bash(sed -n '82,95p' /home/alex/DSP-GPU/DSP/Python/integration/t_fft_integration.py)",
+      "Bash(/home/alex/DSP-GPU/DSP/build/debian-local-dev/_deps/dspcore-build/tests/test_core_main)"
     ]
   },
   "enableAllProjectMcpServers": true,
