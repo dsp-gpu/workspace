@@ -106,7 +106,13 @@
       "Bash(awk -F'/include/core/' '{ split\\($2, a, \":\"\\); count = a[length\\(a\\)]; path = \"\"; for \\(i=1; i<length\\(a\\); i++\\) path = path \\(i>1?\":\":\"\"\\) a[i]; printf \"%4d  %s\\\\n\", count, path }')",
       "Bash(kill -0 13531)",
       "Bash(echo \"exit=$?\")",
-      "Bash(tee /tmp/python_tests.txt)"
+      "Bash(tee /tmp/python_tests.txt)",
+      "Bash(sed -i 's/spectrum\\\\.FirFilter\\(/spectrum.FirFilterROCm\\(/g; s/spectrum\\\\.IirFilter\\(/spectrum.IirFilterROCm\\(/g' t_filters_stage1.py)",
+      "Bash(sed -i 's/spectrum\\\\.FirFilter\\(/spectrum.FirFilterROCm\\(/g; s/spectrum\\\\.IirFilter\\(/spectrum.IirFilterROCm\\(/g' t_iir_plot.py)",
+      "Bash(sed -i 's/        spectrum = fft\\\\.process_complex/        spec_data = fft.process_complex/g' t_signal_to_spectrum.py)",
+      "Bash(sed -i 's/            spectrum = fft\\\\.process_complex/            spec_data = fft.process_complex/g' t_signal_to_spectrum.py)",
+      "Bash(sed -n '215,230p' /home/alex/DSP-GPU/DSP/Python/signal_generators/t_form_signal_rocm.py)",
+      "Bash(sed -n '82,95p' /home/alex/DSP-GPU/DSP/Python/integration/t_fft_integration.py)"
     ]
   },
   "enableAllProjectMcpServers": true,
