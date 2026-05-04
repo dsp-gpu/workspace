@@ -103,7 +103,10 @@
       "Bash(awk -F: '{print $NF, $1}')",
       "Bash(sort -t: -k2 -rn)",
       "Bash(awk -F: '{print $NF\":\"$1}')",
-      "Bash(awk -F'/include/core/' '{ split\\($2, a, \":\"\\); count = a[length\\(a\\)]; path = \"\"; for \\(i=1; i<length\\(a\\); i++\\) path = path \\(i>1?\":\":\"\"\\) a[i]; printf \"%4d  %s\\\\n\", count, path }')"
+      "Bash(awk -F'/include/core/' '{ split\\($2, a, \":\"\\); count = a[length\\(a\\)]; path = \"\"; for \\(i=1; i<length\\(a\\); i++\\) path = path \\(i>1?\":\":\"\"\\) a[i]; printf \"%4d  %s\\\\n\", count, path }')",
+      "Bash(kill -0 13531)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(tee /tmp/python_tests.txt)"
     ]
   },
   "enableAllProjectMcpServers": true,
