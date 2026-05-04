@@ -135,7 +135,10 @@
       "Bash(chmod +x /home/alex/DSP-GPU/core/spike/q7b_rocprofiler/build_counters.sh)",
       "Bash(./build_counters.sh)",
       "Bash(./spike_counters)",
-      "Bash(xargs -I{} git ls-files -s {})"
+      "Bash(xargs -I{} git ls-files -s {})",
+      "WebFetch(domain:claude.com)",
+      "Bash(grep -nB1 -A2 \"@brief TODO\" E:/DSP-GPU/core/include/core/backends/opencl/opencl_backend.hpp)",
+      "Bash(grep *)"
     ]
   },
   "enableAllProjectMcpServers": true,

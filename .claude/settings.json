@@ -41,7 +41,11 @@
       "Bash(awk 'NR>=200 && NR<=220 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/linalg/include/linalg/matrix_ops_rocm.hpp\")",
       "Bash(python C:/finetune-env/clean_doxytags_dups.py --root E:/DSP-GPU/strategies/include)",
       "Bash(awk 'NR>=82 && NR<=140 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/strategies/include/strategies/pipeline_builder.hpp\")",
-      "Bash(awk 'NR>=405 && NR<=420 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/spectrum/include/spectrum/processors/spectrum_processor_rocm.hpp\")"
+      "Bash(awk 'NR>=405 && NR<=420 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/spectrum/include/spectrum/processors/spectrum_processor_rocm.hpp\")",
+      "Bash(awk 'NR>=10 && NR<=20 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/core/include/core/interface/i_config_writer.hpp\")",
+      "Bash(awk 'NR>=800 && NR<=825 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/core/include/core/gpu_manager.hpp\")",
+      "Bash(awk 'NR>=770 && NR<=815 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/core/include/core/gpu_manager.hpp\")",
+      "Bash(awk 'NR>=809 && NR<=832 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/core/include/core/gpu_manager.hpp\")"
     ],
     "additionalDirectories": [
       "/tmp",
