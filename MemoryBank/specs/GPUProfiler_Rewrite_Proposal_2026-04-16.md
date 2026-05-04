@@ -1260,7 +1260,7 @@ main ─────────────────────────
 | Q4 | When to start? | **After Phase 4 testing** — need working baseline first |
 | Q5 | ~~New formats?~~ | Deferred — Strategy makes adding them trivial later |
 | Q6 | Max records safety limit? | **1,000 per (gpu, module, event)** default (revised from 10K — see 11.3.1 memory budget). Configurable via configGPU.json |
-| Q7 | roctracer integration for full 5-field timing? | **Later** — start with hipEvent start/end |
+| Q7 | roctracer integration for full 5-field timing? | ✅ **DONE 2026-05-04** via rocprofiler-sdk (modern ROCm 7+ API). Source policy: `TimingSource::HipEvent` (default) / `TimingSource::Rocprofiler` (opt-in `-DDSP_PROFILING_ROCTRACER=ON`). Counters → отдельный Q7.F. Спека: `MemoryBank/specs/Rocprofiler_API_2026-05-04.md`. Tests: `core/tests/test_timing_source.hpp` (9/9 PASS). |
 | Q8 | Export raw data in JSON? | **Optional flag** — useful for Jupyter analysis |
 | Q9 | Branch name? | **`new_profiler`** in each repo |
 | Q10 | Merge strategy? | PR per repo, core first, then 7 repos |

@@ -61,6 +61,35 @@ CollectOrRelease(a, "Op1Name", pe);  // только теперь собирае
 - Свой «форматировщик таблиц» — всё есть в `Export*`.
 - `GPUProfiler` в новом коде (`@deprecated`).
 
+## Timing source (Q7)
+
+`ProfilingFacade` поддерживает 2 источника GPU-clock данных:
+
+| Source | Default | CMake-флаг | Поля |
+|--------|---------|------------|------|
+| `TimingSource::HipEvent`    | ✅ всегда | — | start_ns, end_ns (из `hipEventElapsedTime`) |
+| `TimingSource::Rocprofiler` | opt-in | `-DDSP_PROFILING_ROCTRACER=ON` | + queued_ns, submit_ns, complete_ns, correlation_id, queue_id |
+
+Переключение в runtime:
+
+```cpp
+auto& f = drv_gpu_lib::profiling::ProfilingFacade::GetInstance();
+f.SetTimingSource(drv_gpu_lib::profiling::TimingSource::Rocprofiler);
+// без флага — silent fallback на HipEvent (GetTimingSource() вернёт HipEvent).
+```
+
+**Когда брать Rocprofiler**:
+- Микро-оптимизация hot-path: видим что pipeline теряет время вне kernel'а
+- Нужны queue_delay (queued→submit) / submit_delay (submit→start) / exec (start→end) раздельно
+- Multi-stream сценарии — `queue_id` различает потоки
+
+**Когда HipEvent хватает**:
+- Бенчмарк одного класса в изоляции (точность ±0.5 µs достаточна)
+- Production hot-path без активного debug
+- Нет ROCm 7+ или установка rocprofiler-sdk недоступна
+
+Подробности → `MemoryBank/specs/Rocprofiler_API_2026-05-04.md`.
+
 ## Параллельный прогон тестов
 
 `ProfilingFacade` — singleton с разделяемым state. Тесты, вызывающие

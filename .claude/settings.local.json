@@ -113,7 +113,17 @@
       "Bash(sed -i 's/            spectrum = fft\\\\.process_complex/            spec_data = fft.process_complex/g' t_signal_to_spectrum.py)",
       "Bash(sed -n '215,230p' /home/alex/DSP-GPU/DSP/Python/signal_generators/t_form_signal_rocm.py)",
       "Bash(sed -n '82,95p' /home/alex/DSP-GPU/DSP/Python/integration/t_fft_integration.py)",
-      "Bash(/home/alex/DSP-GPU/DSP/build/debian-local-dev/_deps/dspcore-build/tests/test_core_main)"
+      "Bash(/home/alex/DSP-GPU/DSP/build/debian-local-dev/_deps/dspcore-build/tests/test_core_main)",
+      "Bash(grep -nB 2 -A 25 \"struct ROCmProfilingData\" /home/alex/DSP-GPU/core/include/core/services/profiling_types.hpp)",
+      "Bash(apt list *)",
+      "Bash(pkg-config --cflags libdw)",
+      "Bash(dpkg -l)",
+      "Bash(chmod +x /home/alex/DSP-GPU/core/spike/q7b_rocprofiler/build.sh)",
+      "Bash(./build.sh)",
+      "Bash(./spike)",
+      "Bash(gdb -batch -ex \"run\" -ex \"bt 30\" --args /home/alex/DSP-GPU/DSP/build/debian-local-dev/_deps/dspcore-build/tests/test_core_main)",
+      "Bash(grep -nA 8 \"Logger::Warning\\(const std::string& component\" /home/alex/DSP-GPU/core/src/logger/logger.cpp)",
+      "Read(//home/alex/DSP-GPU/DSP/**)"
     ]
   },
   "enableAllProjectMcpServers": true,
