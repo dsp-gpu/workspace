@@ -90,6 +90,31 @@ f.SetTimingSource(drv_gpu_lib::profiling::TimingSource::Rocprofiler);
 
 Подробности → `MemoryBank/specs/Rocprofiler_API_2026-05-04.md`.
 
+### Hardware counters (Q7.F)
+
+Расширение Q7 — опционально подписаться на per-dispatch perf counters:
+
+```cpp
+auto& f = drv_gpu_lib::profiling::ProfilingFacade::GetInstance();
+f.SetTimingSource(drv_gpu_lib::profiling::TimingSource::Rocprofiler);
+f.SetCounters({"GPUBusy", "L2CacheHit", "LDSBankConflict", "FetchSize"});
+// затем Record(...) — counters попадут в ProfilingRecord.counters[<name>]
+```
+
+| Свойство | Значение |
+|----------|----------|
+| Default | пустой набор (counters off) |
+| Источник имён | `/opt/rocm/share/rocprofiler-sdk/counter_defs.yaml` (252 metric'а на ROCm 7.2) |
+| Полезный минимум | `GPUBusy`, `L2CacheHit`, `LDSBankConflict`, `FetchSize`, `WriteSize` |
+| Overhead | +10-50% per dispatch — **не для production hot-path** |
+| Поведение на HipEvent | silent no-op (counters не поддерживаются) |
+| Поведение без CMake-флага | silent no-op (Rocprofiler fallback на HipEvent) |
+| Unsupported counter | silent skip (counter просто не появляется в результате) |
+
+**Когда брать**: точечный сеанс микро-оптимизации kernel'а. Включил — измерил — выключил.
+
+План реализации → `MemoryBank/tasks/TASK_Profiler_v2_Q7F_Counters.md`.
+
 ## Параллельный прогон тестов
 
 `ProfilingFacade` — singleton с разделяемым state. Тесты, вызывающие

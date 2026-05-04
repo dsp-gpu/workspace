@@ -123,7 +123,11 @@
       "Bash(./spike)",
       "Bash(gdb -batch -ex \"run\" -ex \"bt 30\" --args /home/alex/DSP-GPU/DSP/build/debian-local-dev/_deps/dspcore-build/tests/test_core_main)",
       "Bash(grep -nA 8 \"Logger::Warning\\(const std::string& component\" /home/alex/DSP-GPU/core/src/logger/logger.cpp)",
-      "Read(//home/alex/DSP-GPU/DSP/**)"
+      "Read(//home/alex/DSP-GPU/DSP/**)",
+      "Bash(grep -E \"^\\(SQ_BUSY|VALUInsts|SALUInsts|VALUBusy|MemUnitBusy|L2.*Hit|LDS.*Conflict|GPUBusy|GRBM_GUI_ACTIVE|CU_OCCUPANCY|FETCH_SIZE|WRITE_SIZE\\):$\" /opt/rocm/share/rocprofiler-sdk/counter_defs.yaml)",
+      "Bash(grep -A 8 \"^GPUBusy:$\" /opt/rocm/share/rocprofiler-sdk/counter_defs.yaml)",
+      "Bash(grep -nA 0 \"gfx12\\\\|gfx1201\" /opt/rocm/share/rocprofiler-sdk/counter_defs.yaml)",
+      "Bash(awk '/^  - name:/ {name=$3} /architectures:/ {arch=1; next} arch && /^      - gfx12/ {print name; arch=0} /^    [a-z]/ {arch=0}' /opt/rocm/share/rocprofiler-sdk/counter_defs.yaml)"
     ]
   },
   "enableAllProjectMcpServers": true,
