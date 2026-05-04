@@ -61,6 +61,32 @@ CollectOrRelease(a, "Op1Name", pe);  // только теперь собирае
 - Свой «форматировщик таблиц» — всё есть в `Export*`.
 - `GPUProfiler` в новом коде (`@deprecated`).
 
+## Параллельный прогон тестов
+
+`ProfilingFacade` — singleton с разделяемым state. Тесты, вызывающие
+`Reset()` или пишущие в Facade, **нельзя** параллелить:
+
+- `core/tests/test_golden_export.hpp` — пишет в Facade и сравнивает с golden JSON/MD
+- `core/tests/test_quality_gates.hpp` — Phase E4 G8/G9/G10 (Record latency, mem, compute)
+
+**Текущая модель** (Phase E Profiler v2 closeout, 2026-05-04): один бинарник
+`test_core_main` запускает все тесты последовательно через `drvgpu_all_test::run()`.
+**RUN_SERIAL property не нужен** — гонок нет by construction.
+
+**Если меняем архитектуру** (отдельные ctest-target'ы или `ctest -j`):
+
+```cmake
+# в core/tests/CMakeLists.txt
+add_test(NAME profiler_golden  COMMAND test_core_main --filter=Golden*)
+add_test(NAME profiler_quality COMMAND test_core_main --filter=Quality*)
+set_tests_properties(profiler_golden profiler_quality
+  PROPERTIES RUN_SERIAL TRUE LABELS "profiler_v2;serial"
+)
+```
+
+Без `RUN_SERIAL` под `ctest -j$(nproc)` записи разных тестов смешиваются в singleton
+→ golden падает или quality-gates ловят чужие латенси. Не повторять урок.
+
 ## Бенчмарки
 
 - `{repo}/tests/{name}_benchmark.hpp` через `GpuBenchmarkBase`.

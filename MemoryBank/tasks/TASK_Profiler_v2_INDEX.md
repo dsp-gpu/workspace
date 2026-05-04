@@ -27,15 +27,20 @@
 
 ---
 
-## 🟡 Что осталось (3 таска)
+## 🟡 Что осталось (2 таска)
 
 | # | Файл | Effort | Зависимости |
 |---|------|-------:|-------------|
 | 1 | [TASK_Profiler_v2_Documentation.md](TASK_Profiler_v2_Documentation.md) | 4-6 ч | — (можно дома, без GPU) |
-| 2 | [TASK_Profiler_v2_CI_RunSerial.md](TASK_Profiler_v2_CI_RunSerial.md) | 1-2 ч | OK Alex на CMake + CI |
+| 2 | ~~TASK_Profiler_v2_CI_RunSerial.md~~ | ~~1-2 ч~~ | ✅ **DONE** 2026-05-04 (Variant C+B) |
 | 3 | [TASK_Profiler_v2_Roctracer_Q7.md](TASK_Profiler_v2_Roctracer_Q7.md) | 16-24 ч | core зелёный + ROCm 7.2 + GPU |
 
-**Итог по effort**: ~21–32 ч, причём ~6 ч можно дома без GPU (Documentation), а Q7 — отдельная большая инициатива.
+### CI_RunSerial — итог 2026-05-04
+
+- **CI1 (RUN_SERIAL)**: Variant **C** — текущая модель (один `test_core_main`, последовательный `drvgpu_all_test::run()`) уже последовательна, RUN_SERIAL не нужен. Добавлен комментарий в `core/tests/CMakeLists.txt` + раздел "Параллельный прогон тестов" в `06-profiling.md`. Code change: ноль логики, только doc-shield на будущее.
+- **CI2 (workflow)**: Variant **B** — закрыт как "не нужен сейчас". Self-hosted runner с ROCm стоит ресурсов, ProfilingFacade стабилизирован, регрессии ловятся точечной сборкой. Добавим **только** при Q7 (roctracer rewrite) — там big-bang refactor с реальным риском регрессий.
+
+**Итог по effort**: ~20-30 ч, причём ~6 ч можно дома без GPU (Documentation), а Q7 — отдельная большая инициатива.
 
 ---
 
