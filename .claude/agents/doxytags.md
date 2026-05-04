@@ -201,6 +201,54 @@ Doxytags **не должен** трогать:
    Но **постарайся** написать осмысленный 1-строчный текст: имя параметра + тип + контекст метода обычно дают достаточно информации.
    `gpu_data` для `void* + ProcessFromGPU` — это **«GPU-буфер с входными complex<float>»**, не «TODO».
 
+### 6.4 🔴 КРИТИЧНО: `*/` внутри Doxygen-блока ломает сборку (Phase B blocker 2026-05-04)
+
+**Проблема**: внутри `/** ... */` блока последовательность `*/` **закрывает комментарий** — где бы ни встретилась. tree-sitter-cpp **не ловит** эту ошибку (для него это валидно), но **g++ ломается каскадом** на этапе сборки на Debian:
+
+```
+* @note Lifecycle: ctor → Process*/FindAllMaxima* → dtor.
+                                  ^^
+                                  ЗАКРЫТИЕ блока преждевременно
+FindAllMaxima* → dtor.    ← теперь это «код» для g++
+*/                         ← а это снова «комментарий» (парсер сломан)
+```
+
+**Реальный инцидент**: коммиты `1475620 spectrum` + `8a5b447 linalg` (наша doxytags-работа)
+сломали Phase B build на gfx1201 в 4 местах — `spectrum_processor_rocm.hpp` (×3) и
+`cholesky_inverter_rocm.hpp` (×1). Спека: `MemoryBank/specs/doxygen_pitfall_star_slash_2026-05-04.md`.
+
+**Жёсткий запрет**: НИКОГДА не пиши `*/` без разделителя в Doxygen блоках.
+
+❌ **НЕПРАВИЛЬНО**:
+```cpp
+* @note Lifecycle: Process*/FindAllMaxima* → dtor.
+* @brief ...последний Process*/Method* вызов.
+* @see Invert*/InvertBatch* — семейство.
+```
+
+✅ **ПРАВИЛЬНО** (3 варианта):
+```cpp
+* @note Lifecycle: Process* / FindAllMaxima* → dtor.        ← пробелы вокруг /
+* @brief ...последний Process()/Method() вызов.             ← () вместо *
+* @see `Process*` / `FindAllMaxima*` — семейство.            ← backticks + пробелы
+```
+
+**Pre-commit grep-проверка** (запускать перед commit на каждом репо):
+```bash
+grep -rn -E "[a-zA-Z]\*/[a-zA-Z]" --include="*.hpp" --include="*.h" --include="*.hip" \
+  E:/DSP-GPU/<repo>/include/
+```
+Должно быть **пусто**. Если найдено — заменить через один из 3 вариантов выше **до коммита**.
+
+**Симптомы при сборке** (если проскочило):
+```
+error: extended character → is not valid in an identifier
+error: 'Method' was not declared in this scope
+error: expected ';' before ...
+```
+
+→ десятки каскадных ошибок сразу после doxygen-блока. Откатывайся к git-state, ищи `*/` в недавно модифицированных hpp.
+
 ## 📝 Правила стиля русского текста
 
 1. **По делу**, без воды. «Прямой FFT C2C для batch-данных» вместо «Этот метод выполняет операцию...».
