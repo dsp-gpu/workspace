@@ -115,20 +115,43 @@ dsp-asst doxytags fill --method ProcessComplex --overload a7f3c1
 
 Системный промпт `prompts/009_test_params_extract.md`. Базовая таблица:
 
-| Имя параметра | Тип | Предложение `@test` |
-|---|---|---|
-| `beam_count`, `n_beams`, `n_antennas`, `antenna_count` | `uint32_t`/`size_t` | `range=[1..50000], value=128, unit="лучей"` |
-| `n_point`, `sample_count`, `n_samples` | `uint32_t`/`size_t` | `range=[100..1300000], value=6000` |
-| `n_fft`, `fft_size` | `size_t` | `range=[8..4194304], value=1024, pattern=power_of_2` |
-| `sample_rate`, `fs` | `float` | `range=[1.0..1e9], value=10e6, unit="Гц"` |
-| `gpu_id`, `device_id` | `int` | `range=[0..GetDeviceCount()-1], value=0` |
-| `repeat_count`, `padding_factor` | `uint32_t` | `range=[1..16], value=1` |
-| `memory_limit` | `float` | `range=[0.1..0.95], value=0.80, unit="доля VRAM"` |
-| `dt`, `period` | `float`/`double` | `range=[1e-9..1e-3], value=1e-6, unit="с"` |
-| `*_ptr`, `*_data` (`void*`) | `void*` | `pattern=gpu_pointer, values=["valid_alloc", nullptr]` |
-| `const T&`, `T` — struct с `@test` тегами | struct | `@test_ref T` |
+| Имя параметра | Тип | Предложение `@test` | `error_values` |
+|---|---|---|---|
+| `beam_count`, `n_beams`, `n_antennas`, `antenna_count` | `uint32_t`/`size_t` | `range=[1..50000], value=128, unit="лучей"` | `[-1, 100000, 3.14]` |
+| `n_point`, `sample_count`, `n_samples` | `uint32_t`/`size_t` | `range=[100..1300000], value=6000` | `[-1, 2000000, 3.14]` |
+| `n_fft`, `fft_size` | `size_t` | `range=[8..4194304], value=1024, pattern=power_of_2` | `[7, 5000000, 3.14]` |
+| `sample_rate`, `fs` | `float` | `range=[1.0..1e9], value=10e6, unit="Гц"` | `[0.0, 2e9, null]` |
+| `gpu_id`, `device_id` | `int` | `range=[0..GetDeviceCount()-1], value=0` | `[-1, GetDeviceCount(), 3.14]` |
+| `repeat_count`, `padding_factor` | `uint32_t` | `range=[1..16], value=1` | `[0, 100, 3.14]` |
+| `memory_limit` | `float` | `range=[0.1..0.95], value=0.80, unit="доля VRAM"` | `[0.0, 1.1, null]` |
+| `dt`, `period` | `float`/`double` | `range=[1e-9..1e-3], value=1e-6, unit="с"` | `[0.0, 1.0, null]` |
+| `*_ptr`, `*_data` (`void*`) | `void*` | `pattern=gpu_pointer, values=["valid_alloc", nullptr]` | `[0xDEADBEEF, null]` |
+| `const T&`, `T` — struct с `@test` тегами | struct | `@test_ref T` | — (не применяется) |
 
 Если имя не узнано → AI ставит `@test { TODO: human }`, метод помечается `coverage: partial`, тест не генерируется до правки руками.
+
+---
+
+### 5.1 Правила генерации `error_values`
+
+Поле добавляется **только** в `@test` теги содержащие `range=[...]` или pointer-паттерн (`values=[..., nullptr]`).
+К `@test_ref` и `@test_check` — **не применяется**.
+
+| Условие | `below` (ниже min) | `above` (выше max) | `type_error` |
+|---|---|---|---|
+| `range=[min..max]`, int/uint | `min - 1` (если min=0 → `-1`) | `max + 1` (или очевидно большое) | `3.14` |
+| `range=[min..max]`, float/double | `0.0` (или `min - epsilon`) | очевидно выше max | `null` |
+| pointer: `values=[..., nullptr]` | `0xDEADBEEF` | `null` | — |
+
+Если граница `max` — выражение (`GetDeviceCount()`), агент ставит вызов как есть:
+```
+error_values=[-1, GetDeviceCount(), 3.14]
+```
+
+Итоговый формат в теге:
+```
+@test { range=[8..4194304], value=1024, pattern=power_of_2, error_values=[7, 5000000, 3.14] }
+```
 
 ---
 
@@ -307,13 +330,13 @@ std::vector<FFTComplexResult> ProcessComplex(
  * @details H2D → pad → hipfftExecC2C → D2H.
  *
  * @param data Входные данные batch'ем [beam_count × n_point] complex<float>.
- *   @test { size=[100..1300000], value=6000, step=10000, unit="complex samples" }
+ *   @test { size=[100..1300000], value=6000, step=10000, unit="complex samples", error_values=[-1, 2000000, 3.14] }
  *
  * @param params Конфиг FFT (см. fft_params.hpp).
  *   @test_ref FFTProcessorParams
  *
  * @param prof_events Профиль (опционально).
- *   @test { values=[nullptr] }
+ *   @test { values=[nullptr], error_values=[0xDEADBEEF, null] }
  *
  * @return Массив [beam_count] результатов; magnitudes[nFFT] и phases[nFFT].
  *   @test_check result.size() == params.beam_count
@@ -335,13 +358,13 @@ std::vector<FFTComplexResult> ProcessComplex(
 /**
  * @brief Прямой FFT C2C для batch-данных с CPU.       ← НЕ тронуто
  * @param data Входные данные.                          ← НЕ тронуто
- *   @test { size=[100..1300000], value=6000, step=10000, unit="complex samples" }   ← добавлено
+ *   @test { size=[100..1300000], value=6000, step=10000, unit="complex samples", error_values=[-1, 2000000, 3.14] }   ← добавлено
  *
  * @param params Конфиг FFT (см. fft_params.hpp).      ← добавлено
  *   @test_ref FFTProcessorParams
  *
  * @param prof_events Профиль (опционально).            ← добавлено
- *   @test { values=[nullptr] }
+ *   @test { values=[nullptr], error_values=[0xDEADBEEF, null] }
  *
  * @return Массив [beam_count] результатов.             ← добавлено
  *   @test_check result.size() == params.beam_count
