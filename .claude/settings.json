@@ -45,7 +45,15 @@
       "Bash(awk 'NR>=10 && NR<=20 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/core/include/core/interface/i_config_writer.hpp\")",
       "Bash(awk 'NR>=800 && NR<=825 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/core/include/core/gpu_manager.hpp\")",
       "Bash(awk 'NR>=770 && NR<=815 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/core/include/core/gpu_manager.hpp\")",
-      "Bash(awk 'NR>=809 && NR<=832 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/core/include/core/gpu_manager.hpp\")"
+      "Bash(awk 'NR>=809 && NR<=832 {printf \"%4d: %s\\\\n\", NR, $0}' \"e:/DSP-GPU/core/include/core/gpu_manager.hpp\")",
+      "Bash(python -c ' *)",
+      "Bash(where psql *)",
+      "Bash(psql -V)",
+      "Bash(pg_isready -h localhost -p 5432)",
+      "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" e:/tmp/_pg_smoke.py)",
+      "Bash(C:/finetune-env/.venv/Scripts/python.exe -c ' *)",
+      "Bash(\"C:/finetune-env/.venv/Scripts/pip.exe\" list *)",
+      "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" e:/tmp/_pg_counts.py)"
     ],
     "additionalDirectories": [
       "/tmp",

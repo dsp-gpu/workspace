@@ -155,6 +155,30 @@ error_values=[-1, GetDeviceCount(), 3.14]
 
 ---
 
+### 5.2 Эвристика: типы параметров БЕЗ `error_values`
+
+> Добавлено по итогам Phase 0 audit RAG-агентов (2026-05-05). См. `RAG_Phase0_error_values_audit_2026-05-05.md` + ревью v2.1 §«Phase 0 audit».
+
+Для следующих типов параметров `error_values` **НЕ предлагается**:
+
+| Тип | Причина | Пример |
+|---|---|---|
+| **enum / enum class** | Передача невалидного значения `(EnumType)999` — UB в C++. Компилятор не пускает мусор в обычном коде; unit-тест на UB бессмысленен. | `WindowType`, `BackendType`, `MovingAverageType`, `PeakMode`, `FFTOutputMode` |
+| **bool** | Тип имеет ровно 2 валидных значения (`true`/`false`). Невалидного состояния не существует. Если нужен «отсутствующий» — используется `std::optional<bool>` (другой случай). | `bool squared`, `bool enabled` |
+| **JSON-путь (string)** | Решение Alex'а 2026-05-05: пока не дозаполняем. Можно пересмотреть позже — тогда стандартный набор `["/no/such/file.json", "", "/tmp/malformed.json", null]`. | `json_path`, путь к `FilterConfig::LoadJson` |
+
+**Поведение агента**:
+- Для enum/bool параметров `@test` тег содержит только `values=[...]`, **без** `error_values`.
+- Для JSON-путей — то же самое (пока).
+- Для всех остальных типов (int/size_t с диапазоном, float, pointer, string не-JSON) — стандартные правила §5.1 применяются.
+
+**Реализация** (TODO для следующего таска):
+- `dsp_assistant/agent_doxytags/heuristics.py` — добавить функцию `should_skip_error_values(param_type: str) -> bool`.
+- Промпт `prompts/009_test_params_extract.md` — отразить правило в инструкциях LLM (если промпт ещё не создан — создать вместе с правкой `heuristics.py`).
+- Pointer-правка #2 (`spectrum_processor_factory.hpp:57`) применяется в этом же коммите (Doxygen-комментарий, на код не влияет).
+
+---
+
 ## 6. Git check
 
 Перед началом агент в каждом затрагиваемом репо делает `git status --porcelain`.
