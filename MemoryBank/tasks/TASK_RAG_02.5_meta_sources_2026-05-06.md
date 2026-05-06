@@ -1,7 +1,31 @@
 # TASK_RAG_02.5 — Meta sources: CLAUDE.md + CMake + build_orchestration
 
-> **Статус**: pending · **Приоритет**: HIGH · **Время**: ~8 ч · **Зависимости**: TASK_RAG_02 (схема `doc_blocks` + поле `inherits_block_id`)
+> **Статус**: ✅ DONE (2026-05-06) · **Приоритет**: HIGH · **Время**: ~8 ч факт · **Зависимости**: TASK_RAG_02 (схема `doc_blocks` + поле `inherits_block_id`)
 > **Версия**: v1 (2026-05-06) · Часть плана v3.
+> **Исполнитель**: Cline #1 на Sonnet 4.6 → Opus 4.7. Code review: Кодо в основном чате (вердикт A).
+>
+> **Результат**:
+> - 30 meta-блоков в `rag_dsp.doc_blocks`:
+>   - 1 build_orchestration (граф зависимостей репо через fetch_dsp_*)
+>   - 9 meta_claude (8 C++ + DSP)
+>   - 1 meta_cmake_common (root template, 75% boilerplate intersection 8 файлов)
+>   - 8 meta_cmake_specific (с `inherits_block_id = dsp_gpu__root__meta_cmake_common__v1`)
+>   - 8 meta_targets (BUILD-флаги + deps + targets per-repo)
+>   - 2 meta_overview (root CLAUDE.md + DSP doxygen modules index)
+>   - 1 meta_rules_index (snapshot 16 правил из MemoryBank/.claude/rules/)
+> - 30 .md файлов созданы:
+>   - `MemoryBank/.rag/meta/` × 4
+>   - `<repo>/.rag/meta/` × 8 C++ × 3 = 24
+>   - `DSP/.rag/meta/` × 2 (без cmake)
+> - PG ↔ Qdrant консистентны (30=30 по meta-list)
+> - Все cmake_specific блоки имеют корректный inherits_block_id
+> - Прогон `--all` идемпотентен через source_hash
+>
+> **Реализация** (в `C:\finetune-env\dsp_assistant\`, не в DSP-GPU):
+> - `modes/meta_extractor.py` — главная логика (~37KB)
+> - `cli/main.py` — расширен `dsp-asst rag meta build [--repo X | --all]`
+>
+> **Pilot session log**: `MemoryBank/sessions/2026-05-06_TASK_RAG_02.5_progress.md`
 
 ## Цель
 

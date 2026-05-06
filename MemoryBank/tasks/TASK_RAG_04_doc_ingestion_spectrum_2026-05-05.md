@@ -1,7 +1,25 @@
 # TASK_RAG_04 — Pilot ingestion: spectrum/Doc/*.md → doc_blocks + Qdrant
 
-> **Статус**: pending · **Приоритет**: HIGH · **Время**: ~1 ч · **Зависимости**: TASK_RAG_03
+> **Статус**: ✅ DONE + RAW SCALE-UP (2026-05-06) · **Приоритет**: HIGH · **Время**: ~1 ч факт · **Зависимости**: TASK_RAG_03
 > **Версия**: v2 (после ревью v2.1) · DoD на `qdrant.count` (а не `WHERE embedding IS NOT NULL`)
+> **Исполнитель**: Кодо (pilot) + Cline #2 на Opus 4.7 (раскатка на 7 репо + DSP).
+>
+> **Результат**: ingestion **не только spectrum** — раскатано на **все 9 репо** в один заход:
+>
+> | Репо | doc_blocks |
+> |---|---|
+> | spectrum | 460 |
+> | radar | 311 |
+> | strategies | 260 |
+> | core | 245 |
+> | linalg | 155 |
+> | signal_generators | 137 |
+> | heterodyne | 99 |
+> | DSP | 95 (включая 2 meta) |
+> | stats | 79 |
+> | **TOTAL** | **1841 doc_blocks** + 30 meta = **1871 в БД** |
+>
+> PG ↔ Qdrant консистентны во всех репо (PG = PG_uniq = Qdrant). Re-run идемпотентен. **Это закрывает большую часть TASK_RAG_11 (rollout phase).**
 
 ## Цель
 
