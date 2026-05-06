@@ -434,7 +434,7 @@ collection_name = "internal"
 
 ## 4. Init script (краткая версия)
 
-Полная версия — в `configs/postgres_init.sql`.
+Полная версия — в `configs/postgres_init.sql` (базовая схема) и `configs/postgres_init_rag.sql` (RAG-таблицы, TASK_RAG_02 v3).
 
 ```sql
 -- 1. Создать пользователя и базу
@@ -451,8 +451,63 @@ GRANT ALL ON SCHEMA rag_dsp TO dsp_asst;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE EXTENSION IF NOT EXISTS btree_gin;
 
--- 4. DDL всех таблиц (см. configs/postgres_init.sql)
+-- 4. DDL базовых таблиц (symbols, files, includes, ...) — см. configs/postgres_init.sql
+-- 5. DDL RAG-таблиц (doc_blocks, use_cases, pipelines, ai_stubs) — см. configs/postgres_init_rag.sql
 ```
+
+---
+
+## 4.1. RAG таблицы (TASK_RAG_02 v3, применено 2026-05-06)
+
+Применены 4 таблицы для RAG-агентов. Vectors **не** в PG — в Qdrant `dsp_gpu_rag_v1`.
+
+### `rag_dsp.doc_blocks` — главное хранилище markdown-блоков
+
+| Колонка | Тип | Назначение |
+|---|---|---|
+| `block_id` | TEXT PK | Semantic slug `{repo}__{class_or_module_snake}__{concept}[_NNN]__v{n}` |
+| `repo` | TEXT | Имя репо |
+| `class_or_module` | TEXT | snake_case класс/модуль |
+| `concept` | TEXT | Whitelist: `class_overview`, `usage_example`, `method_*`, `meta_*`, `python_binding`, `python_test_usecase`, `cross_repo_pipeline`, `build_orchestration`, … |
+| `sub_index`, `version` | INT | Версии и chunk'и больших блоков |
+| `doc_path`, `header_path`, `line_start/end` | TEXT/INT | Источник |
+| `content_md` | TEXT | Сам markdown |
+| `content_format` | TEXT | `markdown` / `ascii_diagram` / `code_cpp` / `code_python` |
+| `source_hash` | CHAR(40) | SHA1 для re-run safety |
+| `ai_generated`, `ai_model`, `human_verified` | BOOL/TEXT | Provenance |
+| `deprecated_by` | TEXT FK self | Замена при версионировании |
+| **`inherits_block_id`** (v3) | TEXT FK self | **Иерархия**: CMake common ← specific, parent CLAUDE.md ← child |
+| `related_ids` | JSONB | Массив связанных блоков |
+
+Индексы: `repo`, `class_or_module`, `concept`, `inherits_block_id`, GIN на `related_ids`.
+
+### `rag_dsp.use_cases` — карточки use-case'ов
+Метаданные одной use-case карточки. Ключевые поля: `id`, `repo`, `title`, `primary_class`, `synonyms_ru/en`, `tags`, `block_refs[]`, `md_path`, `md_hash`. Vectors `title+synonyms` → Qdrant.
+
+### `rag_dsp.pipelines` — карточки pipeline'ов
+Аналогично use_cases для composer-классов. Ключевые: `composer_class`, `chain_classes[]`, `chain_repos[]`.
+
+### `rag_dsp.ai_stubs` — placeholder'ы AI-генерации
+TODO-маркеры в .md (`Q-{N}` формат). Колонка `placeholder_tag` с UNIQUE constraint. `status ∈ {pending, human_filled, rejected}`.
+
+## 4.2. Qdrant коллекция `dsp_gpu_rag_v1`
+
+Параметры: `vectors size=1024, distance=Cosine, hnsw m=16 ef_construct=200`.
+
+Payload каждой точки:
+```json
+{
+  "target_table": "doc_blocks" | "use_cases" | "pipelines",
+  "target_id":    "<id блока в PG>",
+  "repo":         "<имя репо>"
+}
+```
+
+`point_id` = UUID v5 от `(target_table, target_id)` с фиксированным namespace `NS_RAG`.
+
+Payload-индексы: `target_table`, `repo` (KEYWORD).
+
+Создание: `MemoryBank/specs/LLM_and_RAG/configs/qdrant_create_rag_collection.py`.
 
 ---
 
