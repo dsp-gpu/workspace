@@ -1,7 +1,21 @@
 # TASK_RAG_03 — Парсер Doc/*.md → doc_blocks + RagQdrantStore
 
-> **Статус**: pending · **Приоритет**: HIGH · **Время**: ~3.5 ч · **Зависимости**: TASK_RAG_02
+> **Статус**: ✅ DONE (2026-05-06) · **Приоритет**: HIGH · **Время**: ~3 ч факт · **Зависимости**: TASK_RAG_02
 > **Версия**: v2 (после ревью v2.1) · добавлены RagQdrantStore + UUID v5 + deregister
+>
+> **Pilot результат** (spectrum/Doc/*.md, 16 файлов):
+> - 457 блоков, все уникальны
+> - 119/457 (26%) с whitelist concept; остальные с fallback slug — для ревью Alex'а
+> - BGE-M3 batch embedding 457 текстов: 3.6 сек
+> - PG.doc_blocks(repo=spectrum) = Qdrant(target=doc_blocks, repo=spectrum) = 457 ✅
+> - Re-run idempotent: 0 INSERT, 0 UPDATE, 0 embed, skip_unchanged=457 ✅
+>
+> **Реализация** (в `C:\finetune-env\dsp_assistant\`, не в DSP-GPU):
+> - `utils/block_id.py` — make_block_id, parse_block_id, slugify, to_snake_case, CONCEPT_WHITELIST
+> - `retrieval/rag_vector_store.py` — RagQdrantStore (UUID v5 namespace, query_points API Qdrant 1.17)
+> - `modes/doc_block_parser.py` — markdown-it-py парсер с глобальным dedup per-file
+> - `modes/rag_writer.py` — register_blocks_batch с idempotency (source_hash + human_verified guard)
+> - `cli/main.py` — расширен `dsp-asst rag blocks ingest --repo X [--dry-run] [--re-embed]`
 
 ## Цель
 
