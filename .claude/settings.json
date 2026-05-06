@@ -53,7 +53,9 @@
       "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" e:/tmp/_pg_smoke.py)",
       "Bash(C:/finetune-env/.venv/Scripts/python.exe -c ' *)",
       "Bash(\"C:/finetune-env/.venv/Scripts/pip.exe\" list *)",
-      "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" e:/tmp/_pg_counts.py)"
+      "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" e:/tmp/_pg_counts.py)",
+      "Bash(Test-Path \"C:\\\\finetune-env\\\\dsp_assistant\\\\retrieval\\\\rag_vector_store.py\")",
+      "PowerShell($env:DSP_ASST_OFFLINE_HF=\"1\"; & \"C:\\\\finetune-env\\\\.venv\\\\Scripts\\\\python.exe\" -c \"from dsp_assistant.modes.meta_extractor import MetaExtractor, ALL_REPOS, CMAKE_COMMON_BLOCK_ID, compute_cmake_common, extract_build_orchestration; print\\('imports OK'\\); print\\('ALL_REPOS=', ALL_REPOS\\); print\\('common_id=', CMAKE_COMMON_BLOCK_ID\\)\")"
     ],
     "additionalDirectories": [
       "/tmp",

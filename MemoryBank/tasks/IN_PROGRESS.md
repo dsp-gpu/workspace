@@ -1,6 +1,14 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-04-30 (после Phase A push)
+**Обновлено**: 2026-05-06 (после TASK_RAG_02.6 closeout)
+
+## ✅ Закрыто 2026-05-06 — TASK_RAG_02.6 Python use-cases + pybind bindings
+
+83 новых doc_blocks (47 python_test_usecase + 5 cross_repo_pipeline + 31 python_binding), `pybind_bindings` extended (42 rows, 38 with doc_block_id, 25/31 cpp_symbol_id через token-Jaccard через `#include <X.hpp>` paths). CLI `dsp-asst rag python build/bindings`. Smoke retrieval PASS.
+Подробности: [sessions/2026-05-06_TASK_RAG_02.6_progress.md](../sessions/2026-05-06_TASK_RAG_02.6_progress.md), [changelog/2026-05.md](../changelog/2026-05.md).
+Создан follow-up: [TASK_remove_opencl_pybind_2026-05-06.md](TASK_remove_opencl_pybind_2026-05-06.md) (HIGH, 2-3 ч).
+
+
 
 ## Активные таски
 

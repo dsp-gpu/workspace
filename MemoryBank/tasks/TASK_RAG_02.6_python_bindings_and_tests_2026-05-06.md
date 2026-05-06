@@ -1,7 +1,13 @@
 # TASK_RAG_02.6 — Python биндинги + Python use-cases (DSP/Python/*)
 
-> **Статус**: pending · **Приоритет**: HIGH · **Время**: ~14 ч · **Зависимости**: TASK_RAG_02
+> **Статус**: ✅ DONE (2026-05-06) · **Приоритет**: HIGH · **Время**: ~5 ч факт (vs ~14 ч план) · **Зависимости**: TASK_RAG_02
 > **Версия**: v1 (2026-05-06) · Часть плана v3. Возвращает DSP в скоуп (отмена решения v2 #8).
+>
+> **Результат**: 47 python_test_usecase + 5 cross_repo_pipeline + 31 python_binding = **83 doc_blocks**.
+> pybind_bindings: 42 rows, 38/42 doc_block_id, 25/31 cpp_symbol_id (Jaccard token).
+> Smoke retrieval — все 3 query PASS.
+> Findings: создан TASK_remove_opencl_pybind_2026-05-06 (HIGH, 2-3 ч).
+> Подробности: `MemoryBank/sessions/2026-05-06_TASK_RAG_02.6_progress.md`.
 
 ## Цель
 
