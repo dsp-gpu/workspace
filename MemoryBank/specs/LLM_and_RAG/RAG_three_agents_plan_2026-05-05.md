@@ -1,6 +1,6 @@
 # План: RAG-агенты для генерации `.rag/` карточек
 
-> **Статус**: v3 (расширение под meta + Python coverage) · **Создан**: 2026-05-05 · **v3**: 2026-05-06 · **Автор**: Кодо
+> **Статус**: v3.1 (10 findings после прогона 01..05) · **Создан**: 2026-05-05 · **v3**: 2026-05-06 · **v3.1**: 2026-05-06 · **Автор**: Кодо
 >
 > Цель: построить инфраструктуру и агентов, которые на **9 репо** DSP-GPU (DSP вернулся в скоуп — критический источник Python use-cases)
 > сгенерируют `<repo>/.rag/test_params/*.md`, `<repo>/.rag/use_cases/*.md`,
@@ -793,3 +793,124 @@ dsp-asst rag <command> [options]
 ---
 
 *План v3 готов (2026-05-06). Дальше — TASK_RAG_02 с расширением + 02.5 / 02.6.*
+
+---
+
+## 19. v3.1 Findings (2026-05-06, после прогона 01..05+02.5)
+
+Уроки от реального прогона 8 коммитов (TASK_RAG_01..05 v2 + 02.5) — фиксируем до того как забудем.
+
+### 19.1. find_layer6_classes — эвристика расширена
+
+Naive `kind='class' AND name содержит Processor|Pipeline|...` даёт мусор:
+
+| Проблема | Фикс |
+|---|---|
+| Дубликаты (forward decl + definition разными `s.id`) — 17 → 11 | `SQL: DISTINCT ON (s.fqn) ORDER BY s.fqn, s.line_start NULLS LAST` |
+| Interface'ы (`IAllMaximaPipeline`, `ISpectrumProcessor`) проходят как Layer-6 | Python: `_is_interface_name()` exclude `^I[A-Z]` + содержит pattern |
+| Factory классы (`SpectrumProcessorFactory`) проходят | Python: `_is_factory_name()` exclude `*Factory$` |
+| Файлы из `.cpp` (приватные классы) | SQL: `f.path ILIKE '%/include/%'` (не Python pass) |
+
+Расширенный `LAYER6_NAME_PATTERNS`:
+```python
+("Processor", "Pipeline", "Generator", "Backend", "Filter",
+ "Accumulator", "Estimator", "Adapter", "Composer", "Builder")
+```
+
+Result spectrum: 17 (raw) → 11 (DISTINCT) → **8 (filter)** чистых Layer-6.
+
+### 19.2. Smart snake_case для mixed-case acronyms
+
+Стандартный CamelCase regex ломается на `ROCm`, `OpenCL`, `WiFi`:
+- `FFTProcessorROCm` → `fft_processor_ro_cm` ❌
+- Хотим: `fft_processor_rocm` ✅
+
+Фикс — pre-replace mixed-case acronyms ДО to_snake_case:
+```python
+_MIXED_CASE_ACRONYMS = {"ROCm": "Rocm", "OpenCL": "Opencl", "OpenMP": "Openmp", "WiFi": "Wifi"}
+```
+
+All-uppercase acronyms (FFT, GPU, IIR) обрабатываются стандартно — `fft_processor` ОК.
+
+### 19.3. OpenCL deprecated — skip с warning
+
+`t_*_OpenCL_*.py`, `_OpenCL_*` в C++ коде → deprecated backend (см. `tasks/TASK_remove_opencl_enum_2026-05-05.md`).
+
+Правило для агентов TASK_RAG_02.6 / 05 / 07:
+```python
+if "OpenCL" in symbol_name or "_OpenCL_" in path:
+    log.warning("skipped %s — deprecated OpenCL backend", path)
+    continue
+```
+
+### 19.4. LLM cache key должен включать prompt version
+
+Если кэшировать LLM-ответы по `sha1(content)` без учёта промпта — при изменении промпта старые ответы залипают.
+
+Фикс:
+```python
+cache_key = f"{sha1(content)}_{sha1(prompt_text)[:8]}.json"
+# Или явный version int:
+cache_key = f"{sha1(content)}_v{PROMPT_VERSION}.json"
+```
+
+Применимо к Cline #2 LLM-кэшу для python_test_usecase.
+
+### 19.5. inherits_block_id — public параметр в rag_writer
+
+После ревью Cline #1 рефакторинга, `rag_writer.register_block` принимает `inherits_block_id: str | None = None` напрямую (вместо отдельного UPDATE'а после INSERT). Также `_maybe_sync_inherits` синхронизирует поле даже на `skipped_unchanged` (защита от drift).
+
+Также добавлен `skip_qdrant: bool = False` для `--no-embed` режимов без дублирования логики.
+
+### 19.6. h2-split для длинных meta-блоков
+
+Один root `CLAUDE.md` = 5.4 KB → один блок embedding'а грубый. **Split на h2-секции** даёт 9 гранулярных блоков с `sub_index 001..009`. Запрос «правила про CMake» теперь точечно поднимает секцию про MemoryBank, а не весь файл.
+
+Применять к большим Doc/ файлам. Threshold: если контент >2000 симв и есть h2 — split.
+
+### 19.7. Cleanup orphans — паттерн для всех RAG-агентов
+
+Когда меняется эвристика выборки (как в 19.1) — старые .md файлы и блоки в БД остаются как orphans. Каждый RAG-агент нуждается в cleanup-скрипте:
+
+```
+scripts/rag_setup/cleanup_<agent>_orphans.py --repo X --dry-run / --apply
+```
+
+Логика:
+1. Получить current valid set через `find_*()` функцию агента
+2. Сканировать `<repo>/.rag/<subdir>/*.md`
+3. Для каждого .md не из valid set → `deregister_block` (PG + Qdrant) + `unlink()`
+
+### 19.8. Editable install для разработки
+
+`dsp-asst.exe` использует **установленный** package, source code изменения **не подхватываются**. Решения:
+- `pip install -e .` (editable mode) — но требует чтобы exe не был занят
+- **Альтернатива**: использовать `python -m dsp_assistant.cli.main` — всегда подхватывает source
+
+Cline-агенты часто держат `dsp-asst.exe` (через subprocess) → editable install не проходит. Использовать `python -m` в их промптах.
+
+### 19.9. Финальное состояние БД на 2026-05-06
+
+После 8 коммитов, спрятка перед TASK_RAG_07:
+- `doc_blocks` ≈ 1900 записей
+- 9 репо проиндексированы по Doc/ (1841 ingestion блоков)
+- 30 meta-блоков (TASK_RAG_02.5)
+- 8 spectrum class-cards с LLM-summary (TASK_RAG_05 v2) + ~80 method blocks
+- PG ↔ Qdrant консистентны
+- Qdrant collection `dsp_gpu_rag_v1` ≈ 2050 точек (включая старые orphans которые надо clean-up'нуть отдельным проходом)
+
+### 19.10. Параллельная работа двух Cline-агентов
+
+В одной сессии запущены 2 Cline-агента на параллельных задачах. Хорошо работает если:
+- Задачи независимые (02.5 + 05 — разные модули)
+- Один таск ≠ один файл (нет race на тот же class_card.py)
+- Ollama (LLM) — единая очередь, не конфликтует
+- БД INSERT'ы — конфликтов нет благодаря UPSERT через `block_id` PK
+
+Плохо работает если:
+- `dsp-asst.exe` нужно переустановить через `pip install -e .` — exe занят агентами
+- Один и тот же `--repo X --llm` запускается параллельно — race на UPSERT (но ON CONFLICT не ломает БД, просто wasted compute)
+
+---
+
+*v3.1 finished (2026-05-06). 10 findings зафиксированы для следующих TASK_RAG_06..12.*
