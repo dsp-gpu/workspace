@@ -37,11 +37,34 @@
 
 ## DoD
 
-- [ ] CLI работает на strategies (там 3-5 pipelines).
-- [ ] ASCII data flow либо копия из Doc, либо корректно построена по chain_classes.
-- [ ] Промпт 012 не более 50 строк.
-- [ ] После записи 1 pipeline'а — точка в Qdrant `dsp_gpu_rag_v1` с `target_table='pipelines'` создана.
-- [ ] Тесты «по мере роста» (без жёсткого `≥80%`).
+> **Уточнение DoD от 2026-05-06 (Кодо + Cline #2):** Изначально оценивали
+> «3-5 pipelines в strategies» — ожидание было основано на наличии классов
+> `*Pipeline*` в headers + предположении что есть `AddStep<>()` композиции
+> в `<repo>/src/`. **Реальный потолок — 3 pipeline'а** на весь проект:
+>
+> - `spectrum/include/spectrum/all_maxima_pipeline_rocm.hpp` (1 concrete header)
+> - `strategies/Doc/antenna_processor_pipeline.md` (1 концептуальный)
+> - `strategies/Doc/Farrow_Pipeline.md` (1 концептуальный)
+>
+> **Why `AddStep<>()` парсер не реализован:** ни одного использования
+> `PipelineBuilder().add(...)` или `pipeline.AddStep<...>()` в `<repo>/src/`
+> или `<repo>/include/` не найдено. Только generic infrastructure
+> (`strategies::Pipeline`, `PipelineBuilder`, `PipelineContext`) — без
+> concrete subclassов. Это означает что end-to-end pipeline'ы в проекте
+> формируются **руками в Doc/ или через MVP-классы в headers**, не через
+> композиционный API. Если позже появятся `AddStep<>()` использования —
+> расширить `_build_header_pipeline` по pattern `\.add\(std::make_unique<...>\(\)\)`.
+>
+> Дополнительно есть 5 `cross_repo_pipeline` записей от TASK_RAG_02.6
+> (`DSP/Python/integration/`) — они в концепции «end-to-end через 2+ репо»
+> но из Python use-cases, не из C++ композиторов. Хранятся отдельно в
+> `concept='cross_repo_pipeline'`, не пересекаются с `concept='pipeline'`.
+
+- [x] CLI `dsp-asst rag pipelines build --repo strategies` работает (2 pipelines из Doc/).
+- [x] ASCII data flow — копия из Doc/ для strategies (concept-pipelines), автогенерация по chain_classes для spectrum (header-pipeline).
+- [x] Промпт 012_pipeline.md — **49 строк** (требование ≤50 ✅).
+- [x] После записи 1 pipeline'а — точка в Qdrant `dsp_gpu_rag_v1` с `target_table='pipelines'` создана. На момент закрытия — **3 точки** ✅. Typed retrieval `store.search(target_tables=['pipelines'])` возвращает 3 hits, top — `strategies__antenna_processor_pipeline__pipeline__v1` (score 0.473).
+- [x] Тесты «по мере роста» — robust JSON parse адаптирован из `python_usecase_gen.py` (BGE-typo фиксы), header parser `*Pipeline*.hpp` с MVP-фильтром (исключение infrastructure-имён + I-prefix interfaces). LLM fallback rate **0 / 3** карточек.
 
 ## Связано с
 

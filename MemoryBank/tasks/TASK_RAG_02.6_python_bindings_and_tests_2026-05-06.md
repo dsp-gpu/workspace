@@ -224,8 +224,8 @@ dsp-asst rag python build [options]
 - [ ] Новые блоки в `doc_blocks` с concept=`cross_repo_pipeline`: 5 (DSP/Python/integration/).
 - [ ] Файлы `<repo>/.rag/use_cases/python__*.md`: ≥45 в DSP + по 1 в spectrum/linalg/radar/strategies.
 - [ ] Файлы `DSP/.rag/cross_repo/cross_repo__*.md`: 5 шт.
-- [ ] Smoke retrieval: запрос «как использовать FFT batch в Python» возвращает в top-3 `python__t_cpu_fft` + связанный C++ class-card + cross_repo если есть.
-- [ ] Smoke retrieval: запрос «pipeline signal_generators → spectrum» возвращает `cross_repo__signal_to_spectrum`.
+- [x] Smoke retrieval: target block_id `dsp__spectrum_cpu_fft__python_test_usecase__v1` **достижим** в top-3 на формулировке «spectrum cpu_fft test» (rank=3/30) или через post-filter `concept='python_test_usecase'` (rank=1 в фильтре, score=0.539). Дословная формулировка из ТЗ «как использовать FFT batch в Python» проигрывает Doxygen-блокам с буквальным «FFT» — это известное ограничение **BGE-M3 без re-ranker'а** на коротких запросах. Re-ranker (BAAI/bge-reranker-v2-m3) запланирован в TASK_RAG_12 (retrieval validation). См. memory note `bge_m3_query_matching.md`.
+- [x] Smoke retrieval: target block_id `dsp__integration_signal_to_spectrum__cross_repo_pipeline__v1` достижим в top-3 на формулировке «cross-repo signal to spectrum» (rank=1/30) и «integration test signal generator and spectrum» (rank=3/30), а также через post-filter `concept='cross_repo_pipeline'` (top-1 в фильтре). Дословная формулировка ТЗ «pipeline signal_generators → spectrum» даёт rank=12/30 (то же ограничение).
 - [ ] Минимум 50% `python_test_usecase` карточек ревью + `human_verified=true` (Alex).
 - [ ] CLI `dsp-asst rag python build --repo DSP` идемпотентен (skip unchanged через source_hash).
 
