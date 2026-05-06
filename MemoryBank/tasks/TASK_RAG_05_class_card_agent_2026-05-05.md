@@ -1,7 +1,24 @@
 # TASK_RAG_05 — Агент 1: Class-Card Generator
 
-> **Статус**: pending · **Приоритет**: HIGH · **Время**: ~4 ч · **Зависимости**: TASK_RAG_04, **TASK_remove_opencl_enum**
+> **Статус**: ✅ DONE v1 (2026-05-06, без LLM) · **Приоритет**: HIGH · **Время**: ~3 ч факт · **Зависимости**: TASK_RAG_04, **TASK_remove_opencl_enum**
 > **Версия**: v2 (после ревью v2.1) · убрано ≥80% покрытие, запись в test_params + doc_blocks
+> **Исполнитель**: Кодо в основном чате.
+>
+> **Pilot результат** (FFTProcessorROCm в spectrum):
+> - 5 public методов извлечено через `agent_doxytags/extractor.py`
+> - 11 doc_blocks зарегистрировано (1 class_overview + 5 method_signature + 5 method_doxygen)
+> - Перегрузки `ProcessComplex` (×2) и `ProcessMagPhase` (×2) различены через `sub_index 001/002`
+> - `<repo>/.rag/test_params/fft_processor_FFTProcessorROCm.md` (10 KB) создан
+> - PG ↔ Qdrant: spectrum 460 → 471 (+11) ✅
+> - 17 Layer-6 классов в spectrum найдены через эвристику (имя + namespace + path)
+>
+> **Реализация v1** (в `C:\finetune-env\dsp_assistant\`, не в DSP-GPU):
+> - `modes/class_card.py` — основная логика, find_layer6_classes, build_class_card
+> - `cli/main.py` — добавлен `dsp-asst rag cards build --repo X [--class Y] [--dry-run]`
+> - Smart `to_snake_case_smart`: handle ROCm/OpenCL mixed-case acronyms (FFTProcessorROCm → fft_processor_rocm, не fft_processor_ro_cm)
+> - Sub_index для перегрузок: `method_<name>_signature_001/_002__v1`
+>
+> **v2 follow-up** (отдельный таск): промпт `010_class_card.md` для LLM AI summary `class_overview` (сейчас стоит первая строка doxy_brief — слабо). Раскатка на 16 оставшихся Layer-6 классов spectrum + 7 других репо.
 
 ## Цель
 
