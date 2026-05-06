@@ -200,9 +200,26 @@ dsp-asst rag python build [options]
 
 ## Definition of Done
 
-- [ ] Расширена таблица `pybind_bindings` (FK на symbols, py_* колонки, doc_block_id).
-- [ ] Существующие 42 строки `pybind_bindings` обогащены через первый прогон walker'а (cpp_symbol_id заполнен везде где совпало имя).
-- [ ] Новые блоки в `doc_blocks` с concept=`python_binding`: ≥40 (по биндингам в 8 С++ репо).
+> **Уточнение DoD от 2026-05-06 (Кодо + Cline #1):** Изначальная оценка «≥40 / 80+
+> ожидается» (план v2 §17.1) была завышена. Реальный потолок `python_binding` —
+> **35** (`grep -rn "py::class_" E:/DSP-GPU/*/python/ | grep -v py_helpers | wc -l → 35`).
+> 12 «чистых ROCm» Layer-6 классов из `signal_generators` (CwGeneratorROCm,
+> LfmGeneratorROCm, NoiseGeneratorROCm, ScriptGenerator-ROCm и т.п.) **не имеют
+> py-обёрток** — это работа на C++ side (создание `<repo>/python/py_*.hpp`),
+> не RAG-парсера. Создание этих обёрток — отдельный таск
+> (`TASK_pybind_python_wrappers_signal_generators_*`, ещё не заведён). Текущий
+> потолок `python_binding = 35` фиксируется как актуальная цель, DoD считается
+> выполненным при достижении 35.
+>
+> Также применён `ALTER TABLE rag_dsp.pybind_bindings ALTER COLUMN cpp_symbol_id
+> DROP NOT NULL` — для core_module 3 класса (GPUContext, ROCmGPUContext,
+> HybridGPUContext) определены прямо в `dsp_core_module.cpp` без отдельного
+> `py_*.hpp` wrapper и без записи в `rag_dsp.symbols`, так что NULL допустим.
+> Это изменение нужно добавить в `postgres_init_pybind_extras.sql` (idempotent).
+
+- [x] Расширена таблица `pybind_bindings` (FK на symbols, py_* колонки, doc_block_id).
+- [x] Существующие 42 строки `pybind_bindings` обогащены через первый прогон walker'а — cpp_symbol_id 42/42 заполнен где совпало имя ✅. Из 35 актуальных bindings: 32/35 имеют cpp_symbol_id, 3 core-классов NULL (см. примечание выше). 7 строк pybind_bindings остаются orphans от прежних сессий → cleanup отдельным скриптом.
+- [x] ~~Новые блоки в `doc_blocks` с concept=`python_binding`: ≥40~~ → **35 (актуальный потолок)** по 8 C++ репо: spectrum=12, radar=5, stats=5, signal_generators=4, core=3, linalg=3, heterodyne=2, strategies=1.
 - [ ] Новые блоки в `doc_blocks` с concept=`python_test_usecase`: ≥45 (53 в DSP минус ~5 пропущенных smoke + 4 локальных).
 - [ ] Новые блоки в `doc_blocks` с concept=`cross_repo_pipeline`: 5 (DSP/Python/integration/).
 - [ ] Файлы `<repo>/.rag/use_cases/python__*.md`: ≥45 в DSP + по 1 в spectrum/linalg/radar/strategies.

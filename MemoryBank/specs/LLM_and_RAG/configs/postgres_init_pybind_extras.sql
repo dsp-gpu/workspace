@@ -45,6 +45,25 @@ ALTER TABLE rag_dsp.pybind_bindings
     ADD COLUMN IF NOT EXISTS pybind_file    TEXT,    -- 'spectrum/python/py_fft_processor_rocm.hpp'
     ADD COLUMN IF NOT EXISTS doc_block_id   TEXT;    -- FK на rag_dsp.doc_blocks(block_id)
 
+-- 1.1. cpp_symbol_id допускает NULL (применено Cline #1 2026-05-06 во время
+--      pybind extractor запуска). Для core_module 3 классов (GPUContext,
+--      ROCmGPUContext, HybridGPUContext) определены прямо в
+--      dsp_core_module.cpp без отдельного py_*.hpp wrapper и без записи в
+--      rag_dsp.symbols, так что NULL допустим.
+--      Idempotent: если NOT NULL уже снят — no-op.
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'rag_dsp'
+          AND table_name = 'pybind_bindings'
+          AND column_name = 'cpp_symbol_id'
+          AND is_nullable = 'NO'
+    ) THEN
+        ALTER TABLE rag_dsp.pybind_bindings ALTER COLUMN cpp_symbol_id DROP NOT NULL;
+    END IF;
+END $$;
+
 -- 2. FK constraint (idempotent через DO-block).
 DO $$
 BEGIN
