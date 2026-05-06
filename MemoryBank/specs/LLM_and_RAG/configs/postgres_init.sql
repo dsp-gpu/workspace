@@ -1,5 +1,5 @@
 -- =============================================================================
--- dsp_assistant — PostgreSQL init script
+-- gpu_rag_dsp — PostgreSQL init script (renamed from dsp_assistant 2026-05-06)
 -- =============================================================================
 -- Версия: 1.0  · Дата: 2026-04-30  · Автор: Кодо
 --
@@ -19,16 +19,16 @@
 -- -----------------------------------------------------------------------------
 
 CREATE USER dsp_asst WITH PASSWORD :'pg_password';
-CREATE DATABASE dsp_assistant OWNER dsp_asst ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;
+CREATE DATABASE gpu_rag_dsp OWNER dsp_asst ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;
 
-\c dsp_assistant
+\c gpu_rag_dsp
 
 -- 2. СХЕМА И РАСШИРЕНИЯ
 -- -----------------------------------------------------------------------------
 
-CREATE SCHEMA dsp_gpu AUTHORIZATION dsp_asst;
-GRANT ALL ON SCHEMA dsp_gpu TO dsp_asst;
-ALTER USER dsp_asst SET search_path TO dsp_gpu, public;
+CREATE SCHEMA rag_dsp AUTHORIZATION dsp_asst;
+GRANT ALL ON SCHEMA rag_dsp TO dsp_asst;
+ALTER USER dsp_asst SET search_path TO rag_dsp, public;
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE EXTENSION IF NOT EXISTS btree_gin;
@@ -37,7 +37,7 @@ CREATE EXTENSION IF NOT EXISTS btree_gin;
 -- (нужен для stage 1_home, требует компиляции из source через MSVC на Windows
 -- или apt install postgresql-16-pgvector на Linux).
 
-SET search_path TO dsp_gpu, public;
+SET search_path TO rag_dsp, public;
 
 -- 3. ТАБЛИЦА files
 -- -----------------------------------------------------------------------------
@@ -284,14 +284,14 @@ CREATE INDEX idx_cmake_target_name ON cmake_targets(target_name);
 -- Все таблицы создаются от имени суперюзера postgres → dsp_asst по умолчанию
 -- не может INSERT/UPDATE. Выдаём права + DEFAULT PRIVILEGES для будущих таблиц.
 
-GRANT ALL PRIVILEGES ON ALL TABLES    IN SCHEMA dsp_gpu TO dsp_asst;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA dsp_gpu TO dsp_asst;
-ALTER DEFAULT PRIVILEGES IN SCHEMA dsp_gpu GRANT ALL ON TABLES    TO dsp_asst;
-ALTER DEFAULT PRIVILEGES IN SCHEMA dsp_gpu GRANT ALL ON SEQUENCES TO dsp_asst;
+GRANT ALL PRIVILEGES ON ALL TABLES    IN SCHEMA rag_dsp TO dsp_asst;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA rag_dsp TO dsp_asst;
+ALTER DEFAULT PRIVILEGES IN SCHEMA rag_dsp GRANT ALL ON TABLES    TO dsp_asst;
+ALTER DEFAULT PRIVILEGES IN SCHEMA rag_dsp GRANT ALL ON SEQUENCES TO dsp_asst;
 
 -- =============================================================================
 -- Готово. Базовая схема (9 таблиц) создана.
--- Проверка: \dt dsp_gpu.*  (должно быть 9 таблиц)
+-- Проверка: \dt rag_dsp.*  (должно быть 9 таблиц)
 --
 -- Таблица embeddings (pgvector) создаётся ОТДЕЛЬНО через
 -- configs/postgres_init_pgvector.sql — после установки pgvector extension.

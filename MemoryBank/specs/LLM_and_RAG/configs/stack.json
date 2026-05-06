@@ -30,7 +30,7 @@
       },
       "vector_db": {
         "provider": "pgvector",
-        "table": "dsp_gpu.embeddings",
+        "table": "rag_dsp.embeddings",
         "vector_size": 1024,
         "distance": "cosine",
         "index": "hnsw",
@@ -42,8 +42,8 @@
         "provider": "postgresql",
         "host": "localhost",
         "port": 5432,
-        "database": "dsp_assistant",
-        "schema": "dsp_gpu",
+        "database": "gpu_rag_dsp",
+        "schema": "rag_dsp",
         "user": "dsp_asst",
         "password_env": "DSP_ASST_PG_PASSWORD",
         "extensions": ["pg_trgm", "btree_gin", "vector"]
@@ -85,8 +85,8 @@
         "provider": "postgresql",
         "host": "localhost",
         "port": 5432,
-        "database": "dsp_assistant",
-        "schema": "dsp_gpu",
+        "database": "gpu_rag_dsp",
+        "schema": "rag_dsp",
         "user": "dsp_asst",
         "password_env": "DSP_ASST_PG_PASSWORD",
         "extensions": ["pg_trgm", "btree_gin"],
@@ -116,7 +116,8 @@
       "metadata_db": {
         "provider": "postgresql",
         "deployment": "systemd-сервис (apt install postgresql-16 postgresql-contrib)",
-        "schema": "dsp_gpu",
+        "database": "gpu_rag_dsp",
+        "schema": "rag_dsp",
         "extensions": ["pg_trgm", "btree_gin"]
       }
     },
@@ -129,7 +130,7 @@
         "quantization": "AWQ или FP8",
         "concurrent_users": 5
       },
-      "metadata_db": "общий PostgreSQL, схемы per-проект (dsp_gpu, project2, ...)",
+      "metadata_db": "общий PostgreSQL, схемы per-проект (rag_dsp, project2, ...)",
       "vector_db": "общий Qdrant, коллекции per-проект",
       "notes": "Решение по железу — после прихода. Архитектура и схема БД не меняются."
     }

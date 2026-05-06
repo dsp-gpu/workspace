@@ -1,5 +1,5 @@
 -- =============================================================================
--- dsp_assistant — pgvector add-on
+-- gpu_rag_dsp — pgvector add-on (renamed from dsp_assistant 2026-05-06)
 -- =============================================================================
 -- Версия: 1.0  · Дата: 2026-04-30  · Автор: Кодо
 --
@@ -13,18 +13,18 @@
 --
 -- Запуск (Windows):
 --   set PGPASSWORD=<dsp_asst-pass>
---   "C:\Program Files\PostgreSQL\17\bin\psql.exe" -U dsp_asst -d dsp_assistant -f postgres_init_pgvector.sql
+--   "C:\Program Files\PostgreSQL\17\bin\psql.exe" -U dsp_asst -d gpu_rag_dsp -f postgres_init_pgvector.sql
 --
 -- Запуск (Linux):
---   sudo -u postgres psql -d dsp_assistant -f postgres_init_pgvector.sql
+--   sudo -u postgres psql -d gpu_rag_dsp -f postgres_init_pgvector.sql
 --
 -- =============================================================================
 
-\c dsp_assistant
+\c gpu_rag_dsp
 
 CREATE EXTENSION IF NOT EXISTS vector;
 
-SET search_path TO dsp_gpu, public;
+SET search_path TO rag_dsp, public;
 
 -- ТАБЛИЦА embeddings — используется на stage 1_home (Win, без Qdrant)
 -- На stage 2+ создаётся, но не наполняется (vectors хранятся в Qdrant).
@@ -48,5 +48,5 @@ CREATE INDEX IF NOT EXISTS idx_embeddings_hnsw ON embeddings
 
 -- =============================================================================
 -- Готово. Таблица embeddings + HNSW индекс созданы.
--- Проверка: \d dsp_gpu.embeddings
+-- Проверка: \d rag_dsp.embeddings
 -- =============================================================================

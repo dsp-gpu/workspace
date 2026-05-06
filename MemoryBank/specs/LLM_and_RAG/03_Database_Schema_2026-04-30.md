@@ -40,11 +40,11 @@
 ### 2.1. База и схема
 
 ```sql
-CREATE DATABASE dsp_assistant;
-\c dsp_assistant
+CREATE DATABASE gpu_rag_dsp;
+\c gpu_rag_dsp
 
-CREATE SCHEMA dsp_gpu;
-SET search_path TO dsp_gpu, public;
+CREATE SCHEMA rag_dsp;
+SET search_path TO rag_dsp, public;
 
 -- Расширения
 CREATE EXTENSION IF NOT EXISTS pg_trgm;        -- trigram-поиск
@@ -439,14 +439,14 @@ collection_name = "internal"
 ```sql
 -- 1. Создать пользователя и базу
 CREATE USER dsp_asst WITH PASSWORD :'pg_password';
-CREATE DATABASE dsp_assistant OWNER dsp_asst;
+CREATE DATABASE gpu_rag_dsp OWNER dsp_asst;
 
--- 2. Подключиться к dsp_assistant
-\c dsp_assistant
+-- 2. Подключиться к gpu_rag_dsp
+\c gpu_rag_dsp
 
 -- 3. Создать схему и расширения
-CREATE SCHEMA dsp_gpu AUTHORIZATION dsp_asst;
-GRANT ALL ON SCHEMA dsp_gpu TO dsp_asst;
+CREATE SCHEMA rag_dsp AUTHORIZATION dsp_asst;
+GRANT ALL ON SCHEMA rag_dsp TO dsp_asst;
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE EXTENSION IF NOT EXISTS btree_gin;
@@ -463,7 +463,7 @@ CREATE EXTENSION IF NOT EXISTS btree_gin;
 ```bash
 cd C:\finetune-env
 uv run alembic init alembic
-# редактируем alembic.ini → sqlalchemy.url = postgresql+psycopg://dsp_asst@localhost/dsp_assistant
+# редактируем alembic.ini → sqlalchemy.url = postgresql+psycopg://dsp_asst@localhost/gpu_rag_dsp
 uv run alembic revision --autogenerate -m "initial schema"
 uv run alembic upgrade head
 ```
@@ -500,7 +500,7 @@ uv run alembic upgrade head
 
 ```bash
 # Postgres — ежедневный
-pg_dump -U dsp_asst -d dsp_assistant -n dsp_gpu --format=custom > dsp_gpu_$(date +%F).pgdump
+pg_dump -U dsp_asst -d gpu_rag_dsp -n rag_dsp --format=custom > rag_dsp_$(date +%F).pgdump
 
 # Qdrant — снапшот коллекции
 curl -X POST "http://localhost:6333/collections/public_api/snapshots"
