@@ -27,6 +27,17 @@
 > - CLI: флаг `--llm/--no-llm` (default: no-llm для backward compat).
 > - Pilot v2 на FFTProcessorROCm: 22.6 сек, 1158 output tokens, JSON распарсен, frontmatter обогащён synonyms+tags, ЧТО/ЗАЧЕМ/КАК секции вместо одной строки `/// @ingroup grp_fft_func`.
 > - `ai_generated=true, parser_version=2` в frontmatter.
+>
+> **v2 Full pilot на spectrum** (2026-05-06):
+> - Эвристика `find_layer6_classes` улучшена:
+>   - `DISTINCT ON (s.fqn)` в SQL — устраняет дубликаты forward decl vs definition
+>   - `_is_interface_name()` — exclude `I[A-Z][a-z]*Pattern` (interfaces НЕ Layer-6)
+>   - `_is_factory_name()` — exclude `*Factory$` (фабрики НЕ Layer-6)
+> - 17 (raw) → 11 (after DISTINCT) → **8 (after filter)** чистых Layer-6 классов
+> - Прогон `--llm` на 8 классов: 0 errors, все ai=🤖, ~88 блоков в БД
+> - `cleanup_class_card_orphans.py` удалил 3 orphan-карточки (IAllMaximaPipeline, ISpectrumProcessor, SpectrumProcessorFactory) + 31 связанный блок из PG+Qdrant
+>
+> Финальный набор spectrum class-cards (8): AllMaximaPipelineROCm, FFTProcessorROCm, FirFilterROCm, IirFilterROCm, KalmanFilterROCm, KaufmanFilterROCm, MovingAverageFilterROCm, SpectrumProcessorROCm.
 
 ## Цель
 
