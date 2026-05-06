@@ -1,14 +1,15 @@
 # TASK_RAG_02 — DDL для 4 новых таблиц RAG + Qdrant коллекция
 
-> **Статус**: pending · **Приоритет**: HIGH · **Время**: ~1.5 ч · **Зависимости**: TASK_RAG_01
-> **Версия**: v2 (после ревью v2.1) · **Variant C**: vectors в Qdrant, в PG только metadata
+> **Статус**: pending · **Приоритет**: HIGH · **Время**: ~2 ч · **Зависимости**: TASK_RAG_01
+> **Версия**: v3 (2026-05-06: добавлено поле `inherits_block_id` + concept whitelist) · **Variant C**: vectors в Qdrant, в PG только metadata
 
 ## Цель
 
 1. Добавить в schema `rag_dsp` четыре новые таблицы — `doc_blocks`, `use_cases`, `pipelines`, `ai_stubs`. **БЕЗ** колонок `embedding` и **БЕЗ** HNSW vector-индекса (Variant C).
-2. Создать **новую Qdrant коллекцию** `dsp_gpu_rag_v1` рядом с существующей `dsp_gpu_code_v1` — для RAG-карточек.
+2. Создать **новую Qdrant коллекцию** `dsp_gpu_rag_v1` (нет существующей `dsp_gpu_code_v1` — symbols остались в pgvector, см. memory `rag_pgvector_split.md`).
+3. **(v3)** Поддержка inheritance между блоками (CMake common ↔ specific, parent CLAUDE.md ↔ child) через поле `inherits_block_id`.
 
-После применения: 4 PG таблицы + 1 Qdrant коллекция готовы для трёх агентов.
+После применения: 4 PG таблицы + 1 Qdrant коллекция готовы для агентов TASK_RAG_03..10 и meta-агентов TASK_RAG_02.5 / 02.6.
 
 ## Артефакты
 
@@ -28,9 +29,26 @@
 - ✅ `ai_stubs.placeholder_tag TEXT NOT NULL UNIQUE` (добавлен `UNIQUE`).
 - ✅ `vector` extension в БД **остаётся** — нужен для существующей `embeddings` symbols-таблицы.
 
+**v3 дополнения**:
+- ✅ `doc_blocks.inherits_block_id TEXT REFERENCES doc_blocks(block_id)` — для inheritance (NULL у root).
+- ✅ `idx_doc_blocks_inherits` индекс.
+- ✅ Concept slug whitelist (комментарий в DDL):
+  ```
+  -- Recommended concept slugs:
+  -- Layer-6 классы:    class_overview, usage_example, method_<name>_signature,
+  --                    method_<name>_doxygen, method_<name>_test_params
+  -- Use-cases:         when_to_use, solution, parameters, edge_cases, next_steps
+  -- Pipelines:         chain_overview, used_classes, parameters, edge_cases, data_flow
+  -- Doc/ секции:       pipeline_data_flow, math, api, usage, overview, example, tests, benchmark
+  -- v3 meta:           meta_overview, meta_claude, meta_cmake_common, meta_cmake_specific,
+  --                    meta_targets, meta_rules_index, build_orchestration
+  -- v3 Python:         python_binding, python_test_usecase, cross_repo_pipeline
+  ```
+
 Ключевые моменты:
 - `doc_blocks.block_id` PRIMARY KEY (TEXT) — semantic slug
 - `doc_blocks.deprecated_by` FK self-reference (для версий)
+- `doc_blocks.inherits_block_id` FK self-reference (v3, для inheritance)
 - `use_cases` / `pipelines` имеют `block_refs JSONB` (массив `[{section, block_id}]`)
 - `ai_stubs.placeholder_tag` UNIQUE (`Q-{N}` формат, см. план §7)
 
@@ -72,11 +90,13 @@ print("OK: dsp_gpu_rag_v1 создана с payload-индексами по targ
 
 ## Definition of Done
 
-- [ ] `\dt rag_dsp.doc_blocks` — таблица существует, индексы (repo, class, concept, related GIN) **БЕЗ** vector index.
+- [ ] `\dt rag_dsp.doc_blocks` — таблица существует, индексы (repo, class, concept, related GIN, **inherits**) **БЕЗ** vector index.
 - [ ] `\dt rag_dsp.use_cases` — exists.
 - [ ] `\dt rag_dsp.pipelines` — exists.
 - [ ] `\dt rag_dsp.ai_stubs` — exists.
 - [ ] FK `doc_blocks.deprecated_by → doc_blocks.block_id` работает (self-FK).
+- [ ] **(v3)** FK `doc_blocks.inherits_block_id → doc_blocks.block_id` работает (self-FK, второй).
+- [ ] **(v3)** Smoke: вставить 2 связанных блока (parent + child с `inherits_block_id`), `JOIN` через self-FK возвращает оба.
 - [ ] `\d rag_dsp.ai_stubs` показывает `placeholder_tag` с **UNIQUE** constraint.
 - [ ] **HNSW vector index НЕ создан** (`\di rag_dsp.idx_*_embedding` — пусто).
 - [ ] Qdrant `GET /collections/dsp_gpu_rag_v1` → 200, `vectors_config.size=1024, distance=Cosine`.
