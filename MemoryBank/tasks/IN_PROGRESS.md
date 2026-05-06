@@ -1,6 +1,11 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-06 (после TASK_RAG_02.6 closeout)
+**Обновлено**: 2026-05-06 (после TASK_RAG_09 closeout)
+
+## ✅ Закрыто 2026-05-06 — TASK_RAG_09 Pipeline Generator (Агент 3)
+
+3 pipeline'а зарегистрированы (1 spectrum header `AllMaximaPipelineROCm` + 2 strategies doc `antenna_processor_pipeline`/`farrow_pipeline`). doc_blocks concept=`pipeline`: 3. `rag_dsp.pipelines`: 3 типизированных строки. Qdrant `target_table='pipelines'`: 3 точки ✅. CLI `dsp-asst rag pipelines build`. Применены 4 ревью-фикса (title prefix strip, INFRA whitelist, расширенный PascalCase regex, --pipeline slug filter).
+Подробности: [sessions/2026-05-06_TASK_RAG_09_progress.md](../sessions/2026-05-06_TASK_RAG_09_progress.md), [changelog/2026-05.md](../changelog/2026-05.md).
 
 ## ✅ Закрыто 2026-05-06 — TASK_RAG_02.6 Python use-cases + pybind bindings
 

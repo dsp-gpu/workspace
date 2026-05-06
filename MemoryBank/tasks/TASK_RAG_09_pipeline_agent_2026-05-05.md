@@ -1,7 +1,12 @@
 # TASK_RAG_09 — Агент 3: Pipeline Generator
 
-> **Статус**: pending · **Приоритет**: HIGH · **Время**: ~4 ч · **Зависимости**: TASK_RAG_08
-> **Версия**: v2 (после ревью v2.1) · re-use BaseGenerator + RagQdrantStore, тесты «по мере роста»
+> **Статус**: ✅ DONE (2026-05-06) · **Приоритет**: HIGH · **Время**: ~3 ч факт (vs ~4 ч план) · **Зависимости**: TASK_RAG_08
+> **Версия**: v2 (после ревью v2.1) · re-use RagQdrantStore + safe_json_loads, тесты «по мере роста»
+>
+> **Результат**: 3 pipeline'а зарегистрированы (1 spectrum header + 2 strategies doc).
+> doc_blocks concept=`pipeline`: 3. rag_dsp.pipelines: 3. Qdrant target_table='pipelines': 3 точки ✅.
+> CLI `dsp-asst rag pipelines build [--repo X | --all] [--pipeline slug] [--dry-run] [--re-llm]`.
+> Подробности: `MemoryBank/sessions/2026-05-06_TASK_RAG_09_progress.md`.
 
 ## Цель
 
