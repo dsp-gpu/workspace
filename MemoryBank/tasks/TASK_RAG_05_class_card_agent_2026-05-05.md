@@ -19,6 +19,14 @@
 > - Sub_index для перегрузок: `method_<name>_signature_001/_002__v1`
 >
 > **v2 follow-up** (отдельный таск): промпт `010_class_card.md` для LLM AI summary `class_overview` (сейчас стоит первая строка doxy_brief — слабо). Раскатка на 16 оставшихся Layer-6 классов spectrum + 7 других репо.
+>
+> **v2 DONE** (2026-05-06):
+> - Промпт `prompts/010_class_card.md` создан (JSON-output: what/why/how/usage_example/synonyms_ru/synonyms_en/tags).
+> - `class_card.py` расширен функцией `generate_ai_overview()` через `OllamaClient` (Qwen3 8B, temperature=0.2).
+> - `AIOverview` dataclass + интеграция в `build_class_card_md()` и `_make_overview_block()`.
+> - CLI: флаг `--llm/--no-llm` (default: no-llm для backward compat).
+> - Pilot v2 на FFTProcessorROCm: 22.6 сек, 1158 output tokens, JSON распарсен, frontmatter обогащён synonyms+tags, ЧТО/ЗАЧЕМ/КАК секции вместо одной строки `/// @ingroup grp_fft_func`.
+> - `ai_generated=true, parser_version=2` в frontmatter.
 
 ## Цель
 
