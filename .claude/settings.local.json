@@ -174,7 +174,14 @@
       "PowerShell(cd C:\\\\finetune-env; .\\\\.venv\\\\Scripts\\\\python.exe -c \"import py_compile; py_compile.compile\\(r'C:\\\\finetune-env\\\\dsp_assistant\\\\modes\\\\usecase_gen.py', doraise=True\\); py_compile.compile\\(r'C:\\\\finetune-env\\\\dsp_assistant\\\\cli\\\\main.py', doraise=True\\); print\\('SYNTAX OK'\\)\"; $env:DSP_ASST_PG_PASSWORD=\"1\"; $env:DSP_ASST_OFFLINE_HF=\"1\"; .\\\\.venv\\\\Scripts\\\\python.exe -m dsp_assistant.cli.main --stage 2_work_local rag usecases build --repo spectrum --dry-run 2>&1 | Out-String)",
       "Bash(wsl -d Ubuntu -- bash -c \"PGPASSWORD=1 psql -h localhost -U dsp_asst -d gpu_rag_dsp -c \\\\\"SELECT id, primary_class, jsonb_array_length\\(block_refs\\) AS refs, jsonb_array_length\\(synonyms_ru\\) AS syn_ru, jsonb_array_length\\(synonyms_en\\) AS syn_en, jsonb_array_length\\(tags\\) AS tags FROM rag_dsp.use_cases WHERE id LIKE 'spectrum__%';\\\\\"\")",
       "Bash(wsl -d Ubuntu -- bash -c \"PGPASSWORD=1 psql -h localhost -U dsp_asst -d gpu_rag_dsp -c \\\\\"SELECT block_refs FROM rag_dsp.use_cases WHERE id = 'spectrum__fft_processor_rocm__usecase__v1';\\\\\"\")",
-      "Bash(wsl -d Ubuntu -- bash -c \"PGPASSWORD=1 psql -h localhost -U dsp_asst -d gpu_rag_dsp -tAc \\\\\"SELECT count\\(*\\) FROM rag_dsp.doc_blocks WHERE block_id = 'spectrum__fft_processor_rocm__class_overview__v1';\\\\\"\")"
+      "Bash(wsl -d Ubuntu -- bash -c \"PGPASSWORD=1 psql -h localhost -U dsp_asst -d gpu_rag_dsp -tAc \\\\\"SELECT count\\(*\\) FROM rag_dsp.doc_blocks WHERE block_id = 'spectrum__fft_processor_rocm__class_overview__v1';\\\\\"\")",
+      "PowerShell($env:DSP_ASST_PG_PASSWORD = \"1\"; & \"C:/finetune-env/.venv/Scripts/python.exe\" \"C:/finetune-env/collect_from_rag.py\" --output \"C:/finetune-env/dataset_rag.jsonl\")",
+      "PowerShell(& \"C:/finetune-env/.venv/Scripts/python.exe\" \"C:/finetune-env/collect_dataset.py\" 2>&1)",
+      "Bash(python -c \"import sys, json; r = json.loads\\(sys.stdin.read\\(\\)\\); print\\(list\\(r.keys\\(\\)\\), 'len\\(input\\)=', len\\(r['input']\\)\\)\")",
+      "Bash(DSP_ASST_OFFLINE_HF=1 DSP_ASST_PG_PASSWORD=1 /c/finetune-env/.venv/Scripts/python.exe C:/finetune-env/scripts/rag_setup/reembed_mirror_to_typed_target_tables.py)",
+      "Bash(DSP_ASST_OFFLINE_HF=1 DSP_ASST_PG_PASSWORD=1 /c/finetune-env/.venv/Scripts/python.exe C:/finetune-env/scripts/rag_setup/smoke_retrieval.py --query \"как использовать FFT batch в Python\" --target-tables use_cases --top-k 5)",
+      "Bash(DSP_ASST_OFFLINE_HF=1 DSP_ASST_PG_PASSWORD=1 /c/finetune-env/.venv/Scripts/python.exe -m dsp_assistant.cli.main rag search \"как использовать FFT batch в Python\" --target-tables use_cases --top-k 5)",
+      "Bash(/c/finetune-env/.venv/Scripts/python.exe -u -c ' *)"
     ]
   },
   "enableAllProjectMcpServers": true,
