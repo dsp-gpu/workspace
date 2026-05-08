@@ -181,7 +181,8 @@
       "Bash(DSP_ASST_OFFLINE_HF=1 DSP_ASST_PG_PASSWORD=1 /c/finetune-env/.venv/Scripts/python.exe C:/finetune-env/scripts/rag_setup/reembed_mirror_to_typed_target_tables.py)",
       "Bash(DSP_ASST_OFFLINE_HF=1 DSP_ASST_PG_PASSWORD=1 /c/finetune-env/.venv/Scripts/python.exe C:/finetune-env/scripts/rag_setup/smoke_retrieval.py --query \"как использовать FFT batch в Python\" --target-tables use_cases --top-k 5)",
       "Bash(DSP_ASST_OFFLINE_HF=1 DSP_ASST_PG_PASSWORD=1 /c/finetune-env/.venv/Scripts/python.exe -m dsp_assistant.cli.main rag search \"как использовать FFT batch в Python\" --target-tables use_cases --top-k 5)",
-      "Bash(/c/finetune-env/.venv/Scripts/python.exe -u -c ' *)"
+      "Bash(/c/finetune-env/.venv/Scripts/python.exe -u -c ' *)",
+      "Bash(python e:/tmp/build_golden_v2.py)"
     ]
   },
   "enableAllProjectMcpServers": true,
