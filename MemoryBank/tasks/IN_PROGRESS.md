@@ -1,42 +1,86 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-06 (после TASK_RAG_09 closeout)
+**Обновлено**: 2026-05-08 (после деления `TASK_RAG_context_fuel` на 13 подтасков + Phase A QLoRA diagnostic + OpenCL Part A)
 
-## ✅ Закрыто 2026-05-06 — TASK_RAG_09 Pipeline Generator (Агент 3)
+---
 
-3 pipeline'а зарегистрированы (1 spectrum header `AllMaximaPipelineROCm` + 2 strategies doc `antenna_processor_pipeline`/`farrow_pipeline`). doc_blocks concept=`pipeline`: 3. `rag_dsp.pipelines`: 3 типизированных строки. Qdrant `target_table='pipelines'`: 3 точки ✅. CLI `dsp-asst rag pipelines build`. Применены 4 ревью-фикса (title prefix strip, INFRA whitelist, расширенный PascalCase regex, --pipeline slug filter).
-Подробности: [sessions/2026-05-06_TASK_RAG_09_progress.md](../sessions/2026-05-06_TASK_RAG_09_progress.md), [changelog/2026-05.md](../changelog/2026-05.md).
+## ✅ Закрыто 2026-05-08 (сегодня)
 
-## ✅ Закрыто 2026-05-06 — TASK_RAG_02.6 Python use-cases + pybind bindings
+### TASK_remove_opencl_pybind Part A — 3 dead pybind удалены
+- `spectrum/python/py_filters.hpp` (-276 строк, OpenCL PyFirFilter/PyIirFilter)
+- `signal_generators/python/py_lfm_analytical_delay.hpp` (-184 строки)
+- `heterodyne/python/py_heterodyne.hpp` (-215 строк)
+- Doc DEPRECATED markers в `spectrum/Doc/{API,filters_API}.md` + `heterodyne/Doc/{API,Full,copy/heterodyne_Full}.md`
+- Часть B (5 legacy OpenCL .hpp классов) → `TASK_remove_opencl_legacy_classes_2026-05-08.md`
+- Подробности: коммиты `74d7c0a` (spectrum) + `74c34dd` (signal_generators) + `cba392e` (heterodyne)
 
-83 новых doc_blocks (47 python_test_usecase + 5 cross_repo_pipeline + 31 python_binding), `pybind_bindings` extended (42 rows, 38 with doc_block_id, 25/31 cpp_symbol_id через token-Jaccard через `#include <X.hpp>` paths). CLI `dsp-asst rag python build/bindings`. Smoke retrieval PASS.
-Подробности: [sessions/2026-05-06_TASK_RAG_02.6_progress.md](../sessions/2026-05-06_TASK_RAG_02.6_progress.md), [changelog/2026-05.md](../changelog/2026-05.md).
-Создан follow-up: [TASK_remove_opencl_pybind_2026-05-06.md](TASK_remove_opencl_pybind_2026-05-06.md) (HIGH, 2-3 ч).
+### Phase A QLoRA diagnostic
+3 эксперимента на 2080 Ti (r=4 dirty / r=8 dirty / r=8 clean), парадокс CLEAN — гипотеза «датасет=bottleneck (max-5/class)» опровергнута. План Phase B пересмотрен.
+Подробности: `sessions/2026-05-08.md`, `specs/LLM_and_RAG/finetune_diagnostic_2026-05-08.md`.
 
+---
 
+## ✅ Закрыто 2026-05-06
 
-## Активные таски
+- TASK_RAG_09 Pipeline Generator — 3 pipeline'а зарегистрированы. Подробности: `sessions/2026-05-06_TASK_RAG_09_progress.md`.
+- TASK_RAG_02.6 Python use-cases + pybind bindings — 83 doc_blocks, 42 pybind. Подробности: `sessions/2026-05-06_TASK_RAG_02.6_progress.md`.
+
+---
+
+## 📋 Активные таски
+
+### Phase B QLoRA + RAG до 12.05
+
+| # | Таск | Статус | Effort | Зависимости |
+|---|------|--------|--------|-------------|
+| F1 | [TASK_FINETUNE_phase_B_2026-05-12.md](TASK_FINETUNE_phase_B_2026-05-12.md) — QLoRA на 9070, dirty 1093 + r=16 + bf16 | 📋 12.05 | 3-4 ч | — |
+| **CTX0** | [TASK_RAG_schema_migration_2026-05-08.md](TASK_RAG_schema_migration_2026-05-08.md) — `test_params` extend + tsvector | 📋 P0 | ~1 ч | — |
+| **CTX1** | [TASK_RAG_test_params_fill_2026-05-08.md](TASK_RAG_test_params_fill_2026-05-08.md) — заполнить `test_params` LEVEL 0+2 (9 репо) | 📋 P0 | ~4.5 ч | CTX0 |
+| **CTX2** | [TASK_RAG_doxygen_test_parser_2026-05-08.md](TASK_RAG_doxygen_test_parser_2026-05-08.md) — `@test*` парсер + LEVEL 1 | 📋 P0 | ~3 ч | CTX1 |
+| **CTX3** | [TASK_RAG_hybrid_upgrade_2026-05-08.md](TASK_RAG_hybrid_upgrade_2026-05-08.md) — sparse BM25 + HyDE | 📋 P1 | ~3.5 ч | CTX0 |
+| **CTX4** | [TASK_RAG_mcp_atomic_tools_2026-05-08.md](TASK_RAG_mcp_atomic_tools_2026-05-08.md) — 4 atomic MCP tools | 📋 P1 | ~1.5 ч | CTX1, CTX2 |
+| **CTX5** | [TASK_RAG_context_pack_2026-05-08.md](TASK_RAG_context_pack_2026-05-08.md) — orchestrator с cache | 📋 P1 | ~2 ч | CTX4 (опц. GRAPH) |
+| **CTX6** | [TASK_RAG_code_embeddings_2026-05-08.md](TASK_RAG_code_embeddings_2026-05-08.md) — Nomic-Embed-Code | 📋 P2 | ~5-6 ч | — |
+| **CTX7** | [TASK_RAG_late_chunking_2026-05-08.md](TASK_RAG_late_chunking_2026-05-08.md) — Late Chunking BGE-M3 | 📋 P2 | ~2 ч | — |
+| **CTX8** | [TASK_RAG_telemetry_2026-05-08.md](TASK_RAG_telemetry_2026-05-08.md) — popularity boost | 📋 P2 | ~1 ч | TestRunner::OnTestComplete |
+| **GR** | [TASK_RAG_graph_extension_2026-05-08.md](TASK_RAG_graph_extension_2026-05-08.md) — G1-G5 (без call-graph) | 📋 P1 | ~9 ч | — |
+| **EV** | [TASK_RAG_eval_extension_2026-05-08.md](TASK_RAG_eval_extension_2026-05-08.md) — RAGAs + golden-set v2 + CI | 📋 P1 | ~4.5 ч | C-этап |
+| **DS** | [TASK_RAG_dataset_generation_for_qlora_2026-05-08.md](TASK_RAG_dataset_generation_for_qlora_2026-05-08.md) — dataset v3 для QLoRA | 📋 P1 | ~6-8 ч | CTX1+ |
+
+> **Координатор:** [TASK_RAG_context_fuel_2026-05-08.md](TASK_RAG_context_fuel_2026-05-08.md) — INDEX с картой зависимостей.
+
+### Прочие активные
 
 | # | Таск | Статус | Effort | Платформа |
 |---|------|--------|--------|-----------|
-| 1 | [TASK_python_migration_phase_B_debian_2026-05-03.md](TASK_python_migration_phase_B_debian_2026-05-03.md) — реальный прогон 54 t_*.py на gfx1201 + точечные tolerance | 📋 ожидает (стартует 2026-05-03+) | ~3-5 ч | Debian + RX 9070 |
-| 2 | [TASK_KernelCache_v2_Closeout_2026-04-27.md](TASK_KernelCache_v2_Closeout_2026-04-27.md) — MemoryBank sync + core/Doc/Services/Full.md + опц. tag v0.3.0 | 📋 готов | 3-5 ч | Windows |
-| 3 | [TASK_Profiler_v2_INDEX.md](TASK_Profiler_v2_INDEX.md) — 3 закрывающих таска (доки, CI, Q7 roctracer) | 📋 ждёт OK | 4-30 ч | Windows + опц. Debian |
-| 4 | [TASK_validators_port_from_GPUWorkLib_2026-05-03.md](TASK_validators_port_from_GPUWorkLib_2026-05-03.md) — `MaxRelError/RmseError/...` → `core/test_utils/` (родительский) | ≈90% ✅ (см. ниже) | — | Debian |
-| 5 | [TASK_validators_linalg_pilot_2026-05-04.md](TASK_validators_linalg_pilot_2026-05-04.md) — пилот раскатки `gpu_test_utils::*` в `linalg/tests/` | 📋 active | ~3-4 ч | Debian + RX 9070 |
+| O1 | [TASK_remove_opencl_legacy_classes_2026-05-08.md](TASK_remove_opencl_legacy_classes_2026-05-08.md) — миграция 5 legacy OpenCL классов на `*_rocm.hpp` | 📋 medium | 2-4 ч | Debian |
+| O2 | [TASK_remove_opencl_pybind_2026-05-06.md](TASK_remove_opencl_pybind_2026-05-06.md) — Part A ✅ DONE 08.05; Part B/C/D — wait для конкретики | ⚠️ partial | — | Debian |
+| P1 | [TASK_python_migration_phase_B_debian_2026-05-03.md](TASK_python_migration_phase_B_debian_2026-05-03.md) — реальный прогон 54 t_*.py на gfx1201 | 📋 ожидает | ~3-5 ч | Debian + RX 9070 |
+| P2 | [TASK_KernelCache_v2_Closeout_2026-04-27.md](TASK_KernelCache_v2_Closeout_2026-04-27.md) — MemoryBank sync + Doc | 📋 готов | 3-5 ч | Windows |
+| P3 | [TASK_Profiler_v2_INDEX.md](TASK_Profiler_v2_INDEX.md) — 3 закрывающих таска (доки, CI, Q7 roctracer) | 📋 ждёт OK | 4-30 ч | Windows + опц. Debian |
+| V1 | [TASK_validators_port_from_GPUWorkLib_2026-05-03.md](TASK_validators_port_from_GPUWorkLib_2026-05-03.md) — `MaxRelError/RmseError/...` | ✅ ≈90% | — | Debian |
+| V2 | [TASK_validators_linalg_pilot_2026-05-04.md](TASK_validators_linalg_pilot_2026-05-04.md) — пилот `gpu_test_utils::*` | 📋 active | ~3-4 ч | Debian + RX 9070 |
+
+### Phase B+ (после 12.05)
+
+| # | Таск | Статус |
+|---|------|--------|
+| AR | [TASK_RAG_agentic_loop_2026-05-08.md](TASK_RAG_agentic_loop_2026-05-08.md) — CRAG + Self-RAG + feedback + G-calls | 📋 wait Phase B done |
+
+---
 
 ## Перспективные (`.future/`)
 
-- [TASK_script_dsl_rocm.md](../.future/TASK_script_dsl_rocm.md) — runtime HIP DSL (заменяет удалённый ScriptGenerator)
-- [TASK_pybind_review.md](../.future/TASK_pybind_review.md) — заготовка под pybind issues, наполняется в Phase B
-- [TASK_gtest_variant_for_external_projects.md](../.future/TASK_gtest_variant_for_external_projects.md) — GTest вариант AI-генератора (для проектов на GoogleTest)
-- [TASK_namespace_migration_legacy_to_dsp.md](../.future/TASK_namespace_migration_legacy_to_dsp.md) — `fft_processor::*` → `dsp::spectrum::*` (после стабилизации doxytags + первого обучения AI)
+- [TASK_script_dsl_rocm.md](../.future/TASK_script_dsl_rocm.md) — runtime HIP DSL
+- [TASK_pybind_review.md](../.future/TASK_pybind_review.md) — pybind issues
+- [TASK_gtest_variant_for_external_projects.md](../.future/TASK_gtest_variant_for_external_projects.md) — GTest вариант AI-генератора
+- [TASK_namespace_migration_legacy_to_dsp.md](../.future/TASK_namespace_migration_legacy_to_dsp.md) — `fft_processor::*` → `dsp::spectrum::*`
+
+---
 
 ## ✅ Закрыто 2026-04-30 — Phase A Python migration
 
-54 t_*.py мигрированы с `gpuworklib` на `dsp_*`, удалён shim, CMake POST_BUILD auto-deploy в 8 репо, sync правил 04+11. **Все 10 репо запушены** (workspace + 9 sub-репо). Подробности → коммит `44f4606` (DSP) + 8 cmake коммитов sub-репо + `3549a48` (workspace).
-
-Артефакты: [migration_plan_2026-04-29.md](../specs/python/migration_plan_2026-04-29.md), [api_reference_2026-04-30.md](../specs/python/api_reference_2026-04-30.md), [legacy_to_dsp_gpu_mapping_2026-04-30.md](../specs/python/legacy_to_dsp_gpu_mapping_2026-04-30.md), [migration_review_retrospective_2026-04-30.md](../specs/python/migration_review_retrospective_2026-04-30.md).
+54 t_*.py мигрированы с `gpuworklib` на `dsp_*`, удалён shim, CMake POST_BUILD auto-deploy в 8 репо. **Все 10 репо запушены**. Артефакты: `specs/python/migration_*.md`.
 
 ---
 

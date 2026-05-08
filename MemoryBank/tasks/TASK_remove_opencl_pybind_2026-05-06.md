@@ -1,8 +1,39 @@
 # TASK_remove_opencl_pybind — удалить ВСЕ остатки OpenCL в DSP-GPU
 
-> **Статус**: pending · **Приоритет**: HIGH · **Время**: ~2-3 ч · **Зависимости**: none
+> **Статус**: ⚠️ partial — **Part A ✅ DONE 2026-05-08**, Part B/C/D — ждут конкретики
+> **Приоритет**: HIGH · **Время**: ~2-3 ч (изначально); Part A потратил ~1ч
 > **Создан**: 2026-05-06 (по итогам TASK_RAG_02.6)
->
+> **Уточнённая политика OpenCL** (Alex 2026-05-08): OpenCL остаётся **везде где есть совместная работа с памятью OpenCL ↔ ROCm** (interop/ZeroCopy/dma-buf/void* APIs/учебные примеры). Чистить — только pure OpenCL код для вычислений.
+
+## ✅ Part A — DONE 2026-05-08
+
+3 dead pybind файла удалены (НЕ зарегистрированы в module.cpp + ссылались на несуществующие headers):
+
+| Файл | Размер | Коммит |
+|------|--------|--------|
+| `spectrum/python/py_filters.hpp` (PyFirFilter/PyIirFilter) | -276 строк | `74d7c0a` (spectrum) |
+| `signal_generators/python/py_lfm_analytical_delay.hpp` | -184 строки | `74c34dd` (signal_generators) |
+| `heterodyne/python/py_heterodyne.hpp` (PyHeterodyneDechirp) | -215 строк | `cba392e` (heterodyne) |
+
+Также:
+- module.cpp очищены от dead include-комментариев
+- Doc DEPRECATED markers в `spectrum/Doc/{API,filters_API}.md` + `heterodyne/Doc/{API,Full,copy/heterodyne_Full}.md`
+
+→ **Замещающий TASK для остатков**: [TASK_remove_opencl_legacy_classes_2026-05-08.md](TASK_remove_opencl_legacy_classes_2026-05-08.md) (5 legacy OpenCL .hpp классов — миграция include'ов на `*_rocm.hpp` версии).
+
+## 📋 Part B/C/D — ждут конкретики
+
+После Part A inventory показал:
+- **Part B (прямые OpenCL API)**: оставшиеся `cl_mem`/`clCreate*` в коде — **ВСЕ legitimate interop** (`linalg/cholesky_inverter_rocm` ZeroCopy + `heterodyne/i_heterodyne_processor` `void* rx_cl_mem` + `linalg/tests/test_capon_hip_opencl_to_rocm` interop тест) → **по новой политике 08.05 не удаляем**.
+- **Part C (`OpenCLBackend`)**: `core/include/core/backends/opencl/opencl_backend.hpp` существует — это **interop инфраструктура в core**, оставляем.
+- **Part D (тесты с OpenCL)**: остались `_OpenCL_` тесты — это **interop тесты ZeroCopy**, оставляем.
+
+→ Этот TASK можно закрыть как «Part A DONE; Part B/C/D переоценены, не нужны при новой политике 08.05».
+
+---
+
+## (Историческое описание ниже — Part A инструкция уже выполнена)
+
 > Расширен 2026-05-06: scope теперь включает **прямые вызовы OpenCL API**
 > (`cl_mem`, `clCreateBuffer`, `clEnqueueWriteBuffer`, `clReleaseMemObject`,
 > и т.п.) везде в проекте, а не только pybind. Правило 09-rocm-only.md —
