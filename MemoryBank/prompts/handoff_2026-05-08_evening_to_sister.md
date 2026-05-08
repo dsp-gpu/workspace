@@ -334,6 +334,22 @@ FROM rag_dsp.symbols WHERE fqn LIKE '%ScopedHipEvent%');` для каждого 
 3 подэтапа: (1) `parse_test_tags()` в `indexer/cpp_extras.py`, (2) LEVEL 1 AI-эвристики
 через `prompts/009_test_params_heuristics.md`, (3) pre-commit hook расширить.
 
+## 🔬 Deep review C1a — Verdict: PASS_minor
+
+Полный отчёт: [MemoryBank/feedback/C1a_params_extract_review_2026-05-08.md](../feedback/C1a_params_extract_review_2026-05-08.md).
+
+**Топ-3 что фикс обязательно ДО продакшен-LLM-промптов:**
+
+1. 🔴 **BLOCKER — Walker не ходит в `.cpp`.** Тела с throw/assert/clamp в `<repo>/src/**/*.cpp`, я слайсю `.hpp`. Поэтому 0 hits на heuristics. Fix: `_find_cpp_pair(hpp, fqn)` по regex `\b{class}::{method}\s*\(`, слайсить .cpp body.
+
+2. 🟠 **62% no_symbol** — strict path matching. БД хранит относительный путь, я шлю абсолютный. Fix в `_lookup_symbol_id`: добавить `WHERE f.path LIKE '%' || %s` суффиксным.
+
+3. 🟠 **Семантическая ошибка в `_THROW_RANGE_RE`** (строка 161-162): для `if (X < A) throw` я пишу `min_excl=A`, но это означает «X должен быть `>= A`» — `min_inclusive=A`. **Граница противоположна!** Fix: формат `{"op": ">=", "value": A}` или `min_inclusive`. Сделать ДО запуска LLM на 396 записях — иначе сгенерит ошибочные тесты.
+
+**Также (MED):** `_ASSERT_RE` ловит `sizeof` как имя; шаг 4 lookup в docstring но не реализован; 76 шумовых `non_void_return_present`.
+
+**Также (LOW):** dead `MethodReturn` dataclass; `DEFAULT_DSP_ROOT="E:/DSP-GPU"` Windows-only; `_slice_body` без cache (читает файл на каждый метод).
+
 ## 🎯 Архитектура C1a (что я решила)
 
 - Walker: `indexer.file_walker.iter_source_files()` → только `.hpp/.h` под `<repo>/include/`.
