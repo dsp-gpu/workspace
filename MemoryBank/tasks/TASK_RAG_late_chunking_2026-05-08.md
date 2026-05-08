@@ -2,6 +2,22 @@
 
 > **Этап:** CONTEXT-FUEL (C9) · **Приоритет:** 🟡 P2 · **Effort:** ~2 ч · **Зависимости:** none
 > **Координатор:** `TASK_RAG_context_fuel_2026-05-08.md`
+>
+> ## ⏸️ ОТЛОЖЕН до 12.05.26 (AMD Radeon RX 9070)
+>
+> **Статус 2026-05-08:** попытка реализации показала 2 блокера:
+> 1. **BGE-M3 архитектурно не подходит** — cos 0.99 на 6 chunks (нужен mean-pool fine-tune; BGE-M3 = CLS pool)
+> 2. **Jina-v3 / Nomic-v1.5 несовместимы с transformers 5.7.0** на текущем Win venv (custom-code модели рассчитаны на transformers 4.x)
+>
+> **План перезапуска (Debian + AMD Radeon RX 9070, 12.05.26):**
+> - Свежий venv с `transformers==4.46.0` (стабильная для jina/nomic custom code)
+> - `embedder_bge_late.py` уже параметризован — сменить `DEFAULT_MODEL` → `jinaai/jina-embeddings-v3`
+> - Прогнать тот же smoke `cos < 0.95` — если PASS, продолжить интеграцию в build.py + golden eval
+>
+> **Артефакты готовы для следующей сессии:**
+> - `c:/finetune-env/dsp_assistant/indexer/embedder_bge_late.py` — scaffolding
+> - `MemoryBank/specs/LLM_and_RAG/_eval_late_chunking_2026-05-08.md` — eval + список блокеров
+> - `MemoryBank/specs/rag_late_chunking_implementation_review_2026-05-08.md` — self-review
 
 ## 🎯 Цель
 

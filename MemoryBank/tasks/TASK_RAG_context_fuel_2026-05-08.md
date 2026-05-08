@@ -32,7 +32,7 @@
 | 4 | [TASK_RAG_mcp_atomic_tools_2026-05-08.md](TASK_RAG_mcp_atomic_tools_2026-05-08.md) | C5+C6 | ~1.5 ч | test_params_fill, doxygen_test_parser |
 | 5 | [TASK_RAG_context_pack_2026-05-08.md](TASK_RAG_context_pack_2026-05-08.md) | C7 | ~2 ч | mcp_atomic_tools; опц. graph_extension |
 | 6 | [TASK_RAG_code_embeddings_2026-05-08.md](TASK_RAG_code_embeddings_2026-05-08.md) | C8 | ~5-6 ч | — |
-| 7 | [TASK_RAG_late_chunking_2026-05-08.md](TASK_RAG_late_chunking_2026-05-08.md) | C9 | ~2 ч | — |
+| 7 | [TASK_RAG_late_chunking_2026-05-08.md](TASK_RAG_late_chunking_2026-05-08.md) | C9 | ~2 ч | ⏸️ **ОТЛОЖЕН до 12.05.26 (AMD Radeon)** — BGE-M3 не работает (cos 0.99), Jina/Nomic несовместимы с transformers 5.x на Win venv. Перепробовать на Debian + AMD Radeon RX 9070 в свежем venv |
 | 8 | [TASK_RAG_telemetry_2026-05-08.md](TASK_RAG_telemetry_2026-05-08.md) | C10 | ~1 ч | TestRunner::OnTestComplete (linalg pilot) |
 
 ### Этап 2 — GRAPH
