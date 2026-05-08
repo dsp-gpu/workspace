@@ -1,6 +1,8 @@
 # Промпт для subagent / сестрёнки: TASK_RAG_late_chunking (C9)
 
-> **Создан:** 2026-05-08 · **Целевой TASK:** `MemoryBank/tasks/TASK_RAG_late_chunking_2026-05-08.md`
+> **Создан:** 2026-05-08 · **Ревью:** `MemoryBank/specs/rag_prompts_review_part2_2026-05-08.md` (CR3 учтено)
+> **Мета-ревью + правки 8.05 вечер (Кодо main):** W4 truncation fallback вживлён в код (`embed_file()` возвращает `(vecs, truncated)` для caller'а), VRAM с reranker'ом, явный запрет параллельного запуска с C8
+> **Целевой TASK:** `MemoryBank/tasks/TASK_RAG_late_chunking_2026-05-08.md`
 > **Effort:** ~2 ч · **Приоритет:** 🟡 P2 · **Зависимости:** none
 > **Координатор:** `MemoryBank/tasks/TASK_RAG_context_fuel_2026-05-08.md`
 > **Парный (можно параллельно):** `TASK_RAG_code_embeddings_2026-05-08.md`
@@ -123,9 +125,14 @@ class LateChunkEmbedder:
         self,
         file_text: str,
         chunks: list[ChunkSpan],
-    ) -> dict[str, np.ndarray]:
+    ) -> tuple[dict[str, np.ndarray], list[str]]:
         """Один проход на файл → mean-pool по token-span'у каждого chunk.
-        Возврат: {chunk.name: ndarray(1024,)}"""
+
+        Returns:
+            (chunk_vecs, truncated_names) — где truncated_names это chunks которые
+            не уместились в MAX_TOKENS и должны быть переэмбеддены через стандартный
+            BGE per-chunk encoding (W4 fallback).
+        """
         # Tokenize с offset_mapping (нужен для char→token map)
         enc = self.tok(
             file_text,
@@ -138,22 +145,41 @@ class LateChunkEmbedder:
         offsets = enc.pop("offset_mapping")[0].tolist()  # [(char_start, char_end), ...]
         enc = {k: v.to(self.device) for k, v in enc.items()}
 
+        # W4: detection truncation. Если последний offset значительно меньше len(file_text) —
+        # часть файла не вошла в контекст модели.
+        file_was_truncated = (len(offsets) >= MAX_TOKENS - 1) or (
+            offsets and offsets[-1][1] < len(file_text) - 10
+        )
+
         out = self.model(**enc)
         hidden = out.last_hidden_state[0]  # (T, 1024)
 
         result: dict[str, np.ndarray] = {}
+        truncated: list[str] = []
         for c in chunks:
             tok_start, tok_end = self._char_span_to_token_span(
                 offsets, c.char_start, c.char_end
             )
+            # W4 fallback: chunk начинается ЗА пределами усечённого окна — потеряли его целиком.
+            # Возвращаем имя для переэмбеддинга через стандартный BGE на уровне caller'а.
+            if file_was_truncated and (
+                c.char_start >= (offsets[-1][1] if offsets else 0)
+            ):
+                log.warning(
+                    "chunk %s полностью за пределами truncated окна (file>%d токенов) — fallback",
+                    c.name, MAX_TOKENS,
+                )
+                truncated.append(c.name)
+                continue
             if tok_end <= tok_start:
-                log.warning("chunk %s out of token range (truncated)", c.name)
+                log.warning("chunk %s out of token range (truncated edge)", c.name)
+                truncated.append(c.name)
                 continue
             # mean pool с нормализацией (как в BGE-M3)
             chunk_vec = hidden[tok_start:tok_end].mean(dim=0)
             chunk_vec = torch.nn.functional.normalize(chunk_vec, p=2, dim=-1)
             result[c.name] = chunk_vec.float().cpu().numpy()
-        return result
+        return result, truncated
 
     @staticmethod
     def _char_span_to_token_span(
@@ -191,14 +217,29 @@ def line_span_to_char_span(file_text: str, line_start: int, line_end: int) -> tu
 
 ```python
 def _embed_file_with_late_chunking(
-    db, late_emb: LateChunkEmbedder, file_path: Path, syms: list[CppSymbol]
+    db, late_emb: LateChunkEmbedder, bge_emb: Embedder,
+    file_path: Path, syms: list[CppSymbol],
 ) -> int:
     file_text = file_path.read_text(encoding="utf-8", errors="ignore")
     spans = []
     for s in syms:
         cs, ce = line_span_to_char_span(file_text, s.line_start, s.line_end)
         spans.append(ChunkSpan(name=s.fqn, char_start=cs, char_end=ce))
-    chunk_vecs = late_emb.embed_file(file_text, spans)
+    chunk_vecs, truncated = late_emb.embed_file(file_text, spans)
+
+    # W4 fallback: для truncated chunks — стандартный BGE per-symbol encoding.
+    if truncated:
+        log.info("late-chunking: %d/%d chunks truncated → fallback на BGE per-chunk",
+                 len(truncated), len(syms))
+        truncated_set = set(truncated)
+        fallback_syms = [s for s in syms if s.fqn in truncated_set]
+        fallback_texts = [
+            file_text[cs:ce] for s in fallback_syms
+            for cs, ce in [line_span_to_char_span(file_text, s.line_start, s.line_end)]
+        ]
+        fallback_vecs = bge_emb.encode_passages(fallback_texts)
+        for s, v in zip(fallback_syms, fallback_vecs):
+            chunk_vecs[s.fqn] = v
 
     # UPSERT в embeddings (collection='bge-late')
     symbol_ids, vectors = [], []
@@ -291,12 +332,15 @@ dsp-asst eval golden_set --collection bge-late --output /tmp/late.json
 
 ## 9. Риски
 
-- **Память GPU**: BGEM3FlagModel + AutoModel = ~2.5 GB. На 2080 Ti (11 GB) OK,
-  но если запускается параллельно с Nomic (C8) — может OOM. Разделить во времени
+- **VRAM на 2080 Ti (11 GB) с reranker'ом**: BGEM3FlagModel (~1.1 GB) + AutoModel BGE для late
+  chunking (~1.1 GB) + bge-reranker-v2-m3 (~1.1 GB через `get_reranker()`) + KV-cache + batch
+  ≈ **~4 GB** для C9 один. Параллельный запуск с C8 (Nomic ~0.6-1.0 GB) → ~6-8 GB — тонко.
+  **НЕ запускать C8 и C9 параллельно.** Sequential.
 - **Tokenizer fast vs slow**: `offset_mapping` доступен только в fast. Гарантировать `use_fast=True`
 - **Mean-pool примитивен**: если качество слабое — попробовать attention-weighted pool (future)
-- **Файл >8192 токенов**: усечётся → последние chunks потеряются. Логировать warning + fallback
-  на стандартный per-chunk encoding для таких файлов
+- **Файл >8192 токенов**: усечётся → последние chunks потеряются. **W4 fallback в коде §4.1+§4.3**:
+  `embed_file()` возвращает `(chunk_vecs, truncated_names)`, caller переэмбеддит truncated через
+  стандартный BGE per-chunk encoding. Не молчаливая потеря, а graceful degradation.
 
 ## 10. По завершении
 
