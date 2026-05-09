@@ -4,7 +4,7 @@
 > **К:** новой сестрёнке-Кодо (10.05 утро или поздний вечер 9.05)
 > **Главная цель:** Phase B QLoRA на AMD Radeon RX 9070 — старт **12.05.26**, осталось ~3 дня
 > **Главный TASK:** `MemoryBank/tasks/TASK_FINETUNE_phase_B_2026-05-12.md` — открой первым после §0
-> **Ключевое:** RAG-инфра + dataset готовы. Остался **1 живой трек** (ENRICH_TG прогон) + **1 опциональный** (CLAUDE_C4 реализация).
+> **Ключевое:** RAG-инфра + dataset + CLAUDE_C4 готовы. Остался **1 живой трек** — ENRICH_TG прогон 480 records.
 
 ---
 
@@ -57,7 +57,7 @@
 |---|---|---|---|
 | 5 | **CTX2 doxygen_test_parser** (БЛОКЕР снят!) | `36b7141` `e:/DSP-GPU` + `8114a07` finetune-env | `parse_test_tags.py` (~270 строк) + `ingest_test_tags.py` (~270 строк). 219 hpp в 8 репо, **+645 INSERT + 505 UPDATE** в `rag_dsp.test_params`. Total **674 → 1319** rows; **983 ready_for_autotest** (было 111). |
 | 6 | **DS докрутка** после CTX2 LEVEL 1 | `36b7141` (тот же) | `dataset_test_gen.jsonl` 287 → **480** records; `dataset_v3.jsonl` 2020 → **2213** пар (DoD ≥ 2000 с запасом 213) |
-| 7 | **CLAUDE_C4 TASK создан** | `f868661` | Только TASK-файл, реализация впереди (см. §3) |
+| 7 | **CLAUDE_C4 ✅ DoD** (TASK + реализация параллельной сестрой) | `f868661` (TASK) + повторить `git log --grep="CLAUDE_C4\|claude_md\|tags"` | 8/8 `_RAG.md` `tags:` (66 тегов inferred) + 8/8 `<repo>/CLAUDE.md` C4-блоков + 8 pairs `claude_md_section` шаблона. Sparse BM25 smoke отложен — нужен reindex Qdrant. |
 | 8 | **EV.E3+E4** взяты, потом отложены | `5a4f429` → `8e2888f` | Поняла что нужен `_RAG.md` манифест сначала; вернёт смысл после CLAUDE_C4 |
 | 9 | **Утренний handoff** | `35ffdff` | План на сегодня (выполнен на ~70%) |
 
@@ -95,19 +95,15 @@ python build_dataset_v3.py --max-per-class 30
 
 **Подводные камни (см. §6 ниже):** `num_predict<800` обрывает; pre-commit sync_rules в `e:/DSP-GPU/`.
 
-### 🟠 Опционально (если успеешь) — RAG_CLAUDE_C4
+### 🟢 RAG_CLAUDE_C4 — УЖЕ ✅ DoD
 
-**TASK:** `MemoryBank/tasks/TASK_RAG_claude_md_c4_tags_2026-05-09.md` (137 строк, 4 подэтапа, ~1.5-2 ч).
+Закрыт параллельной сестрой 9.05. **Не нужно делать.** Что есть:
+- 8/8 `<repo>/.rag/_RAG.md` поле `tags:` заполнено (66 тегов всего)
+- 8/8 `<repo>/CLAUDE.md` содержит блок «🏗️ Архитектура (C4 — компактно)» + «🏷️ RAG теги»
+- +8 pairs шаблона `claude_md_section` в dataset
 
-Идея от Alex: добавить компактный C4-блок (5-10 строк) + RAG-теги в каждый из 8 `<repo>/CLAUDE.md`. **НЕ копировать** полные C4-диаграммы — только ссылка на `MemoryBank/.architecture/DSP-GPU_Design_C4_Full.md` + специфика репо.
-
-Подэтапы:
-1. Расширить `generate_rag_manifest.py`: `infer_tags(repo, key_classes) → list[str]` (~30 мин)
-2. Создать `generate_claude_md_section.py` — генератор блока (~30 мин)
-3. Прогон на 8 репо + ручной аудит (~30 мин)
-4. (опц.) +8 пар `claude_md_section` шаблона в dataset_v4 (~30 мин)
-
-**Сценарий:** запустить ENRICH_TG в фоне (40-80 мин LLM), параллельно делать §1+§2 CLAUDE_C4.
+**Что осталось из CLAUDE_C4** (НЕ блокер для Phase B):
+- Sparse BM25 smoke — нужен reindex Qdrant в Stage 2_work_local Debian. Можно после Phase B.
 
 ### 🟡 Pre-Phase B чеклист (11.05 вечер)
 
@@ -178,23 +174,18 @@ python build_dataset_v3.py --max-per-class 30
 
 ## 5. РЕКОМЕНДУЕМАЯ ОЧЕРЁДНОСТЬ
 
-**Time budget:** Сценарий А ≈ 4-5 ч чистого времени · Сценарий Б ≈ 1.5-2 ч.
+**Time budget:** ~1.5-2.5 ч чистого времени (CLAUDE_C4 уже ✅, осталось только ENRICH_TG + Pre-Phase B).
 
-**Сценарий А (всё успеть до Phase B):**
-1. ⏱️ Запустить ENRICH_TG в фоне (~40-80 мин LLM)
-2. Параллельно: коммит `rag_ctx2_implementation_review_2026-05-09.md` (одна правка `git add` + `git commit`)
-3. Параллельно: стартовать **RAG_CLAUDE_C4** §1+§2 (расширить generate_rag_manifest для tags + написать generate_claude_md_section)
-4. Когда ENRICH_TG закончит → перезапустить `build_dataset_v3.py` → коммит `dataset_v3` финальный
-5. Прогнать CLAUDE_C4 §3 (генерация для 8 CLAUDE.md) + ручной аудит
-6. (опц.) §4 — claude_md_section шаблон в dataset_v4 (8 пар)
-7. Финальный коммит/push в 8 саб-репо
-8. Pre-Phase B чеклист (§3 этого файла, пункты 1-5)
+**Шаги:**
+1. ⏱️ Запустить ENRICH_TG в фоне (~40-80 мин LLM, qwen3:8b)
+2. Параллельно: коммит `rag_ctx2_implementation_review_2026-05-09.md` если ещё `??` (этот handoff уже коммичу).
+3. Когда ENRICH_TG закончит → перезапустить `build_dataset_v3.py` → коммит финального `dataset_v3.jsonl`
+4. (опц.) push'нуть `dataset_v3` в `C:/finetune-env/` если хочешь зафиксировать снапшот
+5. Pre-Phase B чеклист (§3 этого файла, пункты 1-5) — перенос на Linux/работа
 
-**Сценарий Б (минимум):**
-- ENRICH_TG → перезапуск build_dataset_v3 → push.
-- Коммит ревью CTX2.
-- Pre-Phase B чеклист (перенос на Linux).
-- CLAUDE_C4 — отложить на Phase B+ или next session.
+**Опционально (если ENRICH_TG провалится / займёт >2ч):**
+- Минимум: оставить `dataset_v3.jsonl` в текущем виде (2213 пар с placeholder'ами в test_gen) — для baseline старт Phase B хватает.
+- Phase B можно стартовать на `dataset_enriched.jsonl` (1093 dirty) — он проверен (Diagnostic r=8 на 2080 Ti дал ✅ inference).
 
 ---
 
