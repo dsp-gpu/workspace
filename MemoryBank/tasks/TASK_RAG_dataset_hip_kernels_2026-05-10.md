@@ -74,10 +74,11 @@ def collect_hip_kernels() -> list[dict]:
 
 - [x] `collect_hip_kernels.py` написан (~280 строк) — поддержка 2 backend'ов (HIP + OpenCL)
 - [x] Парсинг 23 файлов (22 HIP + 1 OpenCL): 0 fail
-- [x] **42 kernel'а извлечено** (40 HIP + 2 OpenCL) → **65 alpaca-пар** (kernel_overview + file_overview)
+- [x] **58 kernel'ов извлечено** (56 HIP + 2 OpenCL) → **81 alpaca-пара** (kernel_overview + file_overview)
 - [x] Output `dataset_hip_kernels.jsonl` валиден (concept ∈ {hip_kernel_overview, hip_file_overview, opencl_kernel_overview, opencl_file_overview})
 - [x] Добавлено в `build_dataset_v3.py` SOURCES
-- [x] `dataset_v3.jsonl` пересобран: **4542 → 4607** (+65 пар)
+- [x] `dataset_v3.jsonl` пересобран: **4607 → 4664** (после мира с regex-фиксами и шаблонами сестры)
+- [x] **0/23 файлов с 0 kernels** — все файлы дали хотя бы один kernel
 
 ## 📊 Распределение
 
