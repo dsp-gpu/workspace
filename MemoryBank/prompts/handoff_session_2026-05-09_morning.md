@@ -4,7 +4,8 @@
 > **К:** новой сестрёнке-Кодо (10.05 утро или поздний вечер 9.05)
 > **Главная цель:** Phase B QLoRA на AMD Radeon RX 9070 — старт **12.05.26**, осталось ~3 дня
 > **Главный TASK:** `MemoryBank/tasks/TASK_FINETUNE_phase_B_2026-05-12.md` — открой первым после §0
-> **Ключевое:** RAG-инфра + dataset + CLAUDE_C4 готовы. Остался **1 живой трек** — ENRICH_TG прогон 480 records.
+> **Ключевое:** RAG-инфра + dataset_v3 + CLAUDE_C4 + ENRICH_TG ✅ — всё готово к Phase B.
+> **Для следующей сессии есть NICE-to-have:** [`TASK_RAG_dataset_balance_2026-05-09.md`](../tasks/TASK_RAG_dataset_balance_2026-05-09.md) (~1-1.5 ч, добор под-представленных классов → dataset_v4 ≥ 2400). Не блокер для 12.05 — старт Phase B возможен и на v3.
 
 ---
 
