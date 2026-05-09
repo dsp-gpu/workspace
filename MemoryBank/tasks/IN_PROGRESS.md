@@ -36,7 +36,7 @@
 | F1 | [TASK_FINETUNE_phase_B_2026-05-12.md](TASK_FINETUNE_phase_B_2026-05-12.md) — QLoRA на 9070, dirty 1093 + r=16 + bf16 | 📋 12.05 | 3-4 ч | — |
 | **CTX0** | [TASK_RAG_schema_migration_2026-05-08.md](TASK_RAG_schema_migration_2026-05-08.md) — `test_params` extend + tsvector | ✅ 8.05 11:51 | — | — |
 | **CTX1** | [TASK_RAG_test_params_fill_2026-05-08.md](TASK_RAG_test_params_fill_2026-05-08.md) — заполнить `test_params` LEVEL 0+2 (9 репо) | ✅ DoD 8.05 (674 LEVEL 0 / 111 LEVEL 2 на 10 классах) | — | CTX0 ✅ |
-| **CTX2** | [TASK_RAG_doxygen_test_parser_2026-05-08.md](TASK_RAG_doxygen_test_parser_2026-05-08.md) — `@test*` парсер + LEVEL 1 | ⚠️ **БЛОКЕР 8.05**: 0 `@test*` тегов в коде → завтра 9.05 решение по handoff | ~3 ч | CTX1 ✅ |
+| **CTX2** | [TASK_RAG_doxygen_test_parser_2026-05-08.md](TASK_RAG_doxygen_test_parser_2026-05-08.md) — `@test*` парсер + LEVEL 1 | 🚧 **я (Кодо main) 9.05 утро** — БЛОКЕР снят: в spectrum/include найдено @test* в 7 hpp (cpu_fft, fft_params, spectrum_processor_rocm, all_maxima_pipeline_rocm, spectrum_post_op, mag_phase_op, pad_data_op), парсер реализую | ~3 ч | CTX1 ✅ |
 | **CTX3** | [TASK_RAG_hybrid_upgrade_2026-05-08.md](TASK_RAG_hybrid_upgrade_2026-05-08.md) — sparse BM25 + HyDE | 🚧 я (Кодо main) 8.05 вечер | ~3.5 ч | CTX0 ✅ |
 | **CTX4** | [TASK_RAG_mcp_atomic_tools_2026-05-08.md](TASK_RAG_mcp_atomic_tools_2026-05-08.md) — 4 atomic MCP tools | ✅ DoD 9.05 (test_params 6 rec / use_case 3 hits / pipeline 3 hits / doc_block 2874 chars; commit `0a2882b` в finetune-env) | — | CTX1 ✅ |
 | **CTX5** | [TASK_RAG_context_pack_2026-05-08.md](TASK_RAG_context_pack_2026-05-08.md) — orchestrator с cache | 🚧 сестра #2 | ~2 ч | CTX4 (опц. GRAPH) |
@@ -47,6 +47,7 @@
 | **EV** | [TASK_RAG_eval_extension_2026-05-08.md](TASK_RAG_eval_extension_2026-05-08.md) — RAGAs + golden-set v2 + CI · E1 ✅ + E2 ✅; E3+E4 отложено (нужен `_RAG.md` манифест сначала) | 🚧 partial | ~4.5 ч | C-этап ✅ |
 | **RAG_MAN** | _RAG.md manifest generator (8 репо) — auto-поля из symbols+test_params, AI-brief позже | ✅ DoD 9.05 (8/8 файлов созданы и запушены: core `cc83bb3` / spectrum `542eb56` / stats `e1b2525` / signal_generators `7f12d90` / heterodyne `ff26934` / linalg `687ba91` / radar `962a7c4` / strategies `6b9d64c`; скрипт в finetune-env) | — | CTX1 ✅ |
 | **RAG_ENRICH_TG** | enrich 287 test_gen placeholders → real C++ smoke-tests через ollama qwen3:8b | 🚧 **я (Кодо main) 9.05 утро** (улучшение качества test_gen в dataset_v3 для Phase B QLoRA) | ~45-60 мин | DS ✅, CTX1 ✅ |
+| **RAG_CLAUDE_C4** | [TASK_RAG_claude_md_c4_tags_2026-05-09.md](TASK_RAG_claude_md_c4_tags_2026-05-09.md) — Архитектура C4 + теги в `<repo>/CLAUDE.md` для лучшего обучения QLoRA + sparse retrieval | 📋 после ENRICH_TG (Кодо main) | ~1.5-2 ч | RAG_MAN ✅ |
 | **DS** | [TASK_RAG_dataset_generation_for_qlora_2026-05-08.md](TASK_RAG_dataset_generation_for_qlora_2026-05-08.md) — dataset v3 для QLoRA | ✅ **DoD 9.05 утро** (1347→**2020** через 5 шаблонов: class_overview 47 / method_doxygen 189 / method_signatures 221 / method_signature_blocks 189 / pipeline_data_flow 85; +85% от baseline 1093; max-per-class=30) | — | CTX1 ✅, CTX4 ✅ |
 
 > **Координатор:** [TASK_RAG_context_fuel_2026-05-08.md](TASK_RAG_context_fuel_2026-05-08.md) — INDEX с картой зависимостей.
