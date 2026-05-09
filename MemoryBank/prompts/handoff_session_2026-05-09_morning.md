@@ -1,20 +1,27 @@
-# Handoff Кодо-сестрёнке — 2026-05-09 утро (после большой смены)
+# Handoff Кодо-сестрёнке — 2026-05-09 (вечер большой смены → next session)
 
-> **От:** Кодо main (контекст ~65%, передаю эстафету)
-> **К:** новой сестрёнке-Кодо
-> **Главная цель:** Phase B QLoRA на AMD Radeon RX 9070 — стартует **12.05.26**, ~3 дня до дедлайна.
-> **Ключевое:** RAG-инфраструктура **готова**, осталось 2 трека качества.
+> **От:** Кодо main (~2026-05-09 поздний день, контекст исчерпан)
+> **К:** новой сестрёнке-Кодо (10.05 утро или поздний вечер 9.05)
+> **Главная цель:** Phase B QLoRA на AMD Radeon RX 9070 — старт **12.05.26**, осталось ~3 дня
+> **Главный TASK:** `MemoryBank/tasks/TASK_FINETUNE_phase_B_2026-05-12.md` — открой первым после §0
+> **Ключевое:** RAG-инфра + dataset готовы. Остался **1 живой трек** (ENRICH_TG прогон) + **1 опциональный** (CLAUDE_C4 реализация).
 
 ---
 
-## 0. Прочитать ПЕРВЫМ (15 мин)
+## 0. Прочитать ПЕРВЫМ (10 мин)
 
-1. **`MemoryBank/MASTER_INDEX.md`** + **`MemoryBank/tasks/IN_PROGRESS.md`** — статус 13 RAG-подтасков.
+1. **`MemoryBank/MASTER_INDEX.md`** + **`MemoryBank/tasks/IN_PROGRESS.md`** — статус.
 2. **Этот файл целиком.**
-3. **`MemoryBank/tasks/TASK_RAG_claude_md_c4_tags_2026-05-09.md`** — твой следующий после ENRICH_TG.
-4. По мере необходимости:
-   - `prompts/handoff_session_2026-05-08_late_evening.md` — мой handoff с прошлой сессии
-   - `RAG_deep_analysis_2026-05-08.md` v1.2 — strategic brief
+3. **`MemoryBank/specs/rag_ctx2_implementation_review_2026-05-09.md`** — свежий self-review CTX2 (я писала вечером 9.05, ещё untracked в момент handoff'а).
+4. **СРАЗУ ЗАКОММИТЬ** ревью + handoff (чтобы не потерять при следующих правках):
+   ```bash
+   git -C e:/DSP-GPU add MemoryBank/specs/rag_ctx2_implementation_review_2026-05-09.md \
+                          MemoryBank/prompts/handoff_session_2026-05-09_morning.md
+   git -C e:/DSP-GPU commit -m "session 2026-05-09 evening: handoff + CTX2 self-review"
+   ```
+5. По мере необходимости:
+   - `prompts/handoff_session_2026-05-08_late_evening.md` — предыдущий handoff (для контекста как sister #2 шла, статус её треков CTX5/GR)
+   - утренний handoff 9.05 в этом же файле через `git show 35ffdff:MemoryBank/prompts/handoff_session_2026-05-09_morning.md` — что планировалось vs что сделано
 
 ---
 
@@ -33,53 +40,96 @@
 
 ---
 
-## 2. ЧТО ЗАКРЫТО ЗА СМЕНУ 9.05 УТРО (4 трека)
+## 2. ЧТО ЗАКРЫТО ЗА СМЕНУ 9.05 (полный итог дня)
+
+### Утро (4 трека параллельно)
 
 | # | Задача | Commit | Эффект |
 |---|---|---|---|
-| 1 | **EV.E2 RAGAs + abstain** | `62a067d` finetune-env | faithfulness(grounded)=0.8, faithfulness(hallucination)=0.0 — антигаллюцинация работает |
-| 2 | **CTX4 mcp_atomic_tools** | `0a2882b` finetune-env | 4 tools (test_params/use_case/pipeline/doc_block) |
-| 3 | **DS dataset_v3** | `49851a6` finetune-env (мой) + последующий доп от сестры (5 шаблонов) | 1347 → **2213** пар, DoD ≥ 2000 ✅ |
-| 4 | **RAG_MAN _RAG.md** (8 саб-репо) | `b424f29` finetune-env + 8 коммитов в саб-репо | 8/8 манифестов с key_classes из CTX1 |
+| 1 | **EV.E2 RAGAs + abstain** | `e3429b0` `e:/DSP-GPU` + `62a067d` finetune-env | faithfulness(grounded)=0.8, faithfulness(hallucination)=0.0 — антигаллюцинация работает |
+| 2 | **CTX4 mcp_atomic_tools** | `e3429b0` `e:/DSP-GPU` + `0a2882b` finetune-env | 4 tools (test_params/use_case/pipeline/doc_block) работают через MCP |
+| 3 | **DS dataset_v3** baseline | `043db5a` `e:/DSP-GPU` + finetune-env коммит | 1093 → **2020** через 5 шаблонов (class_overview 47 / method_doxygen 189 / method_signatures 221 / method_signature_blocks 189 / pipeline_data_flow 85) |
+| 4 | **RAG_MAN _RAG.md** (8 саб-репо) | `e143d4c` `e:/DSP-GPU` + 8 коммитов в саб-репо (`cc83bb3` core / `542eb56` spectrum / `e1b2525` stats / `7f12d90` signal_generators / `ff26934` heterodyne / `687ba91` linalg / `962a7c4` radar / `6b9d64c` strategies) | 8/8 манифестов с `key_classes` из CTX1 (поле `tags:` пока пустое) |
 
-**Параллельно сестра закрыла:**
-- ✅ **CTX2 doxygen_test_parser** (БЛОКЕР снят!) — `parse_test_tags.py` + `ingest_test_tags.py`. 219 hpp обработано в 8 репо, **+645 inserted + 505 updated** в `rag_dsp.test_params`. Total **674 → 1319** rows; **983 ready_for_autotest** (было 111). Это **критический рост**: теперь можно автогенерить тесты для 983 методов, а не 111.
-- ✅ Последняя докрутка DS до 2213 пар (test_gen вырос 287 → 480 после CTX2).
+### День (CTX2 + докрутка DS)
+
+| # | Задача | Commit | Эффект |
+|---|---|---|---|
+| 5 | **CTX2 doxygen_test_parser** (БЛОКЕР снят!) | `36b7141` `e:/DSP-GPU` + `8114a07` finetune-env | `parse_test_tags.py` (~270 строк) + `ingest_test_tags.py` (~270 строк). 219 hpp в 8 репо, **+645 INSERT + 505 UPDATE** в `rag_dsp.test_params`. Total **674 → 1319** rows; **983 ready_for_autotest** (было 111). |
+| 6 | **DS докрутка** после CTX2 LEVEL 1 | `36b7141` (тот же) | `dataset_test_gen.jsonl` 287 → **480** records; `dataset_v3.jsonl` 2020 → **2213** пар (DoD ≥ 2000 с запасом 213) |
+| 7 | **CLAUDE_C4 TASK создан** | `f868661` | Только TASK-файл, реализация впереди (см. §3) |
+| 8 | **EV.E3+E4** взяты, потом отложены | `5a4f429` → `8e2888f` | Поняла что нужен `_RAG.md` манифест сначала; вернёт смысл после CLAUDE_C4 |
+| 9 | **Утренний handoff** | `35ffdff` | План на сегодня (выполнен на ~70%) |
+
+### Вечер (review + handoff)
+
+| # | Задача | Commit | Эффект |
+|---|---|---|---|
+| 10 | **CTX2 self-review** | _untracked_ → твой коммит | `MemoryBank/specs/rag_ctx2_implementation_review_2026-05-09.md` — PASS-WITH-FIXES, ~173 строки, 8 разделов |
+| 11 | **Этот handoff** | _этот_ → твой коммит | замена утреннего файла актуальным |
+
+**Итого за день: 11 значимых событий, ~10 коммитов в `e:/DSP-GPU/`, 8 push'ей в саб-репо.**
 
 ---
 
-## 3. ЧТО ОСТАЛОСЬ (приоритет до 12.05)
+## 3. ЧТО ОСТАЛОСЬ ДО Phase B (12.05)
 
-### 🔴 Текущий трек (мой, не закончила)
+### 🔴 Срочно (не откладывать) — RAG_ENRICH_TG
 
-**RAG_ENRICH_TG** — `C:/finetune-env/enrich_test_gen.py`
-- **Статус:** скрипт готов (commit-ready), smoke 5/5 ✅ (без gtest, без обрывов)
-- **НЕ запущен на полные 480** (test_gen вырос с 287 до 480 благодаря CTX2 LEVEL 1)
-- **Что делать:** прогнать `python enrich_test_gen.py --output dataset_test_gen_enriched.jsonl` — ETA ~40-80 мин на 480 records (qwen3:8b ~5-10s/record)
-- **После:** перезапустить `python build_dataset_v3.py --max-per-class 30` чтобы placeholder'ы заменились реальным C++ → финальный `dataset_v3.jsonl` для Phase B
-- **Качество:** smoke v2 показал C++ через `gpu_test_utils::TestRunner` без gtest, корректные namespace, правильный API (`runner.Section`/`Pass`/`Fail`)
+**Контекст:** скрипт `C:/finetune-env/enrich_test_gen.py` готов и smoke-протестирован (5/5 ✅, без gtest, без обрывов на `num_predict=900`). Но **не прогнан на полные 480 records** (test_gen вырос с 287 до 480 после CTX2).
 
-### 🟠 Новый трек (TASK создан, готов к старту)
+**Что делать:**
+```bash
+cd C:/finetune-env
+python enrich_test_gen.py --output dataset_test_gen_enriched.jsonl
+# ETA ~40-80 мин (qwen3:8b ~5-10s/record × 480)
+```
 
-**RAG_CLAUDE_C4** — `MemoryBank/tasks/TASK_RAG_claude_md_c4_tags_2026-05-09.md`
-- **Идея от Alex:** добавить компактный C4-блок + RAG-теги в каждый из 8 `<repo>/CLAUDE.md`
-- **НЕ копировать** полные C4-диаграммы — только ссылка на `MemoryBank/.architecture/` + 5-10 строк специфики
-- **Effort:** ~1.5-2 ч, 4 подэтапа в TASK
-- **Ключевой результат:** улучшит 3-слойный контекст для QLoRA (workspace/repo/classes) + sparse BM25 retrieval по тегам
+После прогона:
+```bash
+python build_dataset_v3.py --max-per-class 30
+# < 30 sec — placeholder'ы заменятся реальным C++ smoke-кодом
+```
 
-### 🟡 Отложено / параллельно
+**Зачем:** финальный `dataset_v3.jsonl` без placeholder'ов в test_gen → чистый материал для QLoRA Phase B.
+
+**Подводные камни (см. §6 ниже):** `num_predict<800` обрывает; pre-commit sync_rules в `e:/DSP-GPU/`.
+
+### 🟠 Опционально (если успеешь) — RAG_CLAUDE_C4
+
+**TASK:** `MemoryBank/tasks/TASK_RAG_claude_md_c4_tags_2026-05-09.md` (137 строк, 4 подэтапа, ~1.5-2 ч).
+
+Идея от Alex: добавить компактный C4-блок (5-10 строк) + RAG-теги в каждый из 8 `<repo>/CLAUDE.md`. **НЕ копировать** полные C4-диаграммы — только ссылка на `MemoryBank/.architecture/DSP-GPU_Design_C4_Full.md` + специфика репо.
+
+Подэтапы:
+1. Расширить `generate_rag_manifest.py`: `infer_tags(repo, key_classes) → list[str]` (~30 мин)
+2. Создать `generate_claude_md_section.py` — генератор блока (~30 мин)
+3. Прогон на 8 репо + ручной аудит (~30 мин)
+4. (опц.) +8 пар `claude_md_section` шаблона в dataset_v4 (~30 мин)
+
+**Сценарий:** запустить ENRICH_TG в фоне (40-80 мин LLM), параллельно делать §1+§2 CLAUDE_C4.
+
+### 🟡 Pre-Phase B чеклист (11.05 вечер)
+
+| # | Что | Где | Прим. |
+|---|---|---|---|
+| 1 | Перенести `dataset_v3.jsonl` (финальный) на Linux/работа | scp / git / usb | DoD: ≥2000 пар, без `<TODO>` в test_gen |
+| 2 | Перенести `train_simple.py` адаптированный для Linux | пути hardcoded → `os.path.expanduser` | См. TASK_FINETUNE_phase_B §«Подготовка» |
+| 3 | Переписать `run_full_qwen3_r8.ps1` → `run_full_qwen3_r16.sh` | bash | См. TASK Phase B §«Команда полного train» |
+| 4 | Проверить ROCm 7.2 + bnb на 9070 | `python -c "import torch; print(torch.cuda.is_bf16_supported())"` → True | Без bf16 не запустим |
+| 5 | `dataset_enriched.jsonl` (1093 dirty baseline) скопировать тоже | страховка если v3 даст surprise | Уже доказано работает (Diagnostic r=8) |
+
+### ⏸️ Deferred / параллельно
 
 | # | Задача | Effort | Прим. |
 |---|---|---|---|
-| **EV.E3** | CI workflow `.github/workflows/rag_eval.yml` | ~1.5 ч | После RAG_CLAUDE_C4 |
-| **EV.E4** | pre-commit hook `_RAG.md` старения | ~30 мин | Теперь имеет смысл — файлы есть |
+| **EV.E3** | CI workflow `.github/workflows/rag_eval.yml` | ~1.5 ч | После CLAUDE_C4 |
+| **EV.E4** | pre-commit hook `_RAG.md` старения | ~30 мин | Имеет смысл когда есть `tags:` |
 | **CTX6** | code_embeddings (Nomic-Embed-Code) | ~5-6 ч | P2, независимо |
 | **CTX8** | telemetry popularity boost | ~1 ч | Ждёт `TestRunner::OnTestComplete` |
-| **CTX5/GR** | sister #2: context_pack / graph_extension | — | Не лезть, чужой трек |
-
-### ⏸️ Deferred
-
-- **CTX7** late_chunking → 12.05.26 (AMD Radeon, transformers 4.46 venv)
+| **CTX5/GR** | sister #2: context_pack / graph_extension | — | Не лезть, чужой трек → статус в `prompts/handoff_session_2026-05-08_late_evening.md` + git log по веткам сестёр |
+| **CTX7** | late_chunking | — | Deferred 12.05.26 (AMD Radeon, transformers 4.46 venv) |
+| **CTX2 P3** | LEVEL 1 AI heuristics через ollama, pre-commit auto-sync | ~2-3 ч | Action items 1-3 в `rag_ctx2_implementation_review_2026-05-09.md` §H |
 
 ---
 
@@ -91,17 +141,17 @@
 - `rag_dsp.use_cases` — 123 / `pipelines` — 8 / все с `search_tsv`
 - `rag_dsp.embeddings` живёт в схеме **`rag_dsp`**, не `public` (search_path маскирует)
 
-### Retrieval
+### Retrieval (НЕ путать!)
 - `pipeline.py` — для **symbols** (pgvector + sparse + rerank)
-- `rag_hybrid.py` — для **doc_blocks/use_cases/pipelines** (Qdrant 1024d + sparse + HyDE) — **CTX3 ✅**
-- НЕ путать! Code-search → `pipeline.py`. Doc-RAG → `rag_hybrid.py`.
+- `rag_hybrid.py` — для **doc_blocks/use_cases/pipelines** (Qdrant 1024d + sparse + HyDE) — CTX3 ✅
+- Code-search → `pipeline.py`. Doc-RAG → `rag_hybrid.py`.
 
 ### CTX4 atomic tools (мои)
 - `dsp_test_params(class_fqn, method=None)` — JSON edge_values+throw_checks+return_checks
 - `dsp_use_case(slug | query, repo, top_k)` — exact или search через ts_rank
 - `dsp_pipeline(slug | query, repo, top_k)` — то же на pipelines
 - `dsp_doc_block(block_id)` — full content_md
-- HTTP endpoints в `http_api.py`, MCP wrappers в `mcp_server.py`
+- HTTP в `http_api.py`, MCP wrappers в `mcp_server.py`
 
 ### EV.E2 RAGAs (мои)
 - `dsp_assistant/eval/ragas_metrics.py` — 4 метрики через ollama judge
@@ -109,17 +159,46 @@
 - Cache по sha1(prompt+system) — повторный прогон бесплатный
 - `dsp_assistant/eval/confidence.py` — `should_abstain(top1_rerank_score, threshold=0.4)`
 
+### CTX2 parser (новое!) — `parse_test_tags.py`
+- Поддерживает: `@test {fields}`, `@test_check expr`, `@test_ref ref`
+- Range/list: `[a..b]` → range, `[v1, v2]` → list
+- Target resolution: ПОСЛЕДНИЙ `@param/@return/@throws` перед `@test`
+- UPSERT по UNIQUE `(symbol_id, param_name)` где `__return__/__throws__/__class__` для не-param targets
+- **Поправка к TASK §1:** реальный синтаксис `@test {field=value}`, НЕ `@test_field name: ...`
+
 ### Stage 1_home (Win) vs 2_work_local (Debian)
-- 1_home: `pgvector` (Qdrant НЕ запущен на Win — это причина почему `rag_hybrid` smoke только sparse-only делала)
+- 1_home: `pgvector` (Qdrant НЕ запущен на Win — `rag_hybrid` smoke на Win только sparse-only)
 - 2_work_local Debian: full Qdrant + ollama qwen3:32b. Полный hybrid реально работает там.
 
 ### Ollama
-- **Qwen3 thinking-режим:** в API параметр `think=false` (Ollama 0.10+). `/no_think` в prompt НЕ срабатывает.
-- Direct POST `/api/generate` с body `{"think": false, "options": {"temperature":0, "seed":42}}`.
+- Qwen3 thinking-режим: API параметр `think=false` (Ollama 0.10+). `/no_think` в prompt НЕ срабатывает.
+- Direct POST `/api/generate` body `{"think": false, "options": {"temperature":0, "seed":42}}`.
 
 ---
 
-## 5. ПОДВОДНЫЕ КАМНИ (на которые я наступила)
+## 5. РЕКОМЕНДУЕМАЯ ОЧЕРЁДНОСТЬ
+
+**Time budget:** Сценарий А ≈ 4-5 ч чистого времени · Сценарий Б ≈ 1.5-2 ч.
+
+**Сценарий А (всё успеть до Phase B):**
+1. ⏱️ Запустить ENRICH_TG в фоне (~40-80 мин LLM)
+2. Параллельно: коммит `rag_ctx2_implementation_review_2026-05-09.md` (одна правка `git add` + `git commit`)
+3. Параллельно: стартовать **RAG_CLAUDE_C4** §1+§2 (расширить generate_rag_manifest для tags + написать generate_claude_md_section)
+4. Когда ENRICH_TG закончит → перезапустить `build_dataset_v3.py` → коммит `dataset_v3` финальный
+5. Прогнать CLAUDE_C4 §3 (генерация для 8 CLAUDE.md) + ручной аудит
+6. (опц.) §4 — claude_md_section шаблон в dataset_v4 (8 пар)
+7. Финальный коммит/push в 8 саб-репо
+8. Pre-Phase B чеклист (§3 этого файла, пункты 1-5)
+
+**Сценарий Б (минимум):**
+- ENRICH_TG → перезапуск build_dataset_v3 → push.
+- Коммит ревью CTX2.
+- Pre-Phase B чеклист (перенос на Linux).
+- CLAUDE_C4 — отложить на Phase B+ или next session.
+
+---
+
+## 6. ПОДВОДНЫЕ КАМНИ (на которые я наступила)
 
 1. **`websearch_to_tsquery` склеивает AND** на естественных запросах → 0 hits на «как использовать FFT в Python». **Решение:** OR-tsquery в Python (см. `rag_hybrid.py:_to_or_tsquery_str`).
 2. **`_reciprocal_rank_fusion`** в `pipeline.py:163` — БЕЗ weights, БЕЗ N-way. Если нужны веса — пиши новую `_weighted_rrf_merge` (вариант B), не пытайся «переиспользовать».
@@ -128,22 +207,9 @@
 5. **PostgreSQL не поддерживает** `COUNT(DISTINCT x) FILTER (WHERE ...)` — используй `SUM(CASE WHEN ...)`.
 6. **CLI Click groups:** `cli/main.py:1060` `rag_group` уже имеет subgroups `rag blocks` (1065) и `rag python` (1196). Новые команды добавлять как subgroup рядом.
 7. **Sync_rules pre-commit hook** в `e:/DSP-GPU/` может автоматически добавить файлы в твой коммит. Не паникуй если `git diff` пустой после Edit — возможно sync-rules захватил.
-8. **При enrich_test_gen num_predict** — 600 обрывает на полуслове, 900 нормально. Если ставишь больше — учитывай latency (×0.5 минимум).
-
----
-
-## 6. РЕКОМЕНДУЕМАЯ ОЧЕРЁДНОСТЬ
-
-**Сценарий А (сегодня всё успеть до Phase B):**
-1. ⏱️ Прогнать ENRICH_TG (~40-80 мин LLM фон) → перезапустить `build_dataset_v3.py` (≤30 sec) → закоммитить enriched + новый dataset_v3
-2. Параллельно (пока ollama работает) — стартовать **RAG_CLAUDE_C4** §1+§2 (расширить generate_rag_manifest для tags + написать generate_claude_md_section)
-3. Прогнать §3 (генерация блоков для 8 CLAUDE.md) + ручной аудит
-4. (опц.) §4 — claude_md_section шаблон в dataset_v4 (8 пар)
-5. Финальный коммит/push в 8 саб-репо
-
-**Сценарий Б (если по дороге что-то ломается):**
-- Минимум: ENRICH_TG → перезапуск build_dataset_v3 → push. Это даёт чистый dataset_v3 для Phase B.
-- RAG_CLAUDE_C4 — отложить на Phase B+ или next session.
+8. **При enrich_test_gen `num_predict`** — 600 обрывает на полуслове, 900 нормально. Если ставишь больше — учитывай latency (×0.5 минимум).
+9. **CTX2 ON CONFLICT** использует `EXCLUDED.*` (полная перезапись). Если в БД был LEVEL 2 manual с `comments` → `comments` затрётся пустым. Mitigation: для будущих re-runs изменить на `COALESCE(EXCLUDED.X, test_params.X)` для `comments`/`linked_use_cases`. Сейчас риск низкий — LEVEL 2 заполнен только на 10 классах (111 records), LEVEL 1 покрывает их.
+10. **CTX2 71 unresolved methods** — приватные / inline в .cpp / template. Можно добавить fallback `(file_id, method_name)` в `resolve_symbol_id` (5-10 мин), не критично.
 
 ---
 
@@ -170,11 +236,13 @@ Refs: TASK_<...>.md, MemoryBank/specs/<...>.md
 
 ## 8. ЧЕКЛИСТ В КОНЦЕ ТРЕКА
 
-- [ ] ENRICH_TG прогон 480 ✅ (или скорректирован до текущего числа в `dataset_test_gen.jsonl`)
+- [ ] ENRICH_TG прогон 480 ✅ (или скорректирован под текущий `dataset_test_gen.jsonl`)
 - [ ] `build_dataset_v3.py` перезапущен → финальный dataset_v3 без placeholders в test_gen
+- [ ] `rag_ctx2_implementation_review_2026-05-09.md` закоммичен
 - [ ] (если успела) RAG_CLAUDE_C4 §1+§2 — `tags:` в `_RAG.md` + блок в CLAUDE.md
+- [ ] Pre-Phase B чеклист §3 (минимум пункты 1-2: dataset + train_simple на Linux)
 - [ ] Все коммиты осмысленные, push'ить только по «да» Alex
-- [ ] `MemoryBank/sessions/2026-05-09.md` — короткое резюме сессии
+- [ ] `MemoryBank/sessions/2026-05-09.md` или `2026-05-10.md` — короткое резюме
 - [ ] `MemoryBank/changelog/2026-05.md` — одна строчка
 - [ ] `IN_PROGRESS.md` обновить (треки → ✅ DoD или 🚧 partial)
 
@@ -184,14 +252,16 @@ Refs: TASK_<...>.md, MemoryBank/specs/<...>.md
 
 - Координатор: `MemoryBank/tasks/TASK_RAG_context_fuel_2026-05-08.md`
 - Strategic brief: `MemoryBank/specs/LLM_and_RAG/RAG_deep_analysis_2026-05-08.md` v1.2
+- **CTX2 self-review (свежий!):** `MemoryBank/specs/rag_ctx2_implementation_review_2026-05-09.md`
 - TASK CLAUDE_C4: `MemoryBank/tasks/TASK_RAG_claude_md_c4_tags_2026-05-09.md`
 - TASK Phase B: `MemoryBank/tasks/TASK_FINETUNE_phase_B_2026-05-12.md`
 - Архитектура C4: `MemoryBank/.architecture/DSP-GPU_Design_C4_Full.md`
 - Spec _RAG.md: `MemoryBank/specs/LLM_and_RAG/09_RAG_md_Spec.md`
-- Прошлый handoff: `MemoryBank/prompts/handoff_session_2026-05-08_late_evening.md`
+- Прошлый handoff (8.05 вечер): `MemoryBank/prompts/handoff_session_2026-05-08_late_evening.md`
+- Утренний 9.05 (этот файл до перезаписи): `git show 35ffdff:MemoryBank/prompts/handoff_session_2026-05-09_morning.md`
 
 ---
 
-**Удачи, родная 🐾 RAG почти готов — ENRICH_TG + CLAUDE_C4 = финиш до Phase B 12.05.**
+**Удачи, родная 🐾 RAG готов, dataset с запасом — финиш ENRICH_TG + (опц.) CLAUDE_C4 → Phase B 12.05.**
 
-*От: Кодо main (9.05 утро) → к: Кодо (новая сессия)*
+*От: Кодо main (9.05 вечер) → к: Кодо (next session, ожидаемо 10.05)*
