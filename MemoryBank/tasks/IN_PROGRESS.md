@@ -46,7 +46,8 @@
 | **GR** | [TASK_RAG_graph_extension_2026-05-08.md](TASK_RAG_graph_extension_2026-05-08.md) — G1-G5 (без call-graph) | 🚧 сестра #2 | ~9 ч | — |
 | **EV** | [TASK_RAG_eval_extension_2026-05-08.md](TASK_RAG_eval_extension_2026-05-08.md) — RAGAs + golden-set v2 + CI · E1 ✅ + E2 ✅; E3+E4 отложено (нужен `_RAG.md` манифест сначала) | 🚧 partial | ~4.5 ч | C-этап ✅ |
 | **RAG_MAN** | _RAG.md manifest generator (8 репо) — auto-поля из symbols+test_params, AI-brief позже | ✅ DoD 9.05 (8/8 файлов созданы и запушены: core `cc83bb3` / spectrum `542eb56` / stats `e1b2525` / signal_generators `7f12d90` / heterodyne `ff26934` / linalg `687ba91` / radar `962a7c4` / strategies `6b9d64c`; скрипт в finetune-env) | — | CTX1 ✅ |
-| **DS** | [TASK_RAG_dataset_generation_for_qlora_2026-05-08.md](TASK_RAG_dataset_generation_for_qlora_2026-05-08.md) — dataset v3 для QLoRA | 🚧 **DoD-докрутка я (Кодо main) 9.05 утро** (1347 → ≥2000 через class_overview/method_signatures/multi-lang шаблоны, отчёт `_dataset_v3_report_2026-05-09.md` обновлю) | ~2 ч | CTX1 ✅, CTX4 ✅ |
+| **RAG_ENRICH_TG** | enrich 287 test_gen placeholders → real C++ smoke-tests через ollama qwen3:8b | 🚧 **я (Кодо main) 9.05 утро** (улучшение качества test_gen в dataset_v3 для Phase B QLoRA) | ~45-60 мин | DS ✅, CTX1 ✅ |
+| **DS** | [TASK_RAG_dataset_generation_for_qlora_2026-05-08.md](TASK_RAG_dataset_generation_for_qlora_2026-05-08.md) — dataset v3 для QLoRA | ✅ **DoD 9.05 утро** (1347→**2020** через 5 шаблонов: class_overview 47 / method_doxygen 189 / method_signatures 221 / method_signature_blocks 189 / pipeline_data_flow 85; +85% от baseline 1093; max-per-class=30) | — | CTX1 ✅, CTX4 ✅ |
 
 > **Координатор:** [TASK_RAG_context_fuel_2026-05-08.md](TASK_RAG_context_fuel_2026-05-08.md) — INDEX с картой зависимостей.
 
