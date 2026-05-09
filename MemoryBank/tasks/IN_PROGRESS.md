@@ -45,7 +45,7 @@
 | **CTX8** | [TASK_RAG_telemetry_2026-05-08.md](TASK_RAG_telemetry_2026-05-08.md) — popularity boost | 📋 P2 | ~1 ч | TestRunner::OnTestComplete |
 | **GR** | [TASK_RAG_graph_extension_2026-05-08.md](TASK_RAG_graph_extension_2026-05-08.md) — G1-G5 (без call-graph) | 🚧 сестра #2 | ~9 ч | — |
 | **EV** | [TASK_RAG_eval_extension_2026-05-08.md](TASK_RAG_eval_extension_2026-05-08.md) — RAGAs + golden-set v2 + CI · E1 ✅ 8.05 + E2 ✅ 9.05 (faithfulness 0.8 grounded / 0.0 hallucination, antigallucinacия работает), E3-E4 далее | 🚧 partial | ~4.5 ч | C-этап ✅ |
-| **DS** | [TASK_RAG_dataset_generation_for_qlora_2026-05-08.md](TASK_RAG_dataset_generation_for_qlora_2026-05-08.md) — dataset v3 для QLoRA | 🚧 **я (Кодо main) 9.05 утро** (расширение collect_from_rag.py: +test_gen через CTX4 + method_explain → concat в dataset_v3 ≥ 2000) | ~2-3 ч | CTX1 ✅, CTX4 ✅ |
+| **DS** | [TASK_RAG_dataset_generation_for_qlora_2026-05-08.md](TASK_RAG_dataset_generation_for_qlora_2026-05-08.md) — dataset v3 для QLoRA | ⚠️ **PARTIAL 9.05** (1347 пар = +23% от baseline 1093, новый шаблон test_gen 287; **DoD ≥2000 не достигнут**, отчёт `_dataset_v3_report_2026-05-09.md`; commit `49851a6` finetune-env) | — | CTX1 ✅, CTX4 ✅ |
 
 > **Координатор:** [TASK_RAG_context_fuel_2026-05-08.md](TASK_RAG_context_fuel_2026-05-08.md) — INDEX с картой зависимостей.
 
