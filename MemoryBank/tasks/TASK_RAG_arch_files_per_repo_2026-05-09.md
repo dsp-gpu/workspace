@@ -1,8 +1,9 @@
 # TASK_RAG_arch_files_per_repo — полные C2/C3/C4 файлы внутри 9 репо
 
-> **Создан:** 2026-05-09 вечер · **Тип:** доработка `RAG_CLAUDE_C4` (та была минимальной — только inline блок в CLAUDE.md без отдельных архитектурных файлов)
+> **Создан:** 2026-05-09 вечер · **Закрыт:** 2026-05-10 (Кодо main, после deep-review) · **Статус:** ✅ DoD
+> **Тип:** доработка `RAG_CLAUDE_C4` (та была минимальной — только inline блок в CLAUDE.md без отдельных архитектурных файлов)
 > **Приоритет:** 🟠 P1 — улучшает контекст QLoRA + sparse retrieval
-> **Effort:** ~3-4 ч · **Зависимости:** RAG_CLAUDE_C4 ✅ (inline блок), RAG_MAN ✅
+> **Effort:** ~3-4 ч (фактически ~2 ч с фиксами генератора) · **Зависимости:** RAG_CLAUDE_C4 ✅ (inline блок), RAG_MAN ✅
 
 ---
 
@@ -185,13 +186,22 @@ architecture_files:
 
 ## ✅ DoD
 
-- [ ] 9 × 3 = **27 файлов** созданы в `<repo>/.rag/arch/{C2,C3,C4}.md`
-- [ ] Каждый файл содержит реальное содержимое (не placeholder), валидный YAML
-- [ ] DSP мета-репо использует спец-шаблон (Python integration вместо C++ namespace)
-- [ ] `<repo>/.rag/_RAG.md` поле `architecture_files: [...]` заполнено
-- [ ] `collect_more_dataset.py` имеет шаблон `arch_levels` (27 пар в dataset)
-- [ ] dataset_v3.jsonl pересобран — 27 новых уникальных пар
-- [ ] (опц.) doc_blocks с concept='arch_*' проиндексированы в БД
+- [x] 9 × 3 = **27 файлов** созданы в `<repo>/.rag/arch/{C2,C3,C4}.md`
+- [x] Каждый файл содержит реальное содержимое (не placeholder), валидный YAML — **финальная зачистка 10.05** убрала `/** */`, `@class/@brief/@ingroup/@note`, `///`, изолированные `*` как разделители (3 итерации regex в `_clean_brief`)
+- [x] DSP мета-репо использует спец-шаблон (Python integration вместо C++ namespace)
+- [x] `<repo>/.rag/_RAG.md` поле `architecture_files: [...]` заполнено для 8 C++ репо (DSP без `_RAG.md` — пропущено по дизайну)
+- [x] `collect_more_dataset.py` имеет шаблон `arch_levels` (27 пар в `dataset_arch_levels.jsonl`)
+- [x] `dataset_v3.jsonl` пересобран — 27 новых уникальных пар (`'arch_levels': 27` в по-источниках, 10.05)
+- [ ] (опц.) doc_blocks с concept='arch_*' проиндексированы в БД — **отложено**, делать в Phase B+ при reindex Qdrant
+
+## 📊 Итоги (10.05)
+
+- 27/27 arch-файлов чистые: `grep -E '/\*\*|@class|@brief|@ingroup|///' *` → пусто
+- Дубликаты классов устранены через CTE `class_syms` с `GROUP BY s.fqn` + `MAX(NULLIF(brief,''))` (раньше было `GROUP BY fqn,name,namespace,brief` → 2 строки на forward-decl + полный класс)
+- Pattern-теги дедуплицированы (`if tag not in tags`)
+- 8 `_RAG.md` обновлены через `update_rag_md_arch_field()` (regex `pat_existing` + fallback на `^tags:`)
+- `dataset_v3.jsonl` = **3848 пар** (после `max-15/class` mid-clean), включает 27 arch_levels
+- Deep-review от 10.05 → **PASS WITH FINDINGS** → P1+P2 фиксы применены до прогона
 
 ---
 
