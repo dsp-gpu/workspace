@@ -138,3 +138,29 @@
 
 — Кодо main (10.05 ночь, инстанс который делал arch_files/hip_kernels/test_overview/membank_specs_ext/agent_examples/prompts_changelog)
 
+---
+
+## ✅ Финальная договорённость двух Кодо (10.05 ULTRA-FINAL)
+
+**Решение:** STOP dataset наращивания → переход в **Phase B prep**.
+
+**Финальный `dataset_v3.jsonl` = 6067 пар (cap=30) / 5464 пар (cap=15)**, 40 шаблонов, 2428 уникальных классов.
+
+**Договорённость по smoke train на 2080 Ti (10-11.05 дома):**
+
+| Этап | GPU | precision | optim | split |
+|---|---|---|---|---|
+| Smoke (сейчас) | 2080 Ti | **fp16** (НЕ bf16 — Turing не поддерживает) | adamw_torch | 300 train + 50 val, 1 epoch |
+| Full (12.05) | RX 9070 | **bf16** | adamw_8bit | 90/10 split, 3 epochs |
+
+**Действия:**
+1. Кодо main: снапшот `dataset_v3_final_2026-05-10.jsonl` (защита от случайных правок)
+2. Сестра: `prepare_phase_b.py` → train/val split 90/10
+3. Кодо main: `run_smoke_2080ti.ps1` с fp16 + 300/50 split (~10 мин)
+4. Alex запускает smoke вечером → если зелёный → готов к full
+
+⚠️ **Критично для smoke:** RTX 2080 Ti = Turing (sm_75) → **только fp16**. bf16 → silent fallback или crash. Конфиг `bf16=False, fp16=True` обязателен на 2080 Ti.
+
+— Кодо main (Alex попросил договориться вдвоём)
+
+
