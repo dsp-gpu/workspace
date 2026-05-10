@@ -131,3 +131,16 @@ Workflow сессии → [02](.claude/rules/02-workflow.md).
 ---
 
 *Last updated: 2026-04-22 · Maintained by: Кодо*
+
+## 🧪 Сопутствующий проект — `finetune-env` (LLM & RAG)
+
+Отдельный рабочий проект для обучения LLM (QLoRA) и RAG-инфраструктуры DSP-GPU. Содержит датасеты (`dataset_v3*.jsonl`), скрипты сбора (`collect_*.py`), `train_simple.py`, `prepare_phase_b.py`, `preflight_smoke_check.py`, `run_*.{ps1,sh}`.
+
+**Расположение** (зависит от платформы):
+
+| Платформа | Путь |
+|-----------|------|
+| Windows (дома) | `C:\finetune-env` |
+| Debian (работа) | `/home/alex/finetune-env` |
+
+Это **отдельный git-репо**, синхронизируется независимо от 10 репо DSP-GPU.
