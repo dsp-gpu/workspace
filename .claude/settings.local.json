@@ -182,7 +182,18 @@
       "Bash(DSP_ASST_OFFLINE_HF=1 DSP_ASST_PG_PASSWORD=1 /c/finetune-env/.venv/Scripts/python.exe C:/finetune-env/scripts/rag_setup/smoke_retrieval.py --query \"как использовать FFT batch в Python\" --target-tables use_cases --top-k 5)",
       "Bash(DSP_ASST_OFFLINE_HF=1 DSP_ASST_PG_PASSWORD=1 /c/finetune-env/.venv/Scripts/python.exe -m dsp_assistant.cli.main rag search \"как использовать FFT batch в Python\" --target-tables use_cases --top-k 5)",
       "Bash(/c/finetune-env/.venv/Scripts/python.exe -u -c ' *)",
-      "Bash(python e:/tmp/build_golden_v2.py)"
+      "Bash(python e:/tmp/build_golden_v2.py)",
+      "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" C:/finetune-env/build_dataset_v3.py)",
+      "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" \"C:/finetune-env/patch_rag_tags.py\")",
+      "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" \"C:/finetune-env/sync_claude_md_tags.py\")",
+      "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" C:/finetune-env/collect_code_templates.py)",
+      "Bash(\"C:/finetune-env/.venv/Scripts/python.exe\" C:/finetune-env/collect_refusal_pairs.py)",
+      "Bash(echo \"=== \\\\\\\\\\\\\\\\wsl.localhost\\\\\\\\Ubuntu\\\\\\\\home\\\\\\\\alex \\(root home\\) ===\")",
+      "Read(///wsl.localhost/Ubuntu/home/**)",
+      "Read(///wsl.localhost/Ubuntu/home/alex/**)",
+      "WebFetch(domain:rocm.docs.amd.com)",
+      "WebFetch(domain:docs.pytorch.org)",
+      "WebFetch(domain:github.com)"
     ]
   },
   "enableAllProjectMcpServers": true,
