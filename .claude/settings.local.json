@@ -193,7 +193,13 @@
       "Read(///wsl.localhost/Ubuntu/home/alex/**)",
       "WebFetch(domain:rocm.docs.amd.com)",
       "WebFetch(domain:docs.pytorch.org)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(ls -la /home/alex/finetune-env 2>&1 | head -30)",
+      "Read(//home/alex/finetune-env/**)",
+      "Bash(set -e)",
+      "Bash(mv /home/alex/finetune-env /home/alex/finetune-env.local-bak)",
+      "Bash([ -d \"/home/alex/finetune-env.local-bak/$d\" ])",
+      "Bash(cp -a /home/alex/finetune-env.local-bak/__TRACKED_VAR__ /home/alex/finetune-env/__TRACKED_VAR__)"
     ]
   },
   "enableAllProjectMcpServers": true,
