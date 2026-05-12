@@ -1,8 +1,31 @@
 # TASK — Continue: локальный embedding для @codebase
 
-**Статус**: IN_PROGRESS (анализ готов, установка завтра)
+**Статус**: 🟡 IN_PROGRESS — Вариант B выбран, `onnxruntime` скачан в offline-pack
 **Дата**: 2026-05-12
 **Цель**: заменить медленный встроенный `transformers.js` в Continue на быстрый локальный embedding-сервер для индексации `@codebase`.
+
+---
+
+## ✅ Прогресс 2026-05-12 (вечер) — Вариант B: wheel скачан
+
+`onnxruntime==1.20.*` для `cp312` / `manylinux_2_28_x86_64` + транзитивный `numpy-2.4.4` скачаны через `pip download` на Windows.
+
+**Артефакт**: `D:\offline-debian-pack\7_dop_files\` (Windows) → перенести в `/home/alex/offline-debian-pack/7_dop_files/` или сразу в `3_python_wheels/`.
+
+| Файл | Размер |
+|------|--------|
+| `onnxruntime-1.20.*-cp312-cp312-manylinux_2_28_x86_64.whl` | ~13-15 MB |
+| `numpy-2.4.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl` | ~16 MB |
+
+> Вариант A (`ollama pull bge-m3`, 1.2 GB) — отложен, не нужен.
+> `fastembed` — не качали (конфликт зависимостей tokenizers; пишем свой FastAPI напрямую на `onnxruntime`).
+
+**Следующий шаг на Debian** (после установки ROCm SDK):
+```bash
+pip install --no-index --find-links /home/alex/offline-debian-pack/3_python_wheels \
+    onnxruntime sentence_transformers fastapi uvicorn
+```
+→ далее `~/.continue/embed_server.py` (Шаг 1 ниже).
 
 ---
 

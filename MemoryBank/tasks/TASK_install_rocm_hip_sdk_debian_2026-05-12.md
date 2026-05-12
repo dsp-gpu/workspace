@@ -1,9 +1,34 @@
 # TASK — Установить ROCm HIP SDK на Debian (рабочая машина)
 
 > **Создано**: 2026-05-12
-> **Статус**: ⬜ TODO (требует sudo)
+> **Статус**: 🟡 IN_PROGRESS — `.deb` собраны в offline-pack, ждёт установки на рабочем Debian
 > **Платформа**: Debian Linux + ROCm 7.2 + AMD Radeon RX 9070 (gfx1201)
 > **Блокирует**: сборку DSP-GPU из исходников + `S1 T6` ([TASK_Stats_Review](TASK_Stats_Review_2026-04-15.md)) + Phase B `P1` ([TASK_python_migration_phase_B_FAILS](TASK_python_migration_phase_B_FAILS_2026-05-04.md))
+
+---
+
+## ✅ Прогресс 2026-05-12 (вечер) — Шаг 0: offline-pack собран
+
+ROCm 7.2 devkit `.deb` пакеты скачаны на WSL2 Ubuntu 24.04 (noble) через `apt-get install --download-only` из репо `https://repo.radeon.com/rocm/apt/7.2 noble main`.
+
+**Артефакт**: `D:\offline-debian-pack\7_dop_files\lib_deb\` (Windows) → перенести в `/home/alex/offline-debian-pack/7_dop_files/lib_deb/` на рабочем Debian.
+
+| Параметр | Значение |
+|----------|----------|
+| Файлов `.deb` | **76** |
+| Размер | **3.7 GB** |
+| Системные libc/libstdc++ | удалены (используются debian-родные) |
+| Покрытие | hipcc + hip-runtime-amd + rocm-llvm + rocm-cmake + hipfft-dev + rocblas-dev + rocsolver-dev + rocprim-dev + rocrand-dev + транзитивные deps |
+
+**Команда установки на рабочем Debian**:
+```bash
+sudo apt install /home/alex/offline-debian-pack/7_dop_files/lib_deb/*.deb
+# fallback:
+sudo dpkg -i /home/alex/offline-debian-pack/7_dop_files/lib_deb/*.deb
+sudo apt-get install -f
+```
+
+**Проверка после установки** (как в разделе "Проверка после установки" ниже).
 
 ---
 
@@ -133,4 +158,4 @@ cd build && ctest --output-on-failure
 
 ---
 
-*Created: 2026-05-12 by Кодо. Нужно ставить дома, когда есть время на ~3-5 ГБ скачивание.*
+*Created: 2026-05-12 by Кодо. `.deb` собраны вечером того же дня в offline-pack (3.7 GB, 76 файлов). Установка на рабочем Debian — следующий шаг.*
