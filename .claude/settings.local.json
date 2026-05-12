@@ -199,7 +199,19 @@
       "Bash(set -e)",
       "Bash(mv /home/alex/finetune-env /home/alex/finetune-env.local-bak)",
       "Bash([ -d \"/home/alex/finetune-env.local-bak/$d\" ])",
-      "Bash(cp -a /home/alex/finetune-env.local-bak/__TRACKED_VAR__ /home/alex/finetune-env/__TRACKED_VAR__)"
+      "Bash(cp -a /home/alex/finetune-env.local-bak/__TRACKED_VAR__ /home/alex/finetune-env/__TRACKED_VAR__)",
+      "Bash(rocm-smi)",
+      "Bash(/opt/rocm/bin/rocm-smi)",
+      "Bash(/opt/rocm/bin/rocminfo)",
+      "Bash(find /home -name \"hipcc*\" 2>/dev/null | head -5; find /usr -name \"hipcc*\" 2>/dev/null | head -5; find /opt -name \"hipcc*\" -o -name \"hipconfig*\" -o -name \"hip-config*\" 2>/dev/null | head -10; echo \"---dpkg---\"; dpkg -l 2>/dev/null | grep -iE \"rocm|hip\" | head -10)",
+      "Read(//home/**)",
+      "Read(//usr/**)",
+      "Bash(code --list-extensions)",
+      "Bash(curl -s -X POST http://localhost:11434/api/chat -d '{\"model\":\"qwen3.6:35b\",\"messages\":[{\"role\":\"user\",\"content\":\"скажи коротко: жив?\"}],\"stream\":false,\"options\":{\"num_ctx\":4096}}' --max-time 60)",
+      "Bash(curl -s -X POST http://localhost:11434/api/chat -d '{\"model\":\"qwen3.6:35b\",\"messages\":[{\"role\":\"user\",\"content\":\"ответь одним словом: работает?\"}],\"stream\":false,\"options\":{\"num_ctx\":2048,\"num_predict\":20}}' --max-time 180)",
+      "Bash(ollama pull *)",
+      "Bash(kill 316717)",
+      "Bash(pkill -f \"ollama pull bge-m3\")"
     ]
   },
   "enableAllProjectMcpServers": true,
