@@ -1,6 +1,52 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-08 (после деления `TASK_RAG_context_fuel` на 13 подтасков + Phase A QLoRA diagnostic + OpenCL Part A)
+**Обновлено**: 2026-05-13 (Continue embed + ROCm devkit + Namespace acceptance + P1 — 4 крупных задачи закрыто)
+
+---
+
+## ✅ Закрыто 2026-05-13
+
+### TASK_install_rocm_hip_sdk_debian — ROCm 7.2 devkit на Debian 13 trixie ✅
+- 76 .deb из offline-pack (Ubuntu noble) **не лезут** на Debian 13 (libc 2.41 vs 2.39, gcc-13 conflicts)
+- Решение: `sudo apt install hipcc hip-dev rocm-llvm hipfft-dev rocblas-dev rocsolver-dev rocprim-dev rocrand-dev hipblas-dev rocm-opencl-runtime` напрямую из подключённого `repo.radeon.com/rocm/apt/7.2/noble` (~3.7 GB скачано)
+- Smoke 9/9 PASS: hipcc 1.1.1 (ROCm 7.2.26015), AMD clang 22.0.0, /opt/rocm-7.2.0/lib/cmake/hip/hip-config.cmake ✅, headers (hipfft/rocblas/rocsolver/rocprim/rocrand) ✅
+- Подробности: `changelog/2026-05.md`
+
+### TASK_namespace_migration_debian_acceptance — 26/26 PASS 🎉
+- Acceptance script `scripts/debian_deploy/acceptance_namespace_migration.sh` прошёл **26/26** после 8 групп фиксов (G1-G8) за 12 итераций
+- G1 spectrum_maxima_types.h include → `<dsp/spectrum/types/...>` (1 файл, закрыло 4 build FAIL)
+- G2 cmake configure stats+strategies — side-effect отсутствия hipcc, разрешилось при devkit
+- G3 hipblas + rocm-opencl-runtime — отдельные apt пакеты
+- G4 namespace shadow `dsp::X::` → `::dsp::X::` (34 файла)
+- G5 fake-nested `namespace dsp::stats::snr_defaults` (внутри `dsp::stats`) → `namespace snr_defaults` (3 файла)
+- G6 antenna_fft (global) vs dsp::spectrum + drv_gpu_lib::OutputDestination (5 файлов)
+- G7 tests legacy `signal_gen::` + `drv_gpu_lib::Heterodyne*` (6 файлов)
+- G8 HeterodyneROCmProfEvents namespace fix (тип жив в `dsp::heterodyne::`, ~2 файла)
+- Результат: 7/7 build, 9/9 ctest, 8/8 Python imports, 2/2 Python integration tests
+- Подробности: `tasks/TASK_namespace_migration_debian_acceptance_2026-05-12.md` + `changelog/2026-05.md`
+
+### TASK_validators_linalg_pilot (V2) — обнаружено DONE inspection'ом ✅
+- В `linalg/tests/` **0** ручных `if (err >= TOL) throw`, **15** использований `gpu_test_utils::ScalarAbsError`
+- Все 4 целевых файла (test_cholesky_inverter_rocm, test_cross_backend_conversion, test_capon_opencl_to_rocm, test_capon_hip_opencl_to_rocm) уже мигрированы
+- Файлы собрались зелёным в acceptance v12 (26/26)
+- Подробности: `tasks/TASK_validators_linalg_pilot_2026-05-04.md` ✅ DONE
+- Следующий шаг (отдельный TASK): rollout-фаза на остальные 7 модулей
+
+### TASK_python_migration_phase_B_debian (P1) — 50 t_*.py: 43 PASS / 1 SKIP / 6 FAIL ✅
+- Точный пересчёт через regex `Total: N passed, M failed, K skipped` (первая попытка дала ложные SKIP из-за case-insensitive 'SKIP' в output)
+- **86% pass rate** на RX 9070 gfx1201 (43 из 50)
+- 6 FAIL'ов — НЕ инфраструктурные (after namespace fix), а реальные numerical / API проблемы
+- FAIL'ы зафиксированы в `tasks/TASK_python_migration_phase_B_FAILS_2026-05-04.md` (обновлён секцией 2026-05-13)
+- Категории: heterodyne полный провал (1×4F), numerical mismatch (3 файла), API mismatch ai_pipeline (1×4F), linalg capon (1)
+- Артефакты: `/tmp/python_tests_report_v2.json`, `/tmp/p1_v2_full.log`
+
+### TASK_continue_embedding_setup — локальный bge-m3 для Continue @codebase ✅
+- venv `~/.continue/.venv` (Python 3.13, ~30 MB из pypi: onnxruntime 1.26, fastapi, uvicorn, tokenizers, numpy, pydantic) — offline-pack cp312 wheels не подошли под системный 3.13
+- `~/.continue/embed_server.py` (FastAPI + bge-m3 ONNX, dim=1024, 8K ctx)
+- systemd user unit `embed.service` — active (running), ExecStart через venv-python
+- `~/.continue/config.yaml` — добавлен `bge-m3 (local)` openai-совместимый embed provider (с backup); Qwen chat/autocomplete не тронуты
+- Smoke: /health ok, /v1/embeddings en+ru → 2×1024
+- Подробности: `tasks/TASK_continue_embedding_setup.md` + `changelog/2026-05.md`
 
 ---
 

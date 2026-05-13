@@ -1,11 +1,37 @@
 # TASK — Debian Acceptance: namespace migration (7 модулей)
 
 > **Создано**: 2026-05-12 (Windows session, конец)
-> **Статус**: ⬜ TODO — все правки на GitHub, ждёт сборки на рабочем Debian
+> **Статус**: ✅ **DONE 2026-05-13** — 26/26 PASS после 12 итераций + 8 групп фиксов
 > **Платформа**: Debian + ROCm 7.2 + AMD Radeon RX 9070 (gfx1201)
-> **Effort**: 1-2 часа (если всё зелёное), 3-6 часов (если ошибки)
+> **Effort**: 1-2 часа (если всё зелёное), 3-6 часов (если ошибки) → факт ~6 часов
 > **Триггер**: 13.05 утром на работе после `git pull` всех репо
 > **Связано**: `.future/TASK_namespace_migration_legacy_to_dsp.md` (исходный таск), `specs/namespace_migration_spectrum_plan_2026-05-12.md` (план для spectrum)
+
+---
+
+## ✅ Итог 2026-05-13: **26/26 PASS**
+
+**Результат**: 7 build + 9 ctest + 8 Python imports + 2 Python integration — **зелёное всё**.
+
+**Путь от 18/8 (v1) до 26/0 (v12)** — 12 acceptance прогонов, **8 групп фиксов**:
+
+| # | Group | Что | Файлов |
+|---|-------|-----|--------|
+| G1 | spectrum_maxima_types.h include | старый путь `<spectrum/types/...>` → `<dsp/spectrum/types/...>` | 1 (закрыло 4 build FAIL) |
+| G2 | cmake configure stats+strategies | side-effect отсутствия hipcc, разрешилось при devkit | 0 (auto-fix) |
+| G3 | hipblas + rocm-opencl-runtime | отдельные apt пакеты | 0 (apt) |
+| G4 | namespace shadow `dsp::X::` → `::dsp::X::` | regex по 4 репо | 34 |
+| G5 | fake-nested `namespace dsp::stats::snr_defaults` (внутри `dsp::stats`) → `namespace snr_defaults` | компилятор делал shadow `dsp::stats::dsp::stats::snr_defaults` | 3 |
+| G6 | antenna_fft (global) vs dsp::spectrum + drv_gpu_lib::OutputDestination | usage заменён на `::antenna_fft::X` и `::drv_gpu_lib::OutputDestination` | 5 |
+| G7 | tests legacy `signal_gen::` + `drv_gpu_lib::Heterodyne*` | sed по tests | 6 |
+| G8 | HeterodyneROCmProfEvents namespace fix | тип ЖИВ в `dsp::heterodyne::`, sed | 2 |
+
+**GCC 14.2 + compound namespace bug**: `using namespace ::drv_gpu_lib;` ВНУТРИ `namespace dsp::X {}` не работает — вынесено в global scope перед namespace в 11 файлах (часть G4).
+
+**Acceptance script**: `scripts/debian_deploy/acceptance_namespace_migration.sh`
+**Артефакты**: `/tmp/acceptance_v12_full.log` (полный лог финального прогона).
+
+---
 
 ---
 

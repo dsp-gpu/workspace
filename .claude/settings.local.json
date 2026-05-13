@@ -211,7 +211,13 @@
       "Bash(curl -s -X POST http://localhost:11434/api/chat -d '{\"model\":\"qwen3.6:35b\",\"messages\":[{\"role\":\"user\",\"content\":\"ответь одним словом: работает?\"}],\"stream\":false,\"options\":{\"num_ctx\":2048,\"num_predict\":20}}' --max-time 180)",
       "Bash(ollama pull *)",
       "Bash(kill 316717)",
-      "Bash(pkill -f \"ollama pull bge-m3\")"
+      "Bash(pkill -f \"ollama pull bge-m3\")",
+      "Bash(mkdir -p ~/.continue && python3 -m venv ~/.continue/.venv && ls ~/.continue/.venv/bin/ 2>&1 | head -10)",
+      "Bash(~/.continue/.venv/bin/pip install *)",
+      "Bash(chmod +x ~/.continue/embed_server.py)"
+    ],
+    "additionalDirectories": [
+      "/home/alex/.continue"
     ]
   },
   "enableAllProjectMcpServers": true,

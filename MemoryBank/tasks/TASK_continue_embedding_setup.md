@@ -1,10 +1,36 @@
 # TASK — Continue: локальный embedding для @codebase
 
-**Статус**: 🟡 IN_PROGRESS — Вариант B выбран, `onnxruntime` скачан в offline-pack
-**Дата**: 2026-05-12
+**Статус**: ✅ **DONE 2026-05-13**
+**Дата**: 2026-05-12 (анализ + offline-pack) → 2026-05-13 (установка + smoke + systemd)
 **Цель**: заменить медленный встроенный `transformers.js` в Continue на быстрый локальный embedding-сервер для индексации `@codebase`.
 
 ---
+
+## ✅ Итог 2026-05-13 — сервер поднят, Continue переключён
+
+Реализовано через **Variant B** (свой FastAPI на onnxruntime), но с поправкой по факту:
+- системный Python = **3.13.5**, offline-pack wheels — **cp312** → не подошли
+- решение: `python3 -m venv ~/.continue/.venv` + `pip install` из pypi (~30 MB) — без sudo, без трогания системы
+
+**Развёрнуто**:
+- `~/.continue/.venv/` — Python 3.13 venv с onnxruntime 1.26 / fastapi 0.136 / uvicorn 0.46 / tokenizers 0.23 / numpy 2.4 / pydantic 2.13
+- `~/.continue/embed_server.py` — копия `scripts/debian_deploy/embed_server.py`
+- `~/.config/systemd/user/embed.service` — `active (running)`, `ExecStart` через venv-python; enabled
+- `~/.continue/config.yaml` — добавлен `bge-m3 (local)` (openai-совместимый, role=embed); Qwen chat/autocomplete не тронуты; backup `config.yaml.bak-2026-05-13`
+- модель `bge-m3` — `/home/alex/offline-debian-pack/1_models/bge-m3` (1024-dim, 8K ctx)
+
+**Acceptance**: `/health` → ok / dim=1024; `/v1/embeddings` на en+ru → 2 вектора по 1024-dim, разные.
+
+**Команды**:
+```bash
+systemctl --user status embed.service
+journalctl --user -u embed.service -f
+```
+Откат: `cp ~/.continue/config.yaml.bak-2026-05-13 ~/.continue/config.yaml && systemctl --user disable --now embed.service`.
+
+---
+
+## 📜 Исходный анализ (12.05)
 
 ## ✅ Прогресс 2026-05-12 (вечер) — Вариант B: wheel скачан
 

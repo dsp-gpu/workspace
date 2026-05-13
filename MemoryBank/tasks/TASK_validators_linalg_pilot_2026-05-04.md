@@ -1,10 +1,30 @@
 # TASK — Внедрить `gpu_test_utils::*` валидаторы в `linalg/tests/` (пилот)
 
 > **Создано**: 2026-05-04
-> **Статус**: 📋 active (пилот для последующего раскатывания на 8 модулей)
-> **Effort**: ~3-4 ч
+> **Статус**: ✅ **DONE 2026-05-13** (обнаружено inspection'ом: миграция уже выполнена в одной из сессий между 04.05 и 13.05)
+> **Effort**: ~3-4 ч — **выполнено фактически в одной из прошлых сессий**
 > **Платформа**: Debian + RX 9070 (gfx1201) — собрать + прогнать на GPU
 > **Зависимости**: ✅ `core/test_utils/validators/{numeric,signal}.hpp` (готовы), ✅ `core/tests/test_validators.hpp` (зелёный)
+
+---
+
+## ✅ Итог 2026-05-13 — V2 уже сделана
+
+Inspection-проверка: в `linalg/tests/` **0** ручных `if (err/diff >= TOL) throw`, **15** использований `gpu_test_utils::ScalarAbsError` + throw на `!v.passed`.
+
+| Файл | `gpu_test_utils::` вхождений |
+|------|-----------------------------:|
+| `test_cholesky_inverter_rocm.hpp` | 6 |
+| `test_cross_backend_conversion.hpp` | 3 |
+| `test_capon_opencl_to_rocm.hpp` | 4 |
+| `test_capon_hip_opencl_to_rocm.hpp` | 2 |
+| **Итого** | **15** |
+
+Все запланированные в этом TASK строки (Phase B + Phase C) уже заменены на правильный паттерн (`v = ScalarAbsError(err, 0.0, TOL, name); if (!v.passed) throw runtime_error(... + v.metric_name + actual + threshold)`). Файлы собрались зелёным в acceptance v12 (26/26).
+
+**Следующий шаг**: раскатить паттерн на остальные 7 модулей — отдельный TASK (rollout-фаза). Пилот ✅ закрыт.
+
+---
 
 ---
 

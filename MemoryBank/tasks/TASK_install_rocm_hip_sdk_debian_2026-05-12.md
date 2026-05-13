@@ -1,9 +1,37 @@
 # TASK — Установить ROCm HIP SDK на Debian (рабочая машина)
 
 > **Создано**: 2026-05-12
-> **Статус**: 🟡 IN_PROGRESS — `.deb` собраны в offline-pack, ждёт установки на рабочем Debian
+> **Статус**: ✅ **DONE 2026-05-13** — установлено через apt из noble repo (offline-pack `.deb` не подошли к Debian 13)
 > **Платформа**: Debian Linux + ROCm 7.2 + AMD Radeon RX 9070 (gfx1201)
-> **Блокирует**: сборку DSP-GPU из исходников + `S1 T6` ([TASK_Stats_Review](TASK_Stats_Review_2026-04-15.md)) + Phase B `P1` ([TASK_python_migration_phase_B_FAILS](TASK_python_migration_phase_B_FAILS_2026-05-04.md))
+> **Разблокировано**: сборка DSP-GPU из исходников ✅ (acceptance 26/26 PASS) + Phase B P1 ✅ (43/50 PASS)
+
+---
+
+## ✅ Итог 2026-05-13
+
+**Offline-pack не подошёл к Debian 13 trixie** — `.deb` собраны на Ubuntu noble имеют libc6=2.39 / gcc-13=13.3.0 в зависимостях, а Debian 13 на libc=2.41 / gcc-14. apt отказался ставить (Reached two conflicting decisions), система не изменена.
+
+**Решение**: установка из подключённого `repo.radeon.com/rocm/apt/7.2/noble` через apt, **без** gcc-13 toolchain:
+
+```bash
+sudo apt install -y hipcc hip-dev rocm-cmake rocm-llvm \
+    hipfft hipfft-dev rocfft rocfft-dev \
+    rocblas rocblas-dev rocsolver rocsolver-dev \
+    rocprim-dev rocrand rocrand-dev \
+    hipblas hipblas-dev rocm-opencl-runtime
+```
+
+~3.7 GB скачано (была одна обрыв сети — повторил с `--fix-missing`). AMD's `hipcc` использует **свой собственный** `rocm-llvm` (clang 22.0.0git), не системный gcc, поэтому конфликта зависимостей не возникает.
+
+**Smoke 9/9 PASS**:
+- `/opt/rocm/bin/hipcc` ✅
+- HIP version 7.2.26015 / AMD clang 22.0.0git roc-7.2.0 ✅
+- `/opt/rocm-7.2.0/lib/cmake/hip/hip-config.cmake` ✅
+- headers (hipfft / rocblas / rocsolver / rocprim / rocrand) ✅
+- `/opt/rocm-7.2.0/llvm/bin/clang` ✅
+- `rocminfo | grep gfx1201` — RX 9070 виден ✅
+
+Подробности: `changelog/2026-05.md` секция 2026-05-13.
 
 ---
 

@@ -1,10 +1,53 @@
-# TASK — Phase B B4: разбор 18 FAIL после полного прогона t_*.py
+# TASK — Phase B B4: разбор FAIL после полного прогона t_*.py
 
 > **Создано**: 2026-05-04 (после Phase B B3 на Debian + RX 9070 gfx1201)
+> **Обновлено**: 2026-05-13 — после namespace migration acceptance + полного re-run 50 t_*.py
 > **Статус**: 📋 active (продолжение Phase B)
 > **Effort**: ~3-6 ч (зависит от глубины каждой категории)
 > **Платформа**: Debian Linux + ROCm 7.2 + AMD Radeon RX 9070 (gfx1201)
-> **Парный таск**: [`TASK_python_migration_phase_B_debian_2026-05-03.md`](TASK_python_migration_phase_B_debian_2026-05-03.md) (B0/B1/Bs/B3 ✅ DONE)
+> **Парный таск**: [`TASK_python_migration_phase_B_debian_2026-05-03.md`](TASK_python_migration_phase_B_debian_2026-05-03.md) (B0/B1/Bs/B3 ✅ DONE 2026-05-13)
+
+---
+
+## 🆕 2026-05-13 — Re-run после namespace migration acceptance
+
+**После полного fix'а namespace migration (G1-G8 + 26/26 acceptance PASS)** — повторный прогон 50 t_*.py через `/tmp/run_python_tests_v2.py` с точной TestRunner-парсёром (regex `Total: N passed, M failed, K skipped`).
+
+### Итог (42.8 сек на 50 файлов)
+
+| Категория | Кол-во |
+|-----------|-------:|
+| ✅ **PASS** | **43** (86%) |
+| ⏭️ all-SKIP (только skipped, без failure) | 1 |
+| ❌ **FAIL** (`failed > 0` в TestRunner output) | **6** |
+| ❌ error-exit / timeout | 0 |
+
+### 6 FAIL (deferred — НЕ блокеры миграции)
+
+| # | Файл | Падений | Категория |
+|---|------|---------|-----------|
+| 1 | `heterodyne/t_heterodyne.py` | 0P/**4F** | полный провал — нужно расследовать |
+| 2 | `linalg/t_capon.py` | ?P/?F | посмотреть детали |
+| 3 | `radar/t_fm_correlator.py` | 11P/**1F** | `test_gpu_vs_numpy_correlation`: max_error=1023.0 >> tol 0.05 — численный mismatch GPU vs NumPy |
+| 4 | `radar/t_range_angle.py` | 6P/**1F** | `test_range_basic`: range 78575 m vs ref 75000 m (off 3575 m, > tol 1000 m) |
+| 5 | `spectrum/ai_pipeline/t_ai_pipeline.py` | 15P/**4F** | API mismatch: `IirFilterROCm(ctx, b, a)` not supported — только `(ctx)`. Test код устарел |
+| 6 | `spectrum/t_spectrum_maxima_finder_rocm.py` | 13P/**1F** | `test_process_multi_beam_list`: Beam 2 expected 234375, got 109375 — численное расхождение |
+
+**Что отличается от B4 2026-05-04 (18 FAIL)**:
+Большая часть из 18 закрыта намeспейс-миграцией + apt'ом ROCm devkit. Остались 6 — *реальные* проблемы (numerical / API mismatch), не infrastructure.
+
+**Артефакты**:
+- Отчёт: `/tmp/python_tests_report_v2.json`
+- Полный лог: `/tmp/p1_v2_full.log`
+- Скрипт прогона: `/tmp/run_python_tests_v2.py`
+
+**Категории для разбора**:
+- 🔴 **Heterodyne полный провал** (1 file × 4 fails) — высокий приоритет, явно регрессия
+- 🟡 **Numerical mismatch** (3 файла, 3 fails) — radar correlator/range, spectrum maxima multi-beam
+- 🟡 **API mismatch ai_pipeline IirFilterROCm** (1 file × 4 fails) — тест устарел
+- ⚪ linalg capon (1 file) — глянуть
+
+---
 
 ---
 

@@ -1,11 +1,26 @@
 # TASK: Python Tests Migration — Phase B (Debian, только сборка + запуск)
 
 **Дата создания**: 2026-04-30 · **Сокращён**: 2026-04-30 (B2 + B6 перенесены в Phase A)
-**Целевая дата выполнения**: **2026-05-03+** (на работе, через 4 дня)
+**Статус**: ✅ **DONE 2026-05-13** (B0/B1/Bs/B3 закрыты; B4 — 6 FAIL остались в TASK_python_migration_phase_B_FAILS)
+**Целевая дата выполнения**: **2026-05-03+** (на работе, через 4 дня) → выполнено 2026-05-13
 **Платформа**: Debian Linux + ROCm 7.2+ + AMD Radeon RX 9070 (gfx1201)
 **Автор**: Кодо
 **План-источник**: [`MemoryBank/specs/python/migration_plan_2026-04-29.md`](../specs/python/migration_plan_2026-04-29.md)
 **Парный таск**: [`TASK_python_migration_phase_A_2026-04-30.md`](TASK_python_migration_phase_A_2026-04-30.md) (всё что можно сделать на Windows)
+
+---
+
+## ✅ Итог 2026-05-13
+
+- ✅ B0 pull всех 10 репо (с github после домашних правок 12.05)
+- ✅ B1 сборка через `cmake --preset debian-local-dev` — 7 build target'ов + 8 .so в `DSP/Python/libs/`
+- ✅ Bs smoke (t_signal_to_spectrum, t_hybrid_backend) — оба PASS
+- ✅ B3 полный прогон 50 t_*.py — **43 PASS / 1 all-SKIP / 6 FAIL** через `/tmp/run_python_tests_v2.py` (regex по TestRunner output)
+- ⚠️ B4 (6 FAIL разбор) — отложено в `TASK_python_migration_phase_B_FAILS_2026-05-04.md` (см. секцию 2026-05-13)
+
+86% pass rate на gfx1201. FAIL'ы — реальные numerical/API проблемы, не инфраструктура.
+
+Артефакты: `/tmp/python_tests_report_v2.json`, `/tmp/p1_v2_full.log`, `/tmp/run_python_tests_v2.py`.
 
 > **Стратегия (запрос Alex 2026-04-30)**: на Debian — **только то, что НЕВОЗМОЖНО на Windows**: реальная сборка, запуск тестов, валидация POST_BUILD автокопирования. Всё остальное (миграция Python, CMake-патч, sync правил) сделано на Windows в Phase A.
 
