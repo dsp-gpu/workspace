@@ -423,14 +423,14 @@
       "query": "LfmGenerator",
       "category": "exact_name",
       "expected_fqn": [
-        "signal_gen::LfmGenerator"
+        "dsp::signal_generators::LfmGenerator"
       ],
       "top_fqns": [
-        "signal_gen::LfmConjugateGenerator",
-        "signal_gen::LfmGenerator",
-        "signal_gen::LfmGeneratorAnalyticalDelay",
-        "signal_gen::LfmGeneratorROCm",
-        "signal_gen::LfmGenerator::LfmGenerator"
+        "dsp::signal_generators::LfmConjugateGenerator",
+        "dsp::signal_generators::LfmGenerator",
+        "dsp::signal_generators::LfmGeneratorAnalyticalDelay",
+        "dsp::signal_generators::LfmGeneratorROCm",
+        "dsp::signal_generators::LfmGenerator::LfmGenerator"
       ],
       "recall_1": 0.0,
       "recall_5": 1.0,
@@ -443,14 +443,14 @@
       "query": "генератор линейно-частотно-модулированного сигнала",
       "category": "semantic_ru",
       "expected_fqn": [
-        "signal_gen::LfmGenerator"
+        "dsp::signal_generators::LfmGenerator"
       ],
       "top_fqns": [
-        "signal_gen::ISignalGenerator",
-        "signal_gen::FormSignalGenerator",
-        "signal_gen::LfmConjugateGeneratorROCm::LfmConjugateGeneratorROCm",
-        "signal_gen::LfmConjugateGenerator::LfmConjugateGenerator",
-        "signal_gen::LfmGenerator::LfmGenerator"
+        "dsp::signal_generators::ISignalGenerator",
+        "dsp::signal_generators::FormSignalGenerator",
+        "dsp::signal_generators::LfmConjugateGeneratorROCm::LfmConjugateGeneratorROCm",
+        "dsp::signal_generators::LfmConjugateGenerator::LfmConjugateGenerator",
+        "dsp::signal_generators::LfmGenerator::LfmGenerator"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -463,14 +463,14 @@
       "query": "CW signal generator continuous wave",
       "category": "semantic_en",
       "expected_fqn": [
-        "signal_gen::CwGenerator"
+        "dsp::signal_generators::CwGenerator"
       ],
       "top_fqns": [
-        "signal_gen::CwGenerator",
-        "signal_gen::ISignalGenerator",
-        "signal_gen::CwGenerator::CwGenerator",
-        "signal_gen::CwGeneratorROCm",
-        "signal_gen::CwGenerator::CwGenerator"
+        "dsp::signal_generators::CwGenerator",
+        "dsp::signal_generators::ISignalGenerator",
+        "dsp::signal_generators::CwGenerator::CwGenerator",
+        "dsp::signal_generators::CwGeneratorROCm",
+        "dsp::signal_generators::CwGenerator::CwGenerator"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,

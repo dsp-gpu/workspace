@@ -266,7 +266,7 @@
       ],
       "top_fqns": [
         "farrow_delay.FarrowDelay",
-        "signal_gen::DelayedFormSignalGenerator",
+        "dsp::signal_generators::DelayedFormSignalGenerator",
         "dsp::spectrum::LchFarrow",
         "t_lch_farrow.apply_delay_numpy",
         "t_delayed_form_signal.apply_delay_numpy"
@@ -423,14 +423,14 @@
       "query": "LfmGenerator",
       "category": "exact_name",
       "expected_fqn": [
-        "signal_gen::LfmGenerator"
+        "dsp::signal_generators::LfmGenerator"
       ],
       "top_fqns": [
-        "signal_gen::LfmGenerator",
-        "signal_gen::LfmGeneratorROCm",
-        "signal_gen::LfmGeneratorROCm",
-        "signal_gen::ISignalGenerator",
-        "signal_gen::LfmGeneratorAnalyticalDelay"
+        "dsp::signal_generators::LfmGenerator",
+        "dsp::signal_generators::LfmGeneratorROCm",
+        "dsp::signal_generators::LfmGeneratorROCm",
+        "dsp::signal_generators::ISignalGenerator",
+        "dsp::signal_generators::LfmGeneratorAnalyticalDelay"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -443,14 +443,14 @@
       "query": "генератор линейно-частотно-модулированного сигнала",
       "category": "semantic_ru",
       "expected_fqn": [
-        "signal_gen::LfmGenerator"
+        "dsp::signal_generators::LfmGenerator"
       ],
       "top_fqns": [
-        "signal_gen::ISignalGenerator",
-        "signal_gen::LfmConjugateGenerator",
-        "signal_gen::LfmGenerator::LfmGenerator",
-        "signal_gen::LfmGenerator::LfmGenerator",
-        "signal_gen::LfmGenerator::LfmGenerator"
+        "dsp::signal_generators::ISignalGenerator",
+        "dsp::signal_generators::LfmConjugateGenerator",
+        "dsp::signal_generators::LfmGenerator::LfmGenerator",
+        "dsp::signal_generators::LfmGenerator::LfmGenerator",
+        "dsp::signal_generators::LfmGenerator::LfmGenerator"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -463,11 +463,11 @@
       "query": "CW signal generator continuous wave",
       "category": "semantic_en",
       "expected_fqn": [
-        "signal_gen::CwGenerator"
+        "dsp::signal_generators::CwGenerator"
       ],
       "top_fqns": [
         "gpu_test_utils::refs::GenerateCw",
-        "signal_gen::ISignalGenerator",
+        "dsp::signal_generators::ISignalGenerator",
         "test_spectrum_maxima_rocm::GenerateCW",
         "t_lch_farrow.generate_cw_signal",
         "test_spectrum_maxima_rocm::GenerateCW"
@@ -752,10 +752,10 @@
       ],
       "top_fqns": [
         "vector_algebra::MatrixOpsROCm",
-        "signal_gen::LfmGeneratorAnalyticalDelayROCm::SetDelays",
+        "dsp::signal_generators::LfmGeneratorAnalyticalDelayROCm::SetDelays",
         "PyLfmAnalyticalDelay::set_delays",
         "PyFMCorrelatorROCm::generate_msequence",
-        "signal_gen::LfmConjugateGeneratorROCm::SetSampling"
+        "dsp::signal_generators::LfmConjugateGeneratorROCm::SetSampling"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,

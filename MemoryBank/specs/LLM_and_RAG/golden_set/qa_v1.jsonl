@@ -18,9 +18,9 @@
 {"id": "018", "query": "online running mean variance computation", "expected_fqn": ["dsp::stats::WelfordFloatOp", "dsp::stats::WelfordFusedOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "semantic_en", "lang": "en"}
 {"id": "019", "query": "RadixSortGPU", "expected_fqn": ["dsp::stats::MedianRadixSortOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "exact_name", "lang": "ru"}
 {"id": "020", "query": "GPU параллельная сортировка radix", "expected_fqn": ["dsp::stats::MedianRadixSortOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "semantic_ru", "lang": "ru"}
-{"id": "021", "query": "LfmGenerator", "expected_fqn": ["signal_gen::LfmGenerator"], "expected_kind": ["class"], "expected_repo": "signal_generators", "category": "exact_name", "lang": "ru"}
-{"id": "022", "query": "генератор линейно-частотно-модулированного сигнала", "expected_fqn": ["signal_gen::LfmGenerator"], "expected_kind": ["class"], "expected_repo": "signal_generators", "category": "semantic_ru", "lang": "ru"}
-{"id": "023", "query": "CW signal generator continuous wave", "expected_fqn": ["signal_gen::CwGenerator"], "expected_kind": ["class"], "expected_repo": "signal_generators", "category": "semantic_en", "lang": "en"}
+{"id": "021", "query": "LfmGenerator", "expected_fqn": ["dsp::signal_generators::LfmGenerator"], "expected_kind": ["class"], "expected_repo": "signal_generators", "category": "exact_name", "lang": "ru"}
+{"id": "022", "query": "генератор линейно-частотно-модулированного сигнала", "expected_fqn": ["dsp::signal_generators::LfmGenerator"], "expected_kind": ["class"], "expected_repo": "signal_generators", "category": "semantic_ru", "lang": "ru"}
+{"id": "023", "query": "CW signal generator continuous wave", "expected_fqn": ["dsp::signal_generators::CwGenerator"], "expected_kind": ["class"], "expected_repo": "signal_generators", "category": "semantic_en", "lang": "en"}
 {"id": "024", "query": "HeterodyneDechirp", "expected_fqn": ["drv_gpu_lib::HeterodyneDechirp"], "expected_kind": ["class"], "expected_repo": "heterodyne", "category": "exact_name", "lang": "ru"}
 {"id": "025", "query": "LFM dechirp NCO mix гетеродин", "expected_fqn": ["drv_gpu_lib::HeterodyneDechirp", "drv_gpu_lib::HeterodyneProcessorROCm"], "expected_kind": ["class"], "expected_repo": "heterodyne", "category": "semantic_ru", "lang": "ru"}
 {"id": "026", "query": "CaponProcessor", "expected_fqn": ["capon::CaponProcessor"], "expected_kind": ["class"], "expected_repo": "linalg", "category": "exact_name", "lang": "ru"}

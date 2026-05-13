@@ -384,14 +384,14 @@
       "query": "LfmGenerator",
       "category": "exact_name",
       "expected_fqn": [
-        "signal_gen::LfmGenerator"
+        "dsp::signal_generators::LfmGenerator"
       ],
       "top_fqns": [
-        "signal_gen::LfmGenerator",
-        "signal_gen::ISignalGenerator",
-        "signal_gen::LfmGenerator::LfmGenerator",
-        "signal_gen::LfmGenerator::LfmGenerator",
-        "signal_gen::LfmGenerator::LfmGenerator"
+        "dsp::signal_generators::LfmGenerator",
+        "dsp::signal_generators::ISignalGenerator",
+        "dsp::signal_generators::LfmGenerator::LfmGenerator",
+        "dsp::signal_generators::LfmGenerator::LfmGenerator",
+        "dsp::signal_generators::LfmGenerator::LfmGenerator"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -404,7 +404,7 @@
       "query": "генератор линейно-частотно-модулированного сигнала",
       "category": "semantic_ru",
       "expected_fqn": [
-        "signal_gen::LfmGenerator"
+        "dsp::signal_generators::LfmGenerator"
       ],
       "top_fqns": [],
       "recall_1": 0.0,
@@ -418,14 +418,14 @@
       "query": "CW signal generator continuous wave",
       "category": "semantic_en",
       "expected_fqn": [
-        "signal_gen::CwGenerator"
+        "dsp::signal_generators::CwGenerator"
       ],
       "top_fqns": [
-        "signal_gen::CwGenerator",
-        "signal_gen::CwGeneratorROCm",
-        "signal_gen::CwGenerator::CwGenerator",
-        "signal_gen::CwGenerator::CwGenerator",
-        "signal_gen::CwGenerator::CwGenerator"
+        "dsp::signal_generators::CwGenerator",
+        "dsp::signal_generators::CwGeneratorROCm",
+        "dsp::signal_generators::CwGenerator::CwGenerator",
+        "dsp::signal_generators::CwGenerator::CwGenerator",
+        "dsp::signal_generators::CwGenerator::CwGenerator"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,

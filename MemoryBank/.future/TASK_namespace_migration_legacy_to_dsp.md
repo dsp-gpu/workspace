@@ -1,7 +1,7 @@
 # TASK: Миграция legacy namespace → `dsp::<repo>::*`
 
 **Создано**: 2026-05-03
-**Статус**: 🟡 IN_PROGRESS — **spectrum + stats + strategies (3/7) выполнены** на Windows 2026-05-12 (все запушены)
+**Статус**: 🟡 IN_PROGRESS — **spectrum + stats + strategies + signal_generators (4/7) выполнены** на Windows 2026-05-12 (все запушены)
 **Триггер реактивации**: ~~после стабилизации `doxytags`-агента + первого обучения локальной AI~~ — Alex решил начать с spectrum-пилота 12.05 на Windows (Phase B QLoRA ещё не сделана, идём в параллель).
 **План**: `MemoryBank/specs/namespace_migration_spectrum_plan_2026-05-12.md`
 
@@ -18,6 +18,14 @@
 | `stats PhaseB` | structural cleanup + cross-repo refs fix (fft_processor::X → dsp::spectrum::X в snr_estimator_op + statistics_types + tests) + CMake target_sources + python/CMake | 8 файлов |
 
 **Особенность stats**: модуль зависит от spectrum через `dsp::spectrum::FFTProcessorROCm`, `dsp::spectrum::WindowType`, `dsp::spectrum::MagPhaseParams`. После миграции spectrum stats ссылается на новые namespace — обновлено в PhaseB.
+
+### signal_generators (выполнен после strategies)
+
+| Коммит | Что | Статистика |
+|--------|-----|------------|
+| `signal_generators Phase1+2` | namespace signal_gen → dsp::signal_generators + cross-repo refs (fft_processor → dsp::spectrum, statistics → dsp::stats) + git mv include/signal_generators → include/dsp/signal_generators + 36 #include rewrites | 36 файлов |
+| `signal_generators Phase3` | Doc + .rag content + test_params rename (18 файлов: signal_gen_X.md → dsp_signal_generators_X.md) | 29 файлов |
+| `signal_generators PhaseB` | OpenCL .cl (6) + manifest + dup .hip удалены, src/X/src/*.cpp → src/X/*.cpp (10), CMake target_sources + python/CMake dead path | 18+ файлов |
 
 ### strategies (выполнен после stats, тот же рецепт + cross-repo updates)
 
