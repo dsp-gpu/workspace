@@ -203,31 +203,86 @@ EOF
 
 ## 🤖 MCP в Claude Code
 
-Конфиг: `/home/alex/DSP-GPU/.claude/settings.json` (project-local).
-Backup: `…/settings.json.bak-2026-05-13`.
+> ⚠️ **Важно:** MCP-сервера в Claude Code хранятся **НЕ** в `.claude/settings.json`,
+> а в отдельных файлах с **машинно-зависимыми путями**:
+> - `~/.claude.json` — **user-scope** (доступно во всех проектах, не в git)
+> - `<project>/.mcp.json` — **project-scope** (в `.gitignore` DSP-GPU!)
+>
+> Регистрация через CLI `claude mcp add ...`, не правкой JSON руками.
 
-```json
-{
-  "permissions": { ... },
-  "mcpServers": {
-    "dsp-asst": {
-      "command": "/home/alex/finetune-env/.venv/bin/dsp-asst",
-      "args": ["--stage", "1_home", "mcp"],
-      "env": {
-        "DSP_ASST_SERVER_URL": "http://127.0.0.1:7821",
-        "DSP_ASST_PG_PASSWORD": "1"
-      }
-    }
-  }
-}
+### Текущая регистрация (проверка)
+
+```bash
+claude mcp list
+# должно показать: dsp-asst: /home/alex/finetune-env/.venv/bin/dsp-asst ... ✓ Connected
+
+claude mcp get dsp-asst
+# Scope: User config (available in all your projects)
+# Status: ✓ Connected
+# Type: stdio
+# Command: /home/alex/finetune-env/.venv/bin/dsp-asst
+# Args: --stage 1_home mcp
+# Environment: DSP_ASST_SERVER_URL=..., DSP_ASST_PG_PASSWORD=...
 ```
 
-После запуска `claude` в этом проекте появятся tools:
-- `mcp__dsp-asst__dsp_search` — гибридный поиск
-- `mcp__dsp-asst__dsp_find` — точный по имени
-- `mcp__dsp-asst__dsp_show_symbol` — детали символа
-- `mcp__dsp-asst__dsp_health` — статус
-- `mcp__dsp-asst__dsp_repos` — список репо
+### Регистрация на **новой машине** (после `git clone DSP-GPU`)
+
+`.mcp.json` в `.gitignore` → новая машина получит **пустую** регистрацию.
+Нужно зарегистрировать MCP **один раз** локально:
+
+```bash
+# Linux/Debian:
+claude mcp add dsp-asst -s user \
+  -e DSP_ASST_SERVER_URL=http://127.0.0.1:7821 \
+  -e DSP_ASST_PG_PASSWORD=1 \
+  -- /home/alex/finetune-env/.venv/bin/dsp-asst --stage 1_home mcp
+
+# Windows (PowerShell):
+claude mcp add dsp-asst -s user `
+  -e DSP_ASST_SERVER_URL=http://127.0.0.1:7821 `
+  -e DSP_ASST_PG_PASSWORD=1 `
+  -- "C:\finetune-env\.venv\Scripts\dsp-asst.exe" --stage 1_home mcp
+
+# macOS (zsh):
+claude mcp add dsp-asst -s user \
+  -e DSP_ASST_SERVER_URL=http://127.0.0.1:7821 \
+  -e DSP_ASST_PG_PASSWORD=1 \
+  -- ~/finetune-env/.venv/bin/dsp-asst --stage 1_home mcp
+```
+
+> 💡 **`-s user`** — глобально для всех проектов. Альтернативы:
+> - `-s project` — только этот проект (запишется в `<project>/.mcp.json` —
+>   у нас в .gitignore, не в git)
+> - `-s local` — только текущая директория
+
+После регистрации **перезапусти Claude Code** (выйди из текущей сессии и
+запусти `claude` снова) — он подцепит новый MCP-сервер при старте.
+
+### Удалить (если что-то пошло не так)
+
+```bash
+claude mcp remove dsp-asst -s user
+# или -s project / -s local
+```
+
+### Доступные tools после успешной регистрации
+
+После запуска `claude` в любом проекте появятся 5 MCP tools:
+- `mcp__dsp-asst__dsp_search` — гибридный поиск (BGE-M3 dense + BM25 sparse + reranker)
+- `mcp__dsp-asst__dsp_find` — точный по имени символа
+- `mcp__dsp-asst__dsp_show_symbol` — детали символа (doxy/код/file:line)
+- `mcp__dsp-asst__dsp_health` — статус БД (counts по таблицам, schema)
+- `mcp__dsp-asst__dsp_repos` — список репо в БД
+
+### Какие файлы НЕ переносить через git
+
+Все эти файлы в `.gitignore` DSP-GPU (или в `$HOME` — не в репо):
+- `~/.claude.json` — user-scope MCP реестр (в `$HOME`, не в git)
+- `<project>/.mcp.json` — project-scope MCP реестр (в `.gitignore`)
+- `.claude/settings.json.bak-*` — личные backups (в `.gitignore`)
+
+В git только `.claude/settings.json` (permissions/theme) и `.claude/settings.local.json`
+(локальные permissions).
 
 ---
 

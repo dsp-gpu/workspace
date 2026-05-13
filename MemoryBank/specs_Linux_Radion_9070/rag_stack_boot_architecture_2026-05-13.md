@@ -299,9 +299,27 @@ python ingest_test_tags.py --all
 
 # 10. Smoke
 curl -s http://127.0.0.1:7821/health
+
+# 11. ОБЯЗАТЕЛЬНО: зарегистрировать MCP в Claude Code (НЕ автоматом, .mcp.json
+#     в .gitignore — каждая машина регистрирует локально):
+claude mcp add dsp-asst -s user \
+  -e DSP_ASST_SERVER_URL=http://127.0.0.1:7821 \
+  -e DSP_ASST_PG_PASSWORD=1 \
+  -- /home/alex/finetune-env/.venv/bin/dsp-asst --stage 1_home mcp
+
+# Verify:
+claude mcp list | grep dsp-asst
+# должно: dsp-asst: ... ✓ Connected
+
+# 12. Перезапустить Claude Code чтобы он подцепил MCP-сервер при старте.
 ```
 
 ETA: 1-1.5 ч (без скачивания offline-pack), 4-6 ч если качать с интернета.
+
+> ⚠️ **Почему MCP регистрация не в git:** команда `dsp-asst mcp` хранит **абсолютный
+> путь к бинарю** и **OS-зависимые флаги** (`cmd /c` на Windows). Если попадёт в git
+> — каждая машина при pull получит чужой путь. Поэтому `.mcp.json` в `.gitignore`,
+> регистрация делается локально через `claude mcp add ...` на каждой машине.
 
 ---
 
