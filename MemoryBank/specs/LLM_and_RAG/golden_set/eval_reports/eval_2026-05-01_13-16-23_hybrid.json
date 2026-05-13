@@ -128,7 +128,7 @@
         "t_strategies_step_by_step.TestGPUvsNumPy.test_gpu_fft_peak",
         "example_form_signal.demo_chirp_fft_pipeline",
         "factories.make_fft_proc",
-        "strategies::AntennaProcessorTest::step_4_window_fft"
+        "dsp::strategies::AntennaProcessorTest::step_4_window_fft"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -648,11 +648,11 @@
       "query": "PipelineBuilder",
       "category": "exact_name",
       "expected_fqn": [
-        "strategies::PipelineBuilder"
+        "dsp::strategies::PipelineBuilder"
       ],
       "top_fqns": [
-        "strategies::PipelineBuilder",
-        "strategies::PipelineBuilder::build",
+        "dsp::strategies::PipelineBuilder",
+        "dsp::strategies::PipelineBuilder::build",
         "pipeline_runner.PipelineRunner.run_pipeline_b",
         "pipeline_runner.PipelineRunner.run_pipeline_a",
         "plot_strategies_results.compute_pipelines"
@@ -668,16 +668,16 @@
       "query": "композиция pipeline DSP стратегия",
       "category": "semantic_ru",
       "expected_fqn": [
-        "strategies::Pipeline",
-        "strategies::PipelineBuilder",
-        "strategies::IPipelineStep"
+        "dsp::strategies::Pipeline",
+        "dsp::strategies::PipelineBuilder",
+        "dsp::strategies::IPipelineStep"
       ],
       "top_fqns": [
-        "strategies::Pipeline",
-        "strategies::AntennaProcessorConfig",
-        "strategies::PipelineContext",
-        "strategies::PipelineContext",
-        "strategies::PipelineBuilder"
+        "dsp::strategies::Pipeline",
+        "dsp::strategies::AntennaProcessorConfig",
+        "dsp::strategies::PipelineContext",
+        "dsp::strategies::PipelineContext",
+        "dsp::strategies::PipelineBuilder"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -833,7 +833,7 @@
         "drv_gpu_lib::KernelCacheService"
       ],
       "top_fqns": [
-        "strategies::StrategiesFloatApi",
+        "dsp::strategies::StrategiesFloatApi",
         "antenna_fft::AllMaximaPipelineROCm::CompileKernels",
         "drv_gpu_lib::KernelCacheService::KernelCacheService",
         "drv_gpu_lib::KernelCacheService::Save",

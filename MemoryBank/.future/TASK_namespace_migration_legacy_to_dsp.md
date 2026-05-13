@@ -1,7 +1,7 @@
 # TASK: Миграция legacy namespace → `dsp::<repo>::*`
 
 **Создано**: 2026-05-03
-**Статус**: 🟡 IN_PROGRESS — **spectrum + stats (2/7) выполнены** на Windows 2026-05-12 (spectrum pushed, stats local)
+**Статус**: 🟡 IN_PROGRESS — **spectrum + stats + strategies (3/7) выполнены** на Windows 2026-05-12 (все запушены)
 **Триггер реактивации**: ~~после стабилизации `doxytags`-агента + первого обучения локальной AI~~ — Alex решил начать с spectrum-пилота 12.05 на Windows (Phase B QLoRA ещё не сделана, идём в параллель).
 **План**: `MemoryBank/specs/namespace_migration_spectrum_plan_2026-05-12.md`
 
@@ -18,6 +18,16 @@
 | `stats PhaseB` | structural cleanup + cross-repo refs fix (fft_processor::X → dsp::spectrum::X в snr_estimator_op + statistics_types + tests) + CMake target_sources + python/CMake | 8 файлов |
 
 **Особенность stats**: модуль зависит от spectrum через `dsp::spectrum::FFTProcessorROCm`, `dsp::spectrum::WindowType`, `dsp::spectrum::MagPhaseParams`. После миграции spectrum stats ссылается на новые namespace — обновлено в PhaseB.
+
+### strategies (выполнен после stats, тот же рецепт + cross-repo updates)
+
+| Коммит | Что | Статистика |
+|--------|-----|------------|
+| `strategies Phase1+2` | namespace strategies → dsp::strategies + forward decls на migrated spectrum/stats + git mv include/strategies → include/dsp/strategies + #include rewrites | 30 файлов |
+| `strategies Phase3` | Doc + .rag content + test_params rename (9 файлов: 7 strategies_X.md + 1 antenna_fft_X.md + 1 statistics_X.md) | 19 файлов |
+| `strategies PhaseB` | OpenCL .cl + manifest.json удалены, src/strategies/src/*.cpp → src/strategies/*.cpp (3), CMake target_sources + комментарий обновлены | 6 файлов |
+
+**Особенность strategies**: модуль зависит от spectrum + stats (transitive). Forward declarations `namespace fft_processor { class X; }` и `namespace antenna_fft { class Y; }` обновлены на `namespace dsp::spectrum`; `namespace statistics { class Z; }` → `namespace dsp::stats`.
 
 ### spectrum (выполнен и запушен ранее)
 

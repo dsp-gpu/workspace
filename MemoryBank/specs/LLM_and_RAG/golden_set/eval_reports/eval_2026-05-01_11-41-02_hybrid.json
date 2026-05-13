@@ -646,14 +646,14 @@
       "query": "PipelineBuilder",
       "category": "exact_name",
       "expected_fqn": [
-        "strategies::PipelineBuilder"
+        "dsp::strategies::PipelineBuilder"
       ],
       "top_fqns": [
-        "strategies::PipelineBuilder",
+        "dsp::strategies::PipelineBuilder",
         "pipeline_runner.PipelineRunner",
-        "strategies::PipelineBuilder::build",
-        "strategies::PipelineBuf",
-        "strategies::PipelineContext"
+        "dsp::strategies::PipelineBuilder::build",
+        "dsp::strategies::PipelineBuf",
+        "dsp::strategies::PipelineContext"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -666,16 +666,16 @@
       "query": "композиция pipeline DSP стратегия",
       "category": "semantic_ru",
       "expected_fqn": [
-        "strategies::Pipeline",
-        "strategies::PipelineBuilder",
-        "strategies::IPipelineStep"
+        "dsp::strategies::Pipeline",
+        "dsp::strategies::PipelineBuilder",
+        "dsp::strategies::IPipelineStep"
       ],
       "top_fqns": [
-        "strategies::Pipeline",
-        "strategies::PipelineContext",
-        "strategies::PipelineContext",
-        "strategies::PipelineBuilder",
-        "strategies::PipelineBuf"
+        "dsp::strategies::Pipeline",
+        "dsp::strategies::PipelineContext",
+        "dsp::strategies::PipelineContext",
+        "dsp::strategies::PipelineBuilder",
+        "dsp::strategies::PipelineBuf"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,

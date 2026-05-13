@@ -29,8 +29,8 @@
 {"id": "029", "query": "rocBLAS rocSOLVER линейная алгебра GPU", "expected_fqn": ["vector_algebra::MatrixOpsROCm", "vector_algebra::CholeskyInverterROCm", "capon::CaponProcessor"], "expected_kind": ["class"], "expected_repo": "linalg", "category": "semantic_ru", "lang": "ru"}
 {"id": "030", "query": "RangeAngleProcessor", "expected_fqn": ["range_angle::RangeAngleProcessor"], "expected_kind": ["class"], "expected_repo": "radar", "category": "exact_name", "lang": "ru"}
 {"id": "031", "query": "FMCorrelator", "expected_fqn": ["drv_gpu_lib::FMCorrelator"], "expected_kind": ["class"], "expected_repo": "radar", "category": "exact_name", "lang": "ru"}
-{"id": "032", "query": "PipelineBuilder", "expected_fqn": ["strategies::PipelineBuilder"], "expected_kind": ["class"], "expected_repo": "strategies", "category": "exact_name", "lang": "ru"}
-{"id": "033", "query": "композиция pipeline DSP стратегия", "expected_fqn": ["strategies::Pipeline", "strategies::PipelineBuilder", "strategies::IPipelineStep"], "expected_kind": ["class", "interface"], "expected_repo": "strategies", "category": "semantic_ru", "lang": "ru"}
+{"id": "032", "query": "PipelineBuilder", "expected_fqn": ["dsp::strategies::PipelineBuilder"], "expected_kind": ["class"], "expected_repo": "strategies", "category": "exact_name", "lang": "ru"}
+{"id": "033", "query": "композиция pipeline DSP стратегия", "expected_fqn": ["dsp::strategies::Pipeline", "dsp::strategies::PipelineBuilder", "dsp::strategies::IPipelineStep"], "expected_kind": ["class", "interface"], "expected_repo": "strategies", "category": "semantic_ru", "lang": "ru"}
 {"id": "034", "query": "ROCmBackend", "expected_fqn": ["drv_gpu_lib::ROCmBackend"], "expected_kind": ["class"], "expected_repo": "core", "category": "exact_name", "lang": "ru"}
 {"id": "035", "query": "AMD ROCm HIP backend driver", "expected_fqn": ["drv_gpu_lib::ROCmBackend"], "expected_kind": ["class"], "expected_repo": "core", "category": "semantic_en", "lang": "en"}
 {"id": "036", "query": "ServiceManager", "expected_fqn": ["drv_gpu_lib::ServiceManager"], "expected_kind": ["class"], "expected_repo": "core", "category": "exact_name", "lang": "ru"}

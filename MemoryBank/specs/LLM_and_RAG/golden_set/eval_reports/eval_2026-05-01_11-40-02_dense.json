@@ -646,14 +646,14 @@
       "query": "PipelineBuilder",
       "category": "exact_name",
       "expected_fqn": [
-        "strategies::PipelineBuilder"
+        "dsp::strategies::PipelineBuilder"
       ],
       "top_fqns": [
-        "strategies::PipelineBuilder",
+        "dsp::strategies::PipelineBuilder",
         "t_farrow_pipeline.TestPipelineBasic",
         "pipeline_step_validator.PipelineStepValidator",
         "pipeline_runner.PipelineRunner",
-        "strategies::PipelineBuilder::build"
+        "dsp::strategies::PipelineBuilder::build"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -666,16 +666,16 @@
       "query": "композиция pipeline DSP стратегия",
       "category": "semantic_ru",
       "expected_fqn": [
-        "strategies::Pipeline",
-        "strategies::PipelineBuilder",
-        "strategies::IPipelineStep"
+        "dsp::strategies::Pipeline",
+        "dsp::strategies::PipelineBuilder",
+        "dsp::strategies::IPipelineStep"
       ],
       "top_fqns": [
-        "strategies::PipelineContext",
-        "strategies::IPipelineStep",
-        "strategies::PipelineContext",
-        "strategies::Pipeline",
-        "strategies::ParallelGroup"
+        "dsp::strategies::PipelineContext",
+        "dsp::strategies::IPipelineStep",
+        "dsp::strategies::PipelineContext",
+        "dsp::strategies::Pipeline",
+        "dsp::strategies::ParallelGroup"
       ],
       "recall_1": 0.0,
       "recall_5": 1.0,

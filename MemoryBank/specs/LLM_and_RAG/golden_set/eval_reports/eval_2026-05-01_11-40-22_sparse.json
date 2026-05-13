@@ -368,7 +368,7 @@
       ],
       "top_fqns": [
         "test_strategies::StepTiming::gpu_ms",
-        "strategies::PipelineContext::gpu_id",
+        "dsp::strategies::PipelineContext::gpu_id",
         "drv_gpu_lib::ConsoleMessage::gpu_id",
         "drv_gpu_lib::ProfilingMessage::gpu_id",
         "drv_gpu_lib::ProfilingRecord::gpu_id"
@@ -595,14 +595,14 @@
       "query": "PipelineBuilder",
       "category": "exact_name",
       "expected_fqn": [
-        "strategies::PipelineBuilder"
+        "dsp::strategies::PipelineBuilder"
       ],
       "top_fqns": [
-        "strategies::PipelineBuilder",
-        "strategies::Pipeline",
+        "dsp::strategies::PipelineBuilder",
+        "dsp::strategies::Pipeline",
         "pipeline_runner.PipelineRunner",
         "pipeline_runner.PipelineResult",
-        "strategies::PipelineBuf"
+        "dsp::strategies::PipelineBuf"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -615,12 +615,12 @@
       "query": "композиция pipeline DSP стратегия",
       "category": "semantic_ru",
       "expected_fqn": [
-        "strategies::Pipeline",
-        "strategies::PipelineBuilder",
-        "strategies::IPipelineStep"
+        "dsp::strategies::Pipeline",
+        "dsp::strategies::PipelineBuilder",
+        "dsp::strategies::IPipelineStep"
       ],
       "top_fqns": [
-        "strategies::Pipeline",
+        "dsp::strategies::Pipeline",
         "pipeline_runner.PipelineRunner",
         "t_heterodyne_comparison.cpu_pipeline",
         "t_ai_fir_demo.run_pipeline",
