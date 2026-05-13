@@ -1,0 +1,43 @@
+# ============================================================================
+# embed.service — systemd user unit для embed_server.py (bge-m3 embedding API)
+#
+# Установка:
+#   mkdir -p ~/.config/systemd/user
+#   cp embed.service ~/.config/systemd/user/
+#   cp embed_server.py ~/.continue/embed_server.py
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now embed.service
+#
+# Проверка:
+#   systemctl --user status embed.service
+#   journalctl --user -u embed.service -f
+#   curl -s http://localhost:8765/health
+#
+# Остановить:
+#   systemctl --user stop embed.service
+#   systemctl --user disable embed.service
+# ============================================================================
+
+[Unit]
+Description=Local bge-m3 embedding server for Continue VSCode
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/.continue/embed_server.py --host 127.0.0.1 --port 8765
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=embed_server
+
+# Environment: путь к offline-pack модели можно переопределить
+Environment="BGE_M3_MODEL_DIR=%h/offline-debian-pack/1_models/bge-m3"
+
+# Soft limits — embed-сервер не должен жрать всё
+MemoryMax=4G
+CPUWeight=50
+
+[Install]
+WantedBy=default.target
