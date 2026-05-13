@@ -1,8 +1,113 @@
 # TASK: Миграция legacy namespace → `dsp::<repo>::*`
 
 **Создано**: 2026-05-03
-**Статус**: 📌 perspective (не запланировано сейчас)
-**Триггер реактивации**: после стабилизации `doxytags`-агента + первого обучения локальной AI на текущем коде
+**Статус**: 🟡 IN_PROGRESS — **spectrum (1/7) выполнен локально** на Windows 2026-05-12
+**Триггер реактивации**: ~~после стабилизации `doxytags`-агента + первого обучения локальной AI~~ — Alex решил начать с spectrum-пилота 12.05 на Windows (Phase B QLoRA ещё не сделана, идём в параллель).
+**План**: `MemoryBank/specs/namespace_migration_spectrum_plan_2026-05-12.md`
+
+---
+
+## ✅ Прогресс 2026-05-12 — spectrum (1 из 7 модулей)
+
+### Сделано локально на Windows (НЕ запушено, НЕ собрано на Debian)
+
+| Коммит | Что | Статистика |
+|--------|-----|------------|
+| `spectrum 675fa1e` | **Phase 1** — namespace replace (fft_processor/filters/lch_farrow → dsp::spectrum) + using namespace + closing comments + inline FQN | 78 файлов / 302 lines |
+| `spectrum 00ace9c` | **Phase 2** — physical move `include/spectrum/` → `include/dsp/spectrum/` + 116 `#include` rewrites | 61 файл / 116 правок |
+| `workspace 6bbe2bc` | spec плана миграции (319 строк) | 1 файл |
+
+### Что ещё нужно сделать (Phase 3+, эта же сессия)
+
+- [ ] **Doc/** — `Doc/API.md` + `Doc/filters_API.md` (legacy namespace в примерах кода)
+- [ ] **.rag/** — `_RAG.md` fqn fields + `test_params/*.md` (renaming + content) + `use_cases/*.md` + `arch/{C3,C4}_code.md`
+- [ ] **MemoryBank/golden_set/** — `qa_v{1,2}.jsonl` expected_fqn + 8 eval_reports/*.json
+- [ ] **Структурная зачистка** (Phase B2):
+  - Удалить legacy дубликаты тестов в `src/{fft_func,filters,lch_farrow}/tests/` (dead code, не подключаются в tests/CMakeLists.txt)
+  - Удалить OpenCL `.cl` + manifest.json в `src/{fft_func,filters,lch_farrow}/kernels/` (правило 09 — только ROCm)
+  - Удалить `.hip` дубликаты в `src/fft_func/kernels/` (diff = 0 с `kernels/rocm/`)
+  - Выпрямить `src/{fft_func,filters,lch_farrow}/src/*.cpp` → `src/{fft_func,filters,lch_farrow}/*.cpp` (убрать лишний `/src/` слой)
+  - CMake `target_sources` rewrite (11 строк)
+- [ ] **`python/CMakeLists.txt`** — убрать dead include paths `${PROJECT_SOURCE_DIR}/src/X/include` (каталоги не существуют)
+
+---
+
+## 🐧 Что нужно протестировать на Debian (после переноса всех правок)
+
+### 1. Сборка spectrum
+```bash
+cd /home/alex/DSP-GPU/spectrum
+git pull --ff-only
+cmake --preset debian-local-dev -B build
+cmake --build build -j$(nproc) 2>&1 | tee /tmp/spectrum_build.log
+# Acceptance: 0 errors, 0 warnings от dsp::spectrum namespace
+```
+
+**Что искать в логе**:
+- `error: 'fft_processor' has not been declared` → пропущен FQN replace (откатить + найти)
+- `fatal error: spectrum/X.hpp: No such file` → пропущен #include rewrite на `dsp/spectrum/`
+- `undefined reference to 'dsp::spectrum::...'` → namespace внутри одного файла, FQN из другого — расхождение
+
+### 2. C++ тесты
+```bash
+ctest --test-dir /home/alex/DSP-GPU/spectrum/build --output-on-failure
+# Acceptance:
+# - test_spectrum_main PASS
+# - все namespace dsp::spectrum:: разрешаются
+# - 0 segfault при компиляции (значит ABI совместим)
+```
+
+### 3. Python биндинги
+```bash
+# Auto-deploy сработал? .so в DSP/Python/libs/?
+ls -la /home/alex/DSP-GPU/DSP/Python/libs/dsp_spectrum*.so
+
+# Импорт работает?
+python3 -c "import sys; sys.path.insert(0, '/home/alex/DSP-GPU/DSP/Python/libs'); import dsp_spectrum; print(dir(dsp_spectrum))"
+# Acceptance:
+# - модуль грузится без ImportError
+# - dsp_spectrum.FFTProcessorROCm доступен
+# - dsp_spectrum.FirFilterROCm доступен
+# - dsp_spectrum.LchFarrowROCm доступен
+```
+
+### 4. Python integration тесты
+```bash
+cd /home/alex/DSP-GPU
+python3 DSP/Python/integration/t_signal_to_spectrum.py
+python3 DSP/Python/integration/t_hybrid_backend.py
+python3 DSP/Python/spectrum/t_cpu_fft.py   # CPU smoke (без GPU)
+# Acceptance: PASS / SKIP (если GPU не виден — SKIP норма), но НЕ FAIL
+```
+
+### 5. Зависимые репо (НЕ должны ломаться, т.к. ничего не используют из spectrum)
+```bash
+cd /home/alex/DSP-GPU/radar && cmake --preset debian-local-dev -B build && cmake --build build -j$(nproc)
+cd /home/alex/DSP-GPU/strategies && cmake --preset debian-local-dev -B build && cmake --build build -j$(nproc)
+# Acceptance: оба собираются БЕЗ правок (доказательство изолированности миграции)
+```
+
+### 6. Старые .rag индексы (RAG smoke, после Phase 3)
+```bash
+# Проверка что _RAG.md / test_params обновлены и валидны:
+dsp-asst dsp_find FFTProcessorROCm   # должен вернуть fqn: dsp::spectrum::FFTProcessorROCm
+dsp-asst dsp_show_symbol <id>        # FQN должно быть dsp::spectrum::*
+```
+
+### 7. Решение по push
+После того как все 6 пунктов PASS на Debian:
+- Push spectrum (3 commit'а: Phase 1 + Phase 2 + Phase 3 Doc/RAG/CMake)
+- Push workspace (1 commit: spec)
+- Tag spectrum как `v0.X.0-namespace-migration` (если Alex решит фиксировать veil)
+
+---
+
+## Зависимости
+
+- ✅ Стабильный `doxytags`-агент (Phase A работает на legacy)
+- ✅ Первое обучение AI (хотя бы baseline R@5)
+- ⚠️ **Согласие Alex'а на каждую итерацию** — миграция модуля = breaking change для зависимых репо.
+- ⚠️ Pybind должен пройти gate (Python тесты `t_*.py` зелёные на новом namespace).
 
 ---
 

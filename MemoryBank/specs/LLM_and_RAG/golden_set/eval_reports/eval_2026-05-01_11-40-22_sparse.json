@@ -1,4 +1,4 @@
-{
+﻿{
   "config": {
     "mode": "sparse",
     "use_rerank": true,
@@ -75,14 +75,14 @@
       "query": "FFTProcessorROCm",
       "category": "exact_name",
       "expected_fqn": [
-        "fft_processor::FFTProcessorROCm"
+        "dsp::spectrum::FFTProcessorROCm"
       ],
       "top_fqns": [
-        "fft_processor::FFTProcessorROCm",
-        "fft_processor::FFTProcessorROCm::FFTProcessorROCm",
-        "fft_processor::FFTProcessorROCm::FFTProcessorROCm",
-        "fft_processor::FFTProcessorROCm::~FFTProcessorROCm",
-        "fft_processor::FFTProcessorROCm::FFTProcessorROCm"
+        "dsp::spectrum::FFTProcessorROCm",
+        "dsp::spectrum::FFTProcessorROCm::FFTProcessorROCm",
+        "dsp::spectrum::FFTProcessorROCm::FFTProcessorROCm",
+        "dsp::spectrum::FFTProcessorROCm::~FFTProcessorROCm",
+        "dsp::spectrum::FFTProcessorROCm::FFTProcessorROCm"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -95,7 +95,7 @@
       "query": "FFT процессор на ROCm hipFFT",
       "category": "semantic_ru",
       "expected_fqn": [
-        "fft_processor::FFTProcessorROCm"
+        "dsp::spectrum::FFTProcessorROCm"
       ],
       "top_fqns": [
         "test_fft_matrix_rocm::run",
@@ -112,7 +112,7 @@
       "query": "fast fourier transform GPU",
       "category": "semantic_en",
       "expected_fqn": [
-        "fft_processor::FFTProcessorROCm"
+        "dsp::spectrum::FFTProcessorROCm"
       ],
       "top_fqns": [],
       "recall_1": 0.0,
@@ -166,14 +166,14 @@
       "query": "MovingAverageFilterROCm",
       "category": "exact_name",
       "expected_fqn": [
-        "filters::MovingAverageFilterROCm"
+        "dsp::spectrum::MovingAverageFilterROCm"
       ],
       "top_fqns": [
-        "filters::MovingAverageFilterROCm",
-        "filters::MovingAverageFilterROCm",
-        "filters::MovingAverageFilterROCm::MovingAverageFilterROCm",
-        "filters::MovingAverageFilterROCm::~MovingAverageFilterROCm",
-        "filters::MovingAverageFilterROCm::MovingAverageFilterROCm"
+        "dsp::spectrum::MovingAverageFilterROCm",
+        "dsp::spectrum::MovingAverageFilterROCm",
+        "dsp::spectrum::MovingAverageFilterROCm::MovingAverageFilterROCm",
+        "dsp::spectrum::MovingAverageFilterROCm::~MovingAverageFilterROCm",
+        "dsp::spectrum::MovingAverageFilterROCm::MovingAverageFilterROCm"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -186,14 +186,14 @@
       "query": "moving average filter signal smoothing",
       "category": "semantic_en",
       "expected_fqn": [
-        "filters::MovingAverageFilterROCm"
+        "dsp::spectrum::MovingAverageFilterROCm"
       ],
       "top_fqns": [
-        "filters::MovingAverageFilterROCm",
+        "dsp::spectrum::MovingAverageFilterROCm",
         "t_moving_average_rocm.make_complex_signal",
         "test_moving_average_rocm::generate_random_signal",
         "test_moving_average_rocm::generate_random_signal",
-        "filters::MovingAverageFilterROCm::MovingAverageFilterROCm"
+        "dsp::spectrum::MovingAverageFilterROCm::MovingAverageFilterROCm"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -206,14 +206,14 @@
       "query": "KalmanFilterROCm",
       "category": "exact_name",
       "expected_fqn": [
-        "filters::KalmanFilterROCm"
+        "dsp::spectrum::KalmanFilterROCm"
       ],
       "top_fqns": [
-        "filters::KalmanFilterROCm",
-        "filters::KalmanFilterROCm::~KalmanFilterROCm",
-        "filters::KalmanFilterROCm::KalmanFilterROCm",
-        "filters::KalmanFilterROCm::KalmanFilterROCm",
-        "filters::KalmanFilterROCm::KalmanFilterROCm"
+        "dsp::spectrum::KalmanFilterROCm",
+        "dsp::spectrum::KalmanFilterROCm::~KalmanFilterROCm",
+        "dsp::spectrum::KalmanFilterROCm::KalmanFilterROCm",
+        "dsp::spectrum::KalmanFilterROCm::KalmanFilterROCm",
+        "dsp::spectrum::KalmanFilterROCm::KalmanFilterROCm"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -226,11 +226,11 @@
       "query": "фильтр Калмана",
       "category": "semantic_ru",
       "expected_fqn": [
-        "filters::KalmanFilterROCm"
+        "dsp::spectrum::KalmanFilterROCm"
       ],
       "top_fqns": [
         "plot_report_filters.kalman_ref_scalar",
-        "filters::KalmanFilterROCm::SetParams"
+        "dsp::spectrum::KalmanFilterROCm::SetParams"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -243,15 +243,15 @@
       "query": "LchFarrow дробная задержка Лагранжа",
       "category": "semantic_ru",
       "expected_fqn": [
-        "lch_farrow::LchFarrow",
-        "lch_farrow::LchFarrowROCm"
+        "dsp::spectrum::LchFarrow",
+        "dsp::spectrum::LchFarrowROCm"
       ],
       "top_fqns": [
-        "lch_farrow::LchFarrow",
-        "lch_farrow::LchFarrow::LchFarrow",
-        "lch_farrow::LchFarrow::LchFarrow",
-        "lch_farrow::LchFarrow::~LchFarrow",
-        "lch_farrow::LchFarrow::LchFarrow"
+        "dsp::spectrum::LchFarrow",
+        "dsp::spectrum::LchFarrow::LchFarrow",
+        "dsp::spectrum::LchFarrow::LchFarrow",
+        "dsp::spectrum::LchFarrow::~LchFarrow",
+        "dsp::spectrum::LchFarrow::LchFarrow"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -264,8 +264,8 @@
       "query": "fractional delay lagrange interpolation",
       "category": "semantic_en",
       "expected_fqn": [
-        "lch_farrow::LchFarrow",
-        "lch_farrow::LchFarrowROCm"
+        "dsp::spectrum::LchFarrow",
+        "dsp::spectrum::LchFarrowROCm"
       ],
       "top_fqns": [
         "farrow_delay.FarrowDelay",
@@ -918,14 +918,14 @@
       "query": "FirFilterROCm",
       "category": "exact_name",
       "expected_fqn": [
-        "filters::FirFilterROCm"
+        "dsp::spectrum::FirFilterROCm"
       ],
       "top_fqns": [
-        "filters::FirFilterROCm",
-        "filters::FirFilterROCm",
-        "filters::FirFilterROCm::~FirFilterROCm",
-        "filters::FirFilterROCm::FirFilterROCm",
-        "filters::FirFilterROCm::FirFilterROCm"
+        "dsp::spectrum::FirFilterROCm",
+        "dsp::spectrum::FirFilterROCm",
+        "dsp::spectrum::FirFilterROCm::~FirFilterROCm",
+        "dsp::spectrum::FirFilterROCm::FirFilterROCm",
+        "dsp::spectrum::FirFilterROCm::FirFilterROCm"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -938,7 +938,7 @@
       "query": "FIR filter finite impulse response GPU",
       "category": "semantic_en",
       "expected_fqn": [
-        "filters::FirFilterROCm"
+        "dsp::spectrum::FirFilterROCm"
       ],
       "top_fqns": [
         "t_moving_average_rocm.TestMovingAverageROCm.test_impulse_response"

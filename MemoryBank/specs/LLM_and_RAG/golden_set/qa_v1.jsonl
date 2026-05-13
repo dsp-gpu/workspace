@@ -1,17 +1,17 @@
-{"id": "001", "query": "ScopedHipEvent", "expected_fqn": ["drv_gpu_lib::ScopedHipEvent"], "expected_kind": ["class"], "expected_repo": "core", "category": "exact_name", "lang": "ru"}
+﻿{"id": "001", "query": "ScopedHipEvent", "expected_fqn": ["drv_gpu_lib::ScopedHipEvent"], "expected_kind": ["class"], "expected_repo": "core", "category": "exact_name", "lang": "ru"}
 {"id": "002", "query": "RAII обертка для hipEvent", "expected_fqn": ["drv_gpu_lib::ScopedHipEvent"], "expected_kind": ["class"], "expected_repo": "core", "category": "semantic_ru", "lang": "ru"}
 {"id": "003", "query": "RAII wrapper for hipEvent_t", "expected_fqn": ["drv_gpu_lib::ScopedHipEvent"], "expected_kind": ["class"], "expected_repo": "core", "category": "semantic_en", "lang": "en"}
-{"id": "004", "query": "FFTProcessorROCm", "expected_fqn": ["fft_processor::FFTProcessorROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "exact_name", "lang": "ru"}
-{"id": "005", "query": "FFT процессор на ROCm hipFFT", "expected_fqn": ["fft_processor::FFTProcessorROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_ru", "lang": "ru"}
-{"id": "006", "query": "fast fourier transform GPU", "expected_fqn": ["fft_processor::FFTProcessorROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_en", "lang": "en"}
+{"id": "004", "query": "FFTProcessorROCm", "expected_fqn": ["dsp::spectrum::FFTProcessorROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "exact_name", "lang": "ru"}
+{"id": "005", "query": "FFT процессор на ROCm hipFFT", "expected_fqn": ["dsp::spectrum::FFTProcessorROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_ru", "lang": "ru"}
+{"id": "006", "query": "fast fourier transform GPU", "expected_fqn": ["dsp::spectrum::FFTProcessorROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_en", "lang": "en"}
 {"id": "007", "query": "ProfilingFacade", "expected_fqn": ["drv_gpu_lib::profiling::ProfilingFacade"], "expected_kind": ["class"], "expected_repo": "core", "category": "exact_name", "lang": "ru"}
 {"id": "008", "query": "профилирование GPU ядер batch record", "expected_fqn": ["drv_gpu_lib::profiling::ProfilingFacade"], "expected_kind": ["class"], "expected_repo": "core", "category": "semantic_ru", "lang": "ru"}
-{"id": "009", "query": "MovingAverageFilterROCm", "expected_fqn": ["filters::MovingAverageFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "exact_name", "lang": "ru"}
-{"id": "010", "query": "moving average filter signal smoothing", "expected_fqn": ["filters::MovingAverageFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_en", "lang": "en"}
-{"id": "011", "query": "KalmanFilterROCm", "expected_fqn": ["filters::KalmanFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "exact_name", "lang": "ru"}
-{"id": "012", "query": "фильтр Калмана", "expected_fqn": ["filters::KalmanFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_ru", "lang": "ru"}
-{"id": "013", "query": "LchFarrow дробная задержка Лагранжа", "expected_fqn": ["lch_farrow::LchFarrow", "lch_farrow::LchFarrowROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_ru", "lang": "ru"}
-{"id": "014", "query": "fractional delay lagrange interpolation", "expected_fqn": ["lch_farrow::LchFarrow", "lch_farrow::LchFarrowROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_en", "lang": "en"}
+{"id": "009", "query": "MovingAverageFilterROCm", "expected_fqn": ["dsp::spectrum::MovingAverageFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "exact_name", "lang": "ru"}
+{"id": "010", "query": "moving average filter signal smoothing", "expected_fqn": ["dsp::spectrum::MovingAverageFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_en", "lang": "en"}
+{"id": "011", "query": "KalmanFilterROCm", "expected_fqn": ["dsp::spectrum::KalmanFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "exact_name", "lang": "ru"}
+{"id": "012", "query": "фильтр Калмана", "expected_fqn": ["dsp::spectrum::KalmanFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_ru", "lang": "ru"}
+{"id": "013", "query": "LchFarrow дробная задержка Лагранжа", "expected_fqn": ["dsp::spectrum::LchFarrow", "dsp::spectrum::LchFarrowROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_ru", "lang": "ru"}
+{"id": "014", "query": "fractional delay lagrange interpolation", "expected_fqn": ["dsp::spectrum::LchFarrow", "dsp::spectrum::LchFarrowROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_en", "lang": "en"}
 {"id": "015", "query": "SNREstimator", "expected_fqn": ["statistics::SnrEstimatorOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "exact_name", "lang": "ru"}
 {"id": "016", "query": "оценка отношения сигнал шум", "expected_fqn": ["statistics::SnrEstimatorOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "semantic_ru", "lang": "ru"}
 {"id": "017", "query": "WelfordOnline", "expected_fqn": ["statistics::WelfordFloatOp", "statistics::WelfordFusedOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "exact_name", "lang": "ru"}
@@ -46,5 +46,5 @@
 {"id": "046", "query": "BatchManager пакетная обработка", "expected_fqn": ["drv_gpu_lib::BatchManager"], "expected_kind": ["class"], "expected_repo": "core", "category": "semantic_ru", "lang": "ru"}
 {"id": "047", "query": "AsyncServiceBase", "expected_fqn": ["drv_gpu_lib::AsyncServiceBase"], "expected_kind": ["class"], "expected_repo": "core", "category": "exact_name", "lang": "ru"}
 {"id": "048", "query": "async task queue background worker", "expected_fqn": ["drv_gpu_lib::AsyncServiceBase"], "expected_kind": ["class"], "expected_repo": "core", "category": "semantic_en", "lang": "en"}
-{"id": "049", "query": "FirFilterROCm", "expected_fqn": ["filters::FirFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "exact_name", "lang": "ru"}
-{"id": "050", "query": "FIR filter finite impulse response GPU", "expected_fqn": ["filters::FirFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_en", "lang": "en"}
+{"id": "049", "query": "FirFilterROCm", "expected_fqn": ["dsp::spectrum::FirFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "exact_name", "lang": "ru"}
+{"id": "050", "query": "FIR filter finite impulse response GPU", "expected_fqn": ["dsp::spectrum::FirFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_en", "lang": "en"}
