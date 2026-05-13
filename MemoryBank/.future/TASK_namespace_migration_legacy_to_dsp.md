@@ -1,7 +1,7 @@
 # TASK: Миграция legacy namespace → `dsp::<repo>::*`
 
 **Создано**: 2026-05-03
-**Статус**: 🟡 IN_PROGRESS — **spectrum + stats + strategies + signal_generators + linalg (5/7) выполнены** на Windows 2026-05-12 (все запушены)
+**Статус**: 🟡 IN_PROGRESS — **6/7 выполнены**: spectrum + stats + strategies + signal_generators + linalg + radar(range_angle). Осталось: **heterodyne** + **radar/fm_correlator** (оба используют `drv_gpu_lib::*` overlap с core — отдельный таск).
 **Триггер реактивации**: ~~после стабилизации `doxytags`-агента + первого обучения локальной AI~~ — Alex решил начать с spectrum-пилота 12.05 на Windows (Phase B QLoRA ещё не сделана, идём в параллель).
 **План**: `MemoryBank/specs/namespace_migration_spectrum_plan_2026-05-12.md`
 
@@ -18,6 +18,15 @@
 | `stats PhaseB` | structural cleanup + cross-repo refs fix (fft_processor::X → dsp::spectrum::X в snr_estimator_op + statistics_types + tests) + CMake target_sources + python/CMake | 8 файлов |
 
 **Особенность stats**: модуль зависит от spectrum через `dsp::spectrum::FFTProcessorROCm`, `dsp::spectrum::WindowType`, `dsp::spectrum::MagPhaseParams`. После миграции spectrum stats ссылается на новые namespace — обновлено в PhaseB.
+
+### radar (выполнен после linalg, 6/7) — частично
+
+| Коммит | Что | Статистика |
+|--------|-----|------------|
+| `radar Phase1+2` | namespace range_angle → dsp::radar + cross-repo refs (5 модулей) + git mv include/radar → include/dsp/radar + 22 #include rewrites | 22 файлов |
+| `radar Phase3+B` | Doc + .rag + test_params (range_angle_RangeAngleProcessor.md → dsp_radar_RangeAngleProcessor.md) + OpenCL .cl/manifest удалены + src/X/src/ → src/X/ (7 файлов) + CMake target_sources | 20+ файлов |
+
+**⚠️ ВАЖНО для radar**: `fm_correlator` НЕ мигрирован — его классы (FMCorrelator, FMCorrelatorProcessorROCm) определены в `namespace drv_gpu_lib` (legacy carry-over из GPUWorkLib). Слепое replace сломает использование `drv_gpu_lib::IBackend`, `drv_gpu_lib::GpuContext` (core классы) внутри этих файлов. Отдельная задача вместе с **heterodyne** (та же проблема).
 
 ### linalg (выполнен после signal_generators, 5/7)
 

@@ -27,7 +27,7 @@
 {"id": "027", "query": "Capon adaptive beamforming", "expected_fqn": ["dsp::linalg::CaponProcessor"], "expected_kind": ["class"], "expected_repo": "linalg", "category": "semantic_en", "lang": "en"}
 {"id": "028", "query": "VectorAlgebra", "expected_fqn": ["dsp::linalg::MatrixOpsROCm"], "expected_kind": ["class"], "expected_repo": "linalg", "category": "exact_name", "lang": "ru"}
 {"id": "029", "query": "rocBLAS rocSOLVER линейная алгебра GPU", "expected_fqn": ["dsp::linalg::MatrixOpsROCm", "dsp::linalg::CholeskyInverterROCm", "dsp::linalg::CaponProcessor"], "expected_kind": ["class"], "expected_repo": "linalg", "category": "semantic_ru", "lang": "ru"}
-{"id": "030", "query": "RangeAngleProcessor", "expected_fqn": ["range_angle::RangeAngleProcessor"], "expected_kind": ["class"], "expected_repo": "radar", "category": "exact_name", "lang": "ru"}
+{"id": "030", "query": "RangeAngleProcessor", "expected_fqn": ["dsp::radar::RangeAngleProcessor"], "expected_kind": ["class"], "expected_repo": "radar", "category": "exact_name", "lang": "ru"}
 {"id": "031", "query": "FMCorrelator", "expected_fqn": ["drv_gpu_lib::FMCorrelator"], "expected_kind": ["class"], "expected_repo": "radar", "category": "exact_name", "lang": "ru"}
 {"id": "032", "query": "PipelineBuilder", "expected_fqn": ["dsp::strategies::PipelineBuilder"], "expected_kind": ["class"], "expected_repo": "strategies", "category": "exact_name", "lang": "ru"}
 {"id": "033", "query": "композиция pipeline DSP стратегия", "expected_fqn": ["dsp::strategies::Pipeline", "dsp::strategies::PipelineBuilder", "dsp::strategies::IPipelineStep"], "expected_kind": ["class", "interface"], "expected_repo": "strategies", "category": "semantic_ru", "lang": "ru"}

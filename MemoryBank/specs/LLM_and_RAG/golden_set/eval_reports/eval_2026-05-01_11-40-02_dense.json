@@ -606,14 +606,14 @@
       "query": "RangeAngleProcessor",
       "category": "exact_name",
       "expected_fqn": [
-        "range_angle::RangeAngleProcessor"
+        "dsp::radar::RangeAngleProcessor"
       ],
       "top_fqns": [
-        "range_angle::RangeAngleProcessor::Process",
-        "range_angle::RangeAngleProcessor::RangeAngleProcessor",
-        "range_angle::RangeAngleProcessor::~RangeAngleProcessor",
-        "range_angle::RangeAngleProcessor::RangeAngleProcessor",
-        "range_angle::RangeAngleProcessor::RangeAngleProcessor"
+        "dsp::radar::RangeAngleProcessor::Process",
+        "dsp::radar::RangeAngleProcessor::RangeAngleProcessor",
+        "dsp::radar::RangeAngleProcessor::~RangeAngleProcessor",
+        "dsp::radar::RangeAngleProcessor::RangeAngleProcessor",
+        "dsp::radar::RangeAngleProcessor::RangeAngleProcessor"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
