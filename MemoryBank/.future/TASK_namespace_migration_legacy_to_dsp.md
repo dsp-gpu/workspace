@@ -1,13 +1,25 @@
 # TASK: Миграция legacy namespace → `dsp::<repo>::*`
 
 **Создано**: 2026-05-03
-**Статус**: 🟡 IN_PROGRESS — **spectrum (1/7) выполнен локально** на Windows 2026-05-12
+**Статус**: 🟡 IN_PROGRESS — **spectrum + stats (2/7) выполнены** на Windows 2026-05-12 (spectrum pushed, stats local)
 **Триггер реактивации**: ~~после стабилизации `doxytags`-агента + первого обучения локальной AI~~ — Alex решил начать с spectrum-пилота 12.05 на Windows (Phase B QLoRA ещё не сделана, идём в параллель).
 **План**: `MemoryBank/specs/namespace_migration_spectrum_plan_2026-05-12.md`
 
 ---
 
-## ✅ Прогресс 2026-05-12 — spectrum (1 из 7 модулей)
+## ✅ Прогресс 2026-05-12 — spectrum + stats (2 из 7 модулей)
+
+### stats (выполнен после spectrum, тот же рецепт, локально)
+
+| Коммит | Что | Статистика |
+|--------|-----|------------|
+| `stats Phase1+2` | namespace `statistics`/`snr_estimator`/`gpu_sort`/`snr_defaults` → `dsp::stats::*` + git mv include/stats → include/dsp/stats + 33 #include rewrites | 18 файлов |
+| `stats Phase3` | Doc + .rag content + test_params rename (statistics_X.md → dsp_stats_X.md) | 12 файлов |
+| `stats PhaseB` | structural cleanup + cross-repo refs fix (fft_processor::X → dsp::spectrum::X в snr_estimator_op + statistics_types + tests) + CMake target_sources + python/CMake | 8 файлов |
+
+**Особенность stats**: модуль зависит от spectrum через `dsp::spectrum::FFTProcessorROCm`, `dsp::spectrum::WindowType`, `dsp::spectrum::MagPhaseParams`. После миграции spectrum stats ссылается на новые namespace — обновлено в PhaseB.
+
+### spectrum (выполнен и запушен ранее)
 
 ### Сделано локально на Windows (НЕ запушено, НЕ собрано на Debian)
 

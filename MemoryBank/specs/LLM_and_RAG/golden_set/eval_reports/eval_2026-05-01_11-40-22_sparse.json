@@ -285,14 +285,14 @@
       "query": "SNREstimator",
       "category": "exact_name",
       "expected_fqn": [
-        "statistics::SNREstimator"
+        "dsp::stats::SNREstimator"
       ],
       "top_fqns": [
-        "statistics::SnrEstimatorOp",
+        "dsp::stats::SnrEstimatorOp",
         "t_snr_estimator.TestSnrEstimator",
         "test_snr_estimator::SnrEstimatorBenchmark",
-        "statistics::SnrEstimationResult",
-        "statistics::SnrEstimationConfig"
+        "dsp::stats::SnrEstimationResult",
+        "dsp::stats::SnrEstimationConfig"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -305,7 +305,7 @@
       "query": "оценка отношения сигнал шум",
       "category": "semantic_ru",
       "expected_fqn": [
-        "statistics::SNREstimator"
+        "dsp::stats::SNREstimator"
       ],
       "top_fqns": [],
       "recall_1": 0.0,
@@ -319,11 +319,11 @@
       "query": "WelfordOnline",
       "category": "exact_name",
       "expected_fqn": [
-        "statistics::WelfordOnline"
+        "dsp::stats::WelfordOnline"
       ],
       "top_fqns": [
-        "statistics::WelfordFloatOp",
-        "statistics::WelfordFusedOp"
+        "dsp::stats::WelfordFloatOp",
+        "dsp::stats::WelfordFusedOp"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -336,7 +336,7 @@
       "query": "online running mean variance computation",
       "category": "semantic_en",
       "expected_fqn": [
-        "statistics::WelfordOnline"
+        "dsp::stats::WelfordOnline"
       ],
       "top_fqns": [],
       "recall_1": 0.0,
@@ -350,7 +350,7 @@
       "query": "RadixSortGPU",
       "category": "exact_name",
       "expected_fqn": [
-        "gpu_sort::RadixSortGPU"
+        "dsp::stats::gpu_sort::RadixSortGPU"
       ],
       "top_fqns": [],
       "recall_1": 0.0,
@@ -364,7 +364,7 @@
       "query": "GPU параллельная сортировка radix",
       "category": "semantic_ru",
       "expected_fqn": [
-        "gpu_sort::RadixSortGPU"
+        "dsp::stats::gpu_sort::RadixSortGPU"
       ],
       "top_fqns": [
         "test_strategies::StepTiming::gpu_ms",

@@ -12,12 +12,12 @@
 {"id": "012", "query": "фильтр Калмана", "expected_fqn": ["dsp::spectrum::KalmanFilterROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_ru", "lang": "ru"}
 {"id": "013", "query": "LchFarrow дробная задержка Лагранжа", "expected_fqn": ["dsp::spectrum::LchFarrow", "dsp::spectrum::LchFarrowROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_ru", "lang": "ru"}
 {"id": "014", "query": "fractional delay lagrange interpolation", "expected_fqn": ["dsp::spectrum::LchFarrow", "dsp::spectrum::LchFarrowROCm"], "expected_kind": ["class"], "expected_repo": "spectrum", "category": "semantic_en", "lang": "en"}
-{"id": "015", "query": "SNREstimator", "expected_fqn": ["statistics::SnrEstimatorOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "exact_name", "lang": "ru"}
-{"id": "016", "query": "оценка отношения сигнал шум", "expected_fqn": ["statistics::SnrEstimatorOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "semantic_ru", "lang": "ru"}
-{"id": "017", "query": "WelfordOnline", "expected_fqn": ["statistics::WelfordFloatOp", "statistics::WelfordFusedOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "exact_name", "lang": "ru"}
-{"id": "018", "query": "online running mean variance computation", "expected_fqn": ["statistics::WelfordFloatOp", "statistics::WelfordFusedOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "semantic_en", "lang": "en"}
-{"id": "019", "query": "RadixSortGPU", "expected_fqn": ["statistics::MedianRadixSortOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "exact_name", "lang": "ru"}
-{"id": "020", "query": "GPU параллельная сортировка radix", "expected_fqn": ["statistics::MedianRadixSortOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "semantic_ru", "lang": "ru"}
+{"id": "015", "query": "SNREstimator", "expected_fqn": ["dsp::stats::SnrEstimatorOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "exact_name", "lang": "ru"}
+{"id": "016", "query": "оценка отношения сигнал шум", "expected_fqn": ["dsp::stats::SnrEstimatorOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "semantic_ru", "lang": "ru"}
+{"id": "017", "query": "WelfordOnline", "expected_fqn": ["dsp::stats::WelfordFloatOp", "dsp::stats::WelfordFusedOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "exact_name", "lang": "ru"}
+{"id": "018", "query": "online running mean variance computation", "expected_fqn": ["dsp::stats::WelfordFloatOp", "dsp::stats::WelfordFusedOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "semantic_en", "lang": "en"}
+{"id": "019", "query": "RadixSortGPU", "expected_fqn": ["dsp::stats::MedianRadixSortOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "exact_name", "lang": "ru"}
+{"id": "020", "query": "GPU параллельная сортировка radix", "expected_fqn": ["dsp::stats::MedianRadixSortOp"], "expected_kind": ["class"], "expected_repo": "stats", "category": "semantic_ru", "lang": "ru"}
 {"id": "021", "query": "LfmGenerator", "expected_fqn": ["signal_gen::LfmGenerator"], "expected_kind": ["class"], "expected_repo": "signal_generators", "category": "exact_name", "lang": "ru"}
 {"id": "022", "query": "генератор линейно-частотно-модулированного сигнала", "expected_fqn": ["signal_gen::LfmGenerator"], "expected_kind": ["class"], "expected_repo": "signal_generators", "category": "semantic_ru", "lang": "ru"}
 {"id": "023", "query": "CW signal generator continuous wave", "expected_fqn": ["signal_gen::CwGenerator"], "expected_kind": ["class"], "expected_repo": "signal_generators", "category": "semantic_en", "lang": "en"}

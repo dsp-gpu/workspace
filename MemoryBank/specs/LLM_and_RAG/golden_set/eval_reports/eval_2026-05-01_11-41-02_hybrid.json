@@ -303,14 +303,14 @@
       "query": "SNREstimator",
       "category": "exact_name",
       "expected_fqn": [
-        "statistics::SNREstimator"
+        "dsp::stats::SNREstimator"
       ],
       "top_fqns": [
         "test_snr_estimator::SnrEstimatorBenchmark",
         "t_snr_estimator.TestSnrEstimator",
-        "statistics::SnrEstimationResult",
-        "statistics::SnrEstimatorOp",
-        "statistics::SnrEstimationConfig"
+        "dsp::stats::SnrEstimationResult",
+        "dsp::stats::SnrEstimatorOp",
+        "dsp::stats::SnrEstimationConfig"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -323,7 +323,7 @@
       "query": "оценка отношения сигнал шум",
       "category": "semantic_ru",
       "expected_fqn": [
-        "statistics::SNREstimator"
+        "dsp::stats::SNREstimator"
       ],
       "top_fqns": [
         "numeric.RmseValidator",
@@ -343,13 +343,13 @@
       "query": "WelfordOnline",
       "category": "exact_name",
       "expected_fqn": [
-        "statistics::WelfordOnline"
+        "dsp::stats::WelfordOnline"
       ],
       "top_fqns": [
-        "statistics::WelfordFloatOp",
-        "statistics::WelfordFusedOp",
-        "statistics::StatisticsResult",
-        "statistics::FullStatisticsResult",
+        "dsp::stats::WelfordFloatOp",
+        "dsp::stats::WelfordFusedOp",
+        "dsp::stats::StatisticsResult",
+        "dsp::stats::FullStatisticsResult",
         "t_statistics_rocm.test_gpu_vs_numpy_welford"
       ],
       "recall_1": 0.0,
@@ -363,10 +363,10 @@
       "query": "online running mean variance computation",
       "category": "semantic_en",
       "expected_fqn": [
-        "statistics::WelfordOnline"
+        "dsp::stats::WelfordOnline"
       ],
       "top_fqns": [
-        "statistics::StatisticsResult",
+        "dsp::stats::StatisticsResult",
         "t_compute_all.ref_statistics",
         "test_moving_average_rocm::run",
         "test_moving_average_rocm::run",
@@ -383,7 +383,7 @@
       "query": "RadixSortGPU",
       "category": "exact_name",
       "expected_fqn": [
-        "gpu_sort::RadixSortGPU"
+        "dsp::stats::gpu_sort::RadixSortGPU"
       ],
       "top_fqns": [
         "t_spectrum_find_all_maxima_rocm.test_rocm_context_available",
@@ -403,13 +403,13 @@
       "query": "GPU параллельная сортировка radix",
       "category": "semantic_ru",
       "expected_fqn": [
-        "gpu_sort::RadixSortGPU"
+        "dsp::stats::gpu_sort::RadixSortGPU"
       ],
       "top_fqns": [
-        "statistics::MedianRadixSortOp",
+        "dsp::stats::MedianRadixSortOp",
         "test_strategies::StrategiesProfilingBenchmark",
         "gpu_mellanox::ServerTopology",
-        "statistics::gpu_sort::ExecuteSort",
+        "dsp::stats::gpu_sort::ExecuteSort",
         "gpu_mellanox::detail::PairInSlot"
       ],
       "recall_1": 0.0,

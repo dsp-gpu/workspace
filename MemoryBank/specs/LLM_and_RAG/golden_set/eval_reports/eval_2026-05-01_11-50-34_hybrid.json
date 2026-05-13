@@ -303,13 +303,13 @@
       "query": "SNREstimator",
       "category": "exact_name",
       "expected_fqn": [
-        "statistics::SNREstimator"
+        "dsp::stats::SNREstimator"
       ],
       "top_fqns": [
         "t_snr_estimator.TestSnrEstimator",
-        "statistics::SnrEstimatorOp",
+        "dsp::stats::SnrEstimatorOp",
         "test_snr_estimator::SnrEstimatorBenchmark",
-        "statistics::SnrEstimationResult",
+        "dsp::stats::SnrEstimationResult",
         "test_snr_estimator_benchmark::SnrBenchScenario"
       ],
       "recall_1": 0.0,
@@ -323,7 +323,7 @@
       "query": "оценка отношения сигнал шум",
       "category": "semantic_ru",
       "expected_fqn": [
-        "statistics::SNREstimator"
+        "dsp::stats::SNREstimator"
       ],
       "top_fqns": [
         "t_kalman_rocm.test_kalman_noise_reduction",
@@ -343,14 +343,14 @@
       "query": "WelfordOnline",
       "category": "exact_name",
       "expected_fqn": [
-        "statistics::WelfordOnline"
+        "dsp::stats::WelfordOnline"
       ],
       "top_fqns": [
-        "statistics::WelfordFusedOp",
-        "statistics::WelfordFloatOp",
-        "statistics::StatisticsResult",
-        "statistics::FullStatisticsResult",
-        "statistics::WelfordFloatOp::Execute"
+        "dsp::stats::WelfordFusedOp",
+        "dsp::stats::WelfordFloatOp",
+        "dsp::stats::StatisticsResult",
+        "dsp::stats::FullStatisticsResult",
+        "dsp::stats::WelfordFloatOp::Execute"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -363,12 +363,12 @@
       "query": "online running mean variance computation",
       "category": "semantic_en",
       "expected_fqn": [
-        "statistics::WelfordOnline"
+        "dsp::stats::WelfordOnline"
       ],
       "top_fqns": [
         "t_compute_all.ref_statistics",
         "numpy_reference.NumpyReference._compute_stats",
-        "statistics::StatisticsResult",
+        "dsp::stats::StatisticsResult",
         "t_statistics_rocm.test_numpy_welford_statistics",
         "PyStatisticsProcessor::compute_mean"
       ],
@@ -383,7 +383,7 @@
       "query": "RadixSortGPU",
       "category": "exact_name",
       "expected_fqn": [
-        "gpu_sort::RadixSortGPU"
+        "dsp::stats::gpu_sort::RadixSortGPU"
       ],
       "top_fqns": [
         "dsp::spectrum::IirFilterROCm::Process",
@@ -403,14 +403,14 @@
       "query": "GPU параллельная сортировка radix",
       "category": "semantic_ru",
       "expected_fqn": [
-        "gpu_sort::RadixSortGPU"
+        "dsp::stats::gpu_sort::RadixSortGPU"
       ],
       "top_fqns": [
-        "statistics::gpu_sort::ExecuteSort",
-        "statistics::MedianRadixSortOp",
-        "statistics::MedianRadixSortOp::Execute",
-        "statistics::MedianRadixSortOp::ExecuteFloat",
-        "statistics::gpu_sort::QuerySortTempSize"
+        "dsp::stats::gpu_sort::ExecuteSort",
+        "dsp::stats::MedianRadixSortOp",
+        "dsp::stats::MedianRadixSortOp::Execute",
+        "dsp::stats::MedianRadixSortOp::ExecuteFloat",
+        "dsp::stats::gpu_sort::QuerySortTempSize"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
