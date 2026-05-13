@@ -524,14 +524,14 @@
       "query": "CaponProcessor",
       "category": "exact_name",
       "expected_fqn": [
-        "capon::CaponProcessor"
+        "dsp::linalg::CaponProcessor"
       ],
       "top_fqns": [
-        "capon::CaponProcessor",
-        "capon::CaponProcessor",
-        "capon::CaponProcessor::CaponProcessor",
-        "capon::CaponProcessor::CaponProcessor",
-        "capon::CaponProcessor::~CaponProcessor"
+        "dsp::linalg::CaponProcessor",
+        "dsp::linalg::CaponProcessor",
+        "dsp::linalg::CaponProcessor::CaponProcessor",
+        "dsp::linalg::CaponProcessor::CaponProcessor",
+        "dsp::linalg::CaponProcessor::~CaponProcessor"
       ],
       "recall_1": 1.0,
       "recall_5": 1.0,
@@ -544,14 +544,14 @@
       "query": "Capon adaptive beamforming",
       "category": "semantic_en",
       "expected_fqn": [
-        "capon::CaponProcessor"
+        "dsp::linalg::CaponProcessor"
       ],
       "top_fqns": [
-        "capon::AdaptBeamformOp",
-        "capon::CaponBeamResult",
+        "dsp::linalg::AdaptBeamformOp",
+        "dsp::linalg::CaponBeamResult",
         "t_capon.capon_beamform_ref",
-        "capon::CaponProcessor::AdaptiveBeamform",
-        "capon::CaponProcessor::AdaptiveBeamform"
+        "dsp::linalg::CaponProcessor::AdaptiveBeamform",
+        "dsp::linalg::CaponProcessor::AdaptiveBeamform"
       ],
       "recall_1": 0.0,
       "recall_5": 1.0,
@@ -564,14 +564,14 @@
       "query": "VectorAlgebra",
       "category": "exact_name",
       "expected_fqn": [
-        "vector_algebra::VectorAlgebra"
+        "dsp::linalg::VectorAlgebra"
       ],
       "top_fqns": [
-        "vector_algebra::CholeskyResult",
-        "vector_algebra::CholeskyResult::~CholeskyResult",
-        "vector_algebra::CholeskyResult::~CholeskyResult",
-        "vector_algebra::CholeskyResult::CholeskyResult",
-        "vector_algebra::CholeskyResult::CholeskyResult"
+        "dsp::linalg::CholeskyResult",
+        "dsp::linalg::CholeskyResult::~CholeskyResult",
+        "dsp::linalg::CholeskyResult::~CholeskyResult",
+        "dsp::linalg::CholeskyResult::CholeskyResult",
+        "dsp::linalg::CholeskyResult::CholeskyResult"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -584,16 +584,16 @@
       "query": "rocBLAS rocSOLVER линейная алгебра GPU",
       "category": "semantic_ru",
       "expected_fqn": [
-        "vector_algebra::VectorAlgebra",
-        "capon::CaponProcessor",
-        "capon::CholeskyInverter"
+        "dsp::linalg::VectorAlgebra",
+        "dsp::linalg::CaponProcessor",
+        "dsp::linalg::CholeskyInverter"
       ],
       "top_fqns": [
-        "vector_algebra::MatrixOpsROCm",
-        "vector_algebra::DiagonalLoadRegularizer::~DiagonalLoadRegularizer",
-        "vector_algebra::MatrixOpsROCm",
-        "vector_algebra::DiagonalLoadRegularizer::DiagonalLoadRegularizer",
-        "vector_algebra::DiagonalLoadRegularizer::DiagonalLoadRegularizer"
+        "dsp::linalg::MatrixOpsROCm",
+        "dsp::linalg::DiagonalLoadRegularizer::~DiagonalLoadRegularizer",
+        "dsp::linalg::MatrixOpsROCm",
+        "dsp::linalg::DiagonalLoadRegularizer::DiagonalLoadRegularizer",
+        "dsp::linalg::DiagonalLoadRegularizer::DiagonalLoadRegularizer"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -751,7 +751,7 @@
         "drv_gpu_lib::ServiceManager"
       ],
       "top_fqns": [
-        "vector_algebra::MatrixOpsROCm",
+        "dsp::linalg::MatrixOpsROCm",
         "dsp::signal_generators::LfmGeneratorAnalyticalDelayROCm::SetDelays",
         "PyLfmAnalyticalDelay::set_delays",
         "PyFMCorrelatorROCm::generate_msequence",

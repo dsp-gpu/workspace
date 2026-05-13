@@ -479,14 +479,14 @@
       "query": "CaponProcessor",
       "category": "exact_name",
       "expected_fqn": [
-        "capon::CaponProcessor"
+        "dsp::linalg::CaponProcessor"
       ],
       "top_fqns": [
-        "capon::CaponProcessor::CaponProcessor",
-        "capon::CaponProcessor::~CaponProcessor",
-        "capon::CaponProcessor::CaponProcessor",
-        "capon::CaponProcessor::CaponProcessor",
-        "capon::CaponProcessor::CaponProcessor"
+        "dsp::linalg::CaponProcessor::CaponProcessor",
+        "dsp::linalg::CaponProcessor::~CaponProcessor",
+        "dsp::linalg::CaponProcessor::CaponProcessor",
+        "dsp::linalg::CaponProcessor::CaponProcessor",
+        "dsp::linalg::CaponProcessor::CaponProcessor"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -499,14 +499,14 @@
       "query": "Capon adaptive beamforming",
       "category": "semantic_en",
       "expected_fqn": [
-        "capon::CaponProcessor"
+        "dsp::linalg::CaponProcessor"
       ],
       "top_fqns": [
-        "capon::AdaptBeamformOp",
+        "dsp::linalg::AdaptBeamformOp",
         "PyCaponProcessor::adaptive_beamform",
         "PyCaponProcessor::adaptive_beamform_gpu",
         "t_capon.capon_beamform_ref",
-        "capon::CaponProcessor::AdaptiveBeamform"
+        "dsp::linalg::CaponProcessor::AdaptiveBeamform"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -519,14 +519,14 @@
       "query": "VectorAlgebra",
       "category": "exact_name",
       "expected_fqn": [
-        "vector_algebra::VectorAlgebra"
+        "dsp::linalg::VectorAlgebra"
       ],
       "top_fqns": [
-        "vector_algebra::MatrixOpsROCm",
-        "vector_algebra::MatrixOpsROCm",
+        "dsp::linalg::MatrixOpsROCm",
+        "dsp::linalg::MatrixOpsROCm",
         "vector_algebra_all_test::run",
-        "vector_algebra::CheckStatus",
-        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm"
+        "dsp::linalg::CheckStatus",
+        "dsp::linalg::MatrixOpsROCm::MatrixOpsROCm"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -539,9 +539,9 @@
       "query": "rocBLAS rocSOLVER линейная алгебра GPU",
       "category": "semantic_ru",
       "expected_fqn": [
-        "vector_algebra::VectorAlgebra",
-        "capon::CaponProcessor",
-        "capon::CholeskyInverter"
+        "dsp::linalg::VectorAlgebra",
+        "dsp::linalg::CaponProcessor",
+        "dsp::linalg::CholeskyInverter"
       ],
       "top_fqns": [],
       "recall_1": 0.0,
@@ -774,8 +774,8 @@
         "drv_gpu_lib::KernelCacheService"
       ],
       "top_fqns": [
-        "vector_algebra::CholeskyInverterROCm::CompileKernels",
-        "capon::CaponInvertOp::CompileKernels",
+        "dsp::linalg::CholeskyInverterROCm::CompileKernels",
+        "dsp::linalg::CaponInvertOp::CompileKernels",
         "test_kernel_cache_service::run",
         "drv_gpu_lib::CompileCopyKernels"
       ],
@@ -848,7 +848,7 @@
       ],
       "top_fqns": [
         "drv_gpu_lib::GpuKernelOp",
-        "capon::CaponInvertOp",
+        "dsp::linalg::CaponInvertOp",
         "drv_gpu_lib::GpuCopyKernels",
         "drv_gpu_lib::GpuKernelOp::~GpuKernelOp",
         "drv_gpu_lib::GpuKernelOp::kernel"

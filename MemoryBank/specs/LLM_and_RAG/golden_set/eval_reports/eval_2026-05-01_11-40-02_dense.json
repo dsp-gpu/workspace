@@ -524,14 +524,14 @@
       "query": "CaponProcessor",
       "category": "exact_name",
       "expected_fqn": [
-        "capon::CaponProcessor"
+        "dsp::linalg::CaponProcessor"
       ],
       "top_fqns": [
-        "capon::CaponProcessor::AdaptiveBeamform",
-        "capon::CaponProcessor::AdaptiveBeamform",
-        "capon::CaponProcessor::ReadBeamResult",
-        "capon::CaponProcessor::~CaponProcessor",
-        "capon::CaponProcessor::AdaptiveBeamform"
+        "dsp::linalg::CaponProcessor::AdaptiveBeamform",
+        "dsp::linalg::CaponProcessor::AdaptiveBeamform",
+        "dsp::linalg::CaponProcessor::ReadBeamResult",
+        "dsp::linalg::CaponProcessor::~CaponProcessor",
+        "dsp::linalg::CaponProcessor::AdaptiveBeamform"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -544,12 +544,12 @@
       "query": "Capon adaptive beamforming",
       "category": "semantic_en",
       "expected_fqn": [
-        "capon::CaponProcessor"
+        "dsp::linalg::CaponProcessor"
       ],
       "top_fqns": [
-        "capon::AdaptBeamformOp",
+        "dsp::linalg::AdaptBeamformOp",
         "t_capon.capon_beamform_ref",
-        "capon::CaponProcessor::AdaptiveBeamform",
+        "dsp::linalg::CaponProcessor::AdaptiveBeamform",
         "PyCaponProcessor::adaptive_beamform",
         "PyCaponProcessor::adaptive_beamform_gpu"
       ],
@@ -564,14 +564,14 @@
       "query": "VectorAlgebra",
       "category": "exact_name",
       "expected_fqn": [
-        "vector_algebra::VectorAlgebra"
+        "dsp::linalg::VectorAlgebra"
       ],
       "top_fqns": [
-        "vector_algebra::CholeskyResult",
-        "vector_algebra::MatrixOpsROCm::Multiply",
-        "vector_algebra::CholeskyResult::~CholeskyResult",
-        "vector_algebra::CholeskyResult::~CholeskyResult",
-        "vector_algebra::SymmetrizeMode"
+        "dsp::linalg::CholeskyResult",
+        "dsp::linalg::MatrixOpsROCm::Multiply",
+        "dsp::linalg::CholeskyResult::~CholeskyResult",
+        "dsp::linalg::CholeskyResult::~CholeskyResult",
+        "dsp::linalg::SymmetrizeMode"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -584,16 +584,16 @@
       "query": "rocBLAS rocSOLVER линейная алгебра GPU",
       "category": "semantic_ru",
       "expected_fqn": [
-        "vector_algebra::VectorAlgebra",
-        "capon::CaponProcessor",
-        "capon::CholeskyInverter"
+        "dsp::linalg::VectorAlgebra",
+        "dsp::linalg::CaponProcessor",
+        "dsp::linalg::CholeskyInverter"
       ],
       "top_fqns": [
-        "vector_algebra::DiagonalLoadRegularizer::DiagonalLoadRegularizer",
-        "vector_algebra::MatrixOpsROCm::CGEMM",
-        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm",
-        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm",
-        "vector_algebra::DiagonalLoadRegularizer::~DiagonalLoadRegularizer"
+        "dsp::linalg::DiagonalLoadRegularizer::DiagonalLoadRegularizer",
+        "dsp::linalg::MatrixOpsROCm::CGEMM",
+        "dsp::linalg::MatrixOpsROCm::MatrixOpsROCm",
+        "dsp::linalg::MatrixOpsROCm::MatrixOpsROCm",
+        "dsp::linalg::DiagonalLoadRegularizer::~DiagonalLoadRegularizer"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -753,9 +753,9 @@
       "top_fqns": [
         "llm_parser.OllamaParser.__init__",
         "PyDelayedFormSignalGeneratorROCm::load_matrix",
-        "vector_algebra::MatrixOpsROCm::CovarianceMatrix",
-        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm",
-        "vector_algebra::MatrixOpsROCm::CovarianceMatrix"
+        "dsp::linalg::MatrixOpsROCm::CovarianceMatrix",
+        "dsp::linalg::MatrixOpsROCm::MatrixOpsROCm",
+        "dsp::linalg::MatrixOpsROCm::CovarianceMatrix"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,

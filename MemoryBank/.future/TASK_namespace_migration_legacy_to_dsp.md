@@ -1,7 +1,7 @@
 # TASK: Миграция legacy namespace → `dsp::<repo>::*`
 
 **Создано**: 2026-05-03
-**Статус**: 🟡 IN_PROGRESS — **spectrum + stats + strategies + signal_generators (4/7) выполнены** на Windows 2026-05-12 (все запушены)
+**Статус**: 🟡 IN_PROGRESS — **spectrum + stats + strategies + signal_generators + linalg (5/7) выполнены** на Windows 2026-05-12 (все запушены)
 **Триггер реактивации**: ~~после стабилизации `doxytags`-агента + первого обучения локальной AI~~ — Alex решил начать с spectrum-пилота 12.05 на Windows (Phase B QLoRA ещё не сделана, идём в параллель).
 **План**: `MemoryBank/specs/namespace_migration_spectrum_plan_2026-05-12.md`
 
@@ -18,6 +18,14 @@
 | `stats PhaseB` | structural cleanup + cross-repo refs fix (fft_processor::X → dsp::spectrum::X в snr_estimator_op + statistics_types + tests) + CMake target_sources + python/CMake | 8 файлов |
 
 **Особенность stats**: модуль зависит от spectrum через `dsp::spectrum::FFTProcessorROCm`, `dsp::spectrum::WindowType`, `dsp::spectrum::MagPhaseParams`. После миграции spectrum stats ссылается на новые namespace — обновлено в PhaseB.
+
+### linalg (выполнен после signal_generators, 5/7)
+
+| Коммит | Что | Статистика |
+|--------|-----|------------|
+| `linalg Phase1+2` | namespace vector_algebra + capon + matrix_ops → dsp::linalg + cross-repo refs + git mv include/linalg → include/dsp/linalg + 25 #include rewrites | 25 файлов |
+| `linalg Phase3` | Doc + .rag content + test_params rename (capon_CaponProcessor.md → dsp_linalg_CaponProcessor.md) | 19 файлов |
+| `linalg PhaseB + CMake` | OpenCL .cl + manifest удалены, src/{capon,vector_algebra}/src/*.cpp → src/{capon,vector_algebra}/*.cpp (5), CMake target_sources обновлены | 8+1 файлов |
 
 ### signal_generators (выполнен после strategies)
 

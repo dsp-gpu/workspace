@@ -524,14 +524,14 @@
       "query": "CaponProcessor",
       "category": "exact_name",
       "expected_fqn": [
-        "capon::CaponProcessor"
+        "dsp::linalg::CaponProcessor"
       ],
       "top_fqns": [
-        "capon::CaponProcessor::~CaponProcessor",
-        "capon::CaponProcessor",
-        "capon::CaponProcessor::CaponProcessor",
-        "capon::CaponProcessor::CaponProcessor",
-        "capon::CaponProcessor::CaponProcessor"
+        "dsp::linalg::CaponProcessor::~CaponProcessor",
+        "dsp::linalg::CaponProcessor",
+        "dsp::linalg::CaponProcessor::CaponProcessor",
+        "dsp::linalg::CaponProcessor::CaponProcessor",
+        "dsp::linalg::CaponProcessor::CaponProcessor"
       ],
       "recall_1": 0.0,
       "recall_5": 1.0,
@@ -544,14 +544,14 @@
       "query": "Capon adaptive beamforming",
       "category": "semantic_en",
       "expected_fqn": [
-        "capon::CaponProcessor"
+        "dsp::linalg::CaponProcessor"
       ],
       "top_fqns": [
-        "capon::AdaptBeamformOp",
+        "dsp::linalg::AdaptBeamformOp",
         "PyCaponProcessor::adaptive_beamform",
         "t_capon.capon_beamform_ref",
         "PyCaponProcessor::adaptive_beamform_gpu",
-        "capon::CaponProcessor::AdaptiveBeamform"
+        "dsp::linalg::CaponProcessor::AdaptiveBeamform"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -564,14 +564,14 @@
       "query": "VectorAlgebra",
       "category": "exact_name",
       "expected_fqn": [
-        "vector_algebra::VectorAlgebra"
+        "dsp::linalg::VectorAlgebra"
       ],
       "top_fqns": [
-        "vector_algebra::CholeskyResult",
-        "vector_algebra::MatrixOpsROCm",
-        "vector_algebra::SymmetrizeMode",
-        "vector_algebra::CholeskyResult::~CholeskyResult",
-        "vector_algebra::CholeskyResult::~CholeskyResult"
+        "dsp::linalg::CholeskyResult",
+        "dsp::linalg::MatrixOpsROCm",
+        "dsp::linalg::SymmetrizeMode",
+        "dsp::linalg::CholeskyResult::~CholeskyResult",
+        "dsp::linalg::CholeskyResult::~CholeskyResult"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -584,16 +584,16 @@
       "query": "rocBLAS rocSOLVER линейная алгебра GPU",
       "category": "semantic_ru",
       "expected_fqn": [
-        "vector_algebra::VectorAlgebra",
-        "capon::CaponProcessor",
-        "capon::CholeskyInverter"
+        "dsp::linalg::VectorAlgebra",
+        "dsp::linalg::CaponProcessor",
+        "dsp::linalg::CholeskyInverter"
       ],
       "top_fqns": [
-        "vector_algebra::DiagonalLoadRegularizer::DiagonalLoadRegularizer",
-        "vector_algebra::MatrixOpsROCm::CGEMM",
-        "vector_algebra::MatrixOpsROCm",
-        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm",
-        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm"
+        "dsp::linalg::DiagonalLoadRegularizer::DiagonalLoadRegularizer",
+        "dsp::linalg::MatrixOpsROCm::CGEMM",
+        "dsp::linalg::MatrixOpsROCm",
+        "dsp::linalg::MatrixOpsROCm::MatrixOpsROCm",
+        "dsp::linalg::MatrixOpsROCm::MatrixOpsROCm"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -753,9 +753,9 @@
       "top_fqns": [
         "llm_parser.OllamaParser.__init__",
         "PyDelayedFormSignalGeneratorROCm::load_matrix",
-        "vector_algebra::MatrixOpsROCm::CovarianceMatrix",
-        "vector_algebra::MatrixOpsROCm::MatrixOpsROCm",
-        "vector_algebra::MatrixOpsROCm::CovarianceMatrix"
+        "dsp::linalg::MatrixOpsROCm::CovarianceMatrix",
+        "dsp::linalg::MatrixOpsROCm::MatrixOpsROCm",
+        "dsp::linalg::MatrixOpsROCm::CovarianceMatrix"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -832,8 +832,8 @@
       ],
       "top_fqns": [
         "drv_gpu_lib::CompileCopyKernels",
-        "capon::CaponInvertOp::CompileKernels",
-        "vector_algebra::CholeskyInverterROCm::CompileKernels",
+        "dsp::linalg::CaponInvertOp::CompileKernels",
+        "dsp::linalg::CholeskyInverterROCm::CompileKernels",
         "test_kernel_cache_service::run",
         "antenna_fft::AllMaximaPipelineROCm::CompileKernels"
       ],
