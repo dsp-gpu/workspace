@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "dsp-asst": {
-      "command": "cmd",
-      "args": ["/c", "C:\\finetune-env\\.venv\\Scripts\\dsp-asst.exe", "mcp"]
-    }
-  }
-}

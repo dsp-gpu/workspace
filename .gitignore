@@ -22,6 +22,15 @@ api_keys.json
 .claude/worktrees/
 .claude/claude-code-chat-images/
 
+# ── MCP server registrations — машинно-зависимые пути!
+#     На Windows: cmd /c C:\finetune-env\.venv\Scripts\dsp-asst.exe
+#     На Debian:  /home/alex/finetune-env/.venv/bin/dsp-asst
+#     Не переносить через GitHub. Регистрировать локально командой:
+#         claude mcp add dsp-asst -s user -e DSP_ASST_SERVER_URL=... \
+#             -- <path-to-dsp-asst-binary> --stage 1_home mcp
+.mcp.json
+.claude/settings.json.bak-*
+
 # ── Системное ────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db

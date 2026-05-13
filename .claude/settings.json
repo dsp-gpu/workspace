@@ -252,19 +252,5 @@
       "/home/alex/.config/systemd/user",
       "/home/alex/finetune-env"
     ]
-  },
-  "mcpServers": {
-    "dsp-asst": {
-      "command": "/home/alex/finetune-env/.venv/bin/dsp-asst",
-      "args": [
-        "--stage",
-        "1_home",
-        "mcp"
-      ],
-      "env": {
-        "DSP_ASST_SERVER_URL": "http://127.0.0.1:7821",
-        "DSP_ASST_PG_PASSWORD": "1"
-      }
-    }
   }
 }
