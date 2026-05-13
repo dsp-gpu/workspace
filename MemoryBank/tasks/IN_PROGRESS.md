@@ -1,6 +1,21 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-13 (Continue embed + ROCm devkit + Namespace acceptance + P1 — 4 крупных задачи закрыто)
+**Обновлено**: 2026-05-13 вечер (RAG bringup на Debian + RX 9070 ✅ + 19,961 row в БД + 5 systemd сервисов autostart)
+
+---
+
+## 🆕 2026-05-13 вечер — RAG Stack Bringup на Debian
+
+Подняли полный RAG стек с нуля. **19,961 row в `rag_dsp.*`** (5396 BGE-M3 embeddings + 2591 doc_blocks + 900 test_params + ...).
+Все 5 сервисов с autostart через systemd + linger=yes (PG/Qdrant/Ollama/embed/dsp-asst).
+
+**Документы:**
+- `specs_Linux_Radion_9070/rag_stack_cheatsheet_2026-05-13.md` — команды управления стеком
+- `specs_Linux_Radion_9070/rag_stack_boot_architecture_2026-05-13.md` — boot architecture + troubleshooting
+- **`TASK_RAG_remaining_work_2026-05-13.md`** — что осталось доделать (план на завтра+)
+
+**MCP в Claude Code:** `/home/alex/DSP-GPU/.claude/settings.json` (mcpServers.dsp-asst → `http://127.0.0.1:7821` stdio).
+**Patches в finetune-env:** cli/main.py (5×`--root`), embedder.py (env+auto-cuda), ingest_test_tags.py (env), новые `migrate_pgvector_to_qdrant.py` + `re_ingest_all.sh`.
 
 ---
 

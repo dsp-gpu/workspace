@@ -214,7 +214,11 @@
       "Bash(pkill -f \"ollama pull bge-m3\")",
       "Bash(mkdir -p ~/.continue && python3 -m venv ~/.continue/.venv && ls ~/.continue/.venv/bin/ 2>&1 | head -10)",
       "Bash(~/.continue/.venv/bin/pip install *)",
-      "Bash(chmod +x ~/.continue/embed_server.py)"
+      "Bash(chmod +x ~/.continue/embed_server.py)",
+      "Bash(curl -s http://127.0.0.1:8765/health)",
+      "Bash(curl -s -m 3 http://localhost:11434/api/tags)",
+      "Bash(curl -s -m 3 http://10.10.4.105:11434/api/tags)",
+      "Bash(curl -s http://127.0.0.1:7821/health)"
     ],
     "additionalDirectories": [
       "/home/alex/.continue"

@@ -232,19 +232,7 @@
       "Bash(~/.local/bin/uv pip *)",
       "Bash(unzip -p /home/alex/offline-debian-pack/3_python_wheels/torch-rocm/torch-2.11.0+rocm7.2-cp312-cp312-manylinux_2_28_x86_64.whl \"torch-*.dist-info/METADATA\")",
       "Bash(PGPASSWORD=1 psql -h localhost -U dsp_asst -d gpu_rag_dsp -c ' *)",
-      "Bash(chmod +x /home/alex/finetune-env/re_ingest_all.sh)",
-      "Bash(systemctl is-enabled *)",
-      "Bash(systemctl is-active *)",
-      "Bash(systemctl --user is-enabled embed.service)",
-      "Bash(systemctl --user is-active embed.service)",
-      "Bash(systemctl --user is-enabled dsp-asst.service)",
-      "Bash(systemctl --user is-active dsp-asst.service)",
-      "Bash(loginctl show-user *)",
-      "Read(//var/lib/systemd/linger/**)",
-      "Bash(sudo -n loginctl enable-linger alex)",
-      "Bash(echo \"exit: $?\")",
-      "Bash(systemctl --user list-unit-files --state=enabled --type=service)",
-      "Bash(systemctl show *)"
+      "Bash(chmod +x /home/alex/finetune-env/re_ingest_all.sh)"
     ],
     "additionalDirectories": [
       "/tmp",
@@ -252,19 +240,5 @@
       "/home/alex/.config/systemd/user",
       "/home/alex/finetune-env"
     ]
-  },
-  "mcpServers": {
-    "dsp-asst": {
-      "command": "/home/alex/finetune-env/.venv/bin/dsp-asst",
-      "args": [
-        "--stage",
-        "1_home",
-        "mcp"
-      ],
-      "env": {
-        "DSP_ASST_SERVER_URL": "http://127.0.0.1:7821",
-        "DSP_ASST_PG_PASSWORD": "1"
-      }
-    }
   }
 }
