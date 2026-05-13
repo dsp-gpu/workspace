@@ -485,13 +485,13 @@
       "query": "HeterodyneDechirp",
       "category": "exact_name",
       "expected_fqn": [
-        "drv_gpu_lib::HeterodyneDechirp"
+        "dsp::heterodyne::HeterodyneDechirp"
       ],
       "top_fqns": [
-        "drv_gpu_lib::HeterodyneDechirp",
+        "dsp::heterodyne::HeterodyneDechirp",
         "PyHeterodyneDechirp",
         "t_heterodyne.TestHeterodyne",
-        "drv_gpu_lib::HeterodyneResult",
+        "dsp::heterodyne::HeterodyneResult",
         "factories.make_het_proc"
       ],
       "recall_1": 1.0,
@@ -505,15 +505,15 @@
       "query": "LFM dechirp NCO mix гетеродин",
       "category": "semantic_ru",
       "expected_fqn": [
-        "drv_gpu_lib::HeterodyneDechirp",
-        "drv_gpu_lib::HeterodyneProcessorROCm"
+        "dsp::heterodyne::HeterodyneDechirp",
+        "dsp::heterodyne::HeterodyneProcessorROCm"
       ],
       "top_fqns": [
-        "drv_gpu_lib::HeterodyneParams",
+        "dsp::heterodyne::HeterodyneParams",
         "signal_refs.SignalReferences.lfm_with_delay",
         "PyHeterodyneROCm::dechirp",
         "t_spectrum_find_all_maxima_rocm.test_spectrum_via_heterodyne_rocm",
-        "drv_gpu_lib::HeterodyneProcessorROCm::Dechirp"
+        "dsp::heterodyne::HeterodyneProcessorROCm::Dechirp"
       ],
       "recall_1": 0.0,
       "recall_5": 1.0,
@@ -628,14 +628,14 @@
       "query": "FMCorrelator",
       "category": "exact_name",
       "expected_fqn": [
-        "drv_gpu_lib::FMCorrelator"
+        "dsp::radar::FMCorrelator"
       ],
       "top_fqns": [
         "t_fm_correlator_rocm.TestFMCorrelatorROCm",
-        "drv_gpu_lib::FMCorrelatorProcessorROCm",
-        "drv_gpu_lib::FMCorrelatorProcessorROCm",
-        "drv_gpu_lib::FMCorrelator",
-        "drv_gpu_lib::FMCorrelatorResult"
+        "dsp::radar::FMCorrelatorProcessorROCm",
+        "dsp::radar::FMCorrelatorProcessorROCm",
+        "dsp::radar::FMCorrelator",
+        "dsp::radar::FMCorrelatorResult"
       ],
       "recall_1": 0.0,
       "recall_5": 1.0,

@@ -1,7 +1,7 @@
 # TASK: Миграция legacy namespace → `dsp::<repo>::*`
 
 **Создано**: 2026-05-03
-**Статус**: 🟡 IN_PROGRESS — **6/7 выполнены**: spectrum + stats + strategies + signal_generators + linalg + radar(range_angle). Осталось: **heterodyne** + **radar/fm_correlator** (оба используют `drv_gpu_lib::*` overlap с core — отдельный таск).
+**Статус**: 🟢 **DONE 7/7** на Windows 2026-05-12. Все namespace мигрированы, все коммиты запушены. ⏳ Ждёт сборки на Debian.
 **Триггер реактивации**: ~~после стабилизации `doxytags`-агента + первого обучения локальной AI~~ — Alex решил начать с spectrum-пилота 12.05 на Windows (Phase B QLoRA ещё не сделана, идём в параллель).
 **План**: `MemoryBank/specs/namespace_migration_spectrum_plan_2026-05-12.md`
 
@@ -19,7 +19,26 @@
 
 **Особенность stats**: модуль зависит от spectrum через `dsp::spectrum::FFTProcessorROCm`, `dsp::spectrum::WindowType`, `dsp::spectrum::MagPhaseParams`. После миграции spectrum stats ссылается на новые namespace — обновлено в PhaseB.
 
-### radar (выполнен после linalg, 6/7) — частично
+### heterodyne (7/7) + radar/fm_correlator (часть radar 6/7)
+
+Особый случай — модули использовали `namespace drv_gpu_lib { class X ... }` (legacy carry-over из GPUWorkLib).
+
+**Подход**: `namespace drv_gpu_lib {` → `namespace dsp::heterodyne {` (или `dsp::radar` для fm_correlator) + добавлен `using namespace ::drv_gpu_lib;` сразу после открывающей скобки. Это позволяет:
+- Классы модуля теперь живут в `dsp::heterodyne::*` (или `dsp::radar::*`)
+- Внутри методов обращения к core (`IBackend*`, `GpuContext`, `DrvGPU`, `Logger`, etc.) продолжают резолвиться через `using` (импортированы из `::drv_gpu_lib`)
+
+**heterodyne**:
+- 7 файлов в include/dsp/heterodyne/ + src/heterodyne/ (Phase 1+2)
+- Doc/ + .rag/ + test_params (drv_gpu_lib_HeterodyneProcessorROCm.md → dsp_heterodyne_HeterodyneProcessorROCm.md)
+- kernels/Heterodyne_kernels.cl + manifest.json удалены (OpenCL legacy)
+- src/heterodyne/src/ → src/heterodyne/
+
+**radar/fm_correlator** (доделано к ранее мигрированному range_angle):
+- 4 .hpp + 2 .cpp + 6 test_fm_*.hpp + py_fm_correlator_rocm.hpp = 13 файлов
+- Doc/ + .rag/fm_*.md обновлены
+- test_params drv_gpu_lib_FMCorrelatorProcessorROCm.md → dsp_radar_FMCorrelatorProcessorROCm.md
+
+### radar (выполнен после linalg, 6/7) — range_angle
 
 | Коммит | Что | Статистика |
 |--------|-----|------------|

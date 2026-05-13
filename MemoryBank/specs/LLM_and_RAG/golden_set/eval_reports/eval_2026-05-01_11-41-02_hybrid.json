@@ -488,9 +488,9 @@
       "top_fqns": [
         "PyHeterodyneDechirp",
         "configs.HeterodyneConfig",
-        "drv_gpu_lib::HeterodyneDechirp",
-        "drv_gpu_lib::HeterodyneDechirp::HeterodyneDechirp",
-        "drv_gpu_lib::HeterodyneDechirp::Process"
+        "dsp::heterodyne::HeterodyneDechirp",
+        "dsp::heterodyne::HeterodyneDechirp::HeterodyneDechirp",
+        "dsp::heterodyne::HeterodyneDechirp::Process"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
@@ -507,9 +507,9 @@
         "heterodyne::HeterodyneROCm"
       ],
       "top_fqns": [
-        "drv_gpu_lib::HeterodyneProcessorROCm::Dechirp",
+        "dsp::heterodyne::HeterodyneProcessorROCm::Dechirp",
         "heterodyne_base.HeterodyneTestBase.dechirp_numpy",
-        "drv_gpu_lib::HeterodyneProcessorROCm::Dechirp",
+        "dsp::heterodyne::HeterodyneProcessorROCm::Dechirp",
         "PyHeterodyneROCm::dechirp",
         "signal_refs.SignalReferences.dechirp"
       ],
@@ -629,11 +629,11 @@
         "fm_correlator::FMCorrelator"
       ],
       "top_fqns": [
-        "drv_gpu_lib::FMCorrelator",
-        "drv_gpu_lib::FMCorrelator::Process",
-        "drv_gpu_lib::FMCorrelator::FMCorrelator",
-        "drv_gpu_lib::FMCorrelator::FMCorrelator",
-        "drv_gpu_lib::FMCorrelator::ProcessWithBatching"
+        "dsp::radar::FMCorrelator",
+        "dsp::radar::FMCorrelator::Process",
+        "dsp::radar::FMCorrelator::FMCorrelator",
+        "dsp::radar::FMCorrelator::FMCorrelator",
+        "dsp::radar::FMCorrelator::ProcessWithBatching"
       ],
       "recall_1": 0.0,
       "recall_5": 0.0,
