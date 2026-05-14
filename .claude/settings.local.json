@@ -250,7 +250,19 @@
       "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"\\\\d rag_dsp.cmake_targets\")",
       "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"SELECT * FROM rag_dsp.cmake_targets LIMIT 3;\")",
       "Bash(sudo -u postgres psql -d gpu_rag_dsp -c ' *)",
-      "Bash(ollama list *)"
+      "Bash(ollama list *)",
+      "Bash(ctest --output-on-failure --timeout 120)",
+      "Bash(timeout 120 ./test_spectrum_main)",
+      "Bash(timeout 240 ./test_spectrum_main)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(timeout 600 ./test_stats_main)",
+      "Bash(timeout 900 ./test_stats_main)",
+      "Bash(timeout 300 ./test_heterodyne_main)",
+      "Bash(timeout 300 ./test_signal_generators_main)",
+      "Bash(timeout 600 ./test_radar_main)",
+      "Bash(timeout 600 ./test_strategies_main)",
+      "Bash(timeout 300 ./test_core_main)",
+      "Bash(file /home/alex/DSP-GPU/DSP/Python/spectrum/ai_pipeline/modules/*)"
     ],
     "additionalDirectories": [
       "/home/alex/.continue"
