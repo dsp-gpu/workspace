@@ -249,7 +249,8 @@
       "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"SELECT f.path AS from_file, i.included_path, i.is_system FROM rag_dsp.includes i JOIN rag_dsp.files f ON f.id = i.file_id LIMIT 5;\")",
       "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"\\\\d rag_dsp.cmake_targets\")",
       "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"SELECT * FROM rag_dsp.cmake_targets LIMIT 3;\")",
-      "Bash(sudo -u postgres psql -d gpu_rag_dsp -c ' *)"
+      "Bash(sudo -u postgres psql -d gpu_rag_dsp -c ' *)",
+      "Bash(ollama list *)"
     ],
     "additionalDirectories": [
       "/home/alex/.continue"

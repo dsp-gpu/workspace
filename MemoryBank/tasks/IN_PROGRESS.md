@@ -11,6 +11,8 @@
 - **Phase 3** Выгрузка пар из RAG-БД через `collect_rag_v6.py`: **dataset_v6_train = 9159** (×2.5 к v4) + 1490 val, 12+ source-типов
 - **Phase 4** Smoke #3 на v6 (coder-7b): **eval @ step 50 = 1.345 vs v4 1.44** → v6 ОБЫГРАЛ v4 на Δ=−0.095 на 1310 samples (×18 надёжнее) → **гипотеза Phase 3 подтверждена**
 - **Phase 3 v2** Расширение `collect_rag_v6.py` (+7 builders: files+includes+cmake+CLAUDE.md+Doc+arch+specs; extended negatives 24→99) → **dataset_v6 final = 10204 train / 1660 val** (×2.06 к v4)
+- **Phase 6 dry-run** Inference compare FT (ckpt-50 v6) vs base coder-7b → FT 2.8/6 vs base 0/6 (Q1 Bridge ✅, Q2 RAII ✅)
+- **Phase 5/6 infra** Готовы 3 артефакта в `/home/alex/finetune-env/` (отдельный git репо): `post_train.sh` (bash post-train pipeline + auto-build llama.cpp), `run_with_resume.sh` (auto-resume wrapper для HIP-race), `train_simple.py --resume-from-checkpoint` патч, `Modelfile.template` repeat_penalty 1.20
 
 **Технические инсайты:**
 - `bnb 0.49.2` 4-bit kernel падает в `csrc/ops.hip:83` на gfx1201 при `max_seq=1024+adamw_8bit` → safe Plan-B `seq=256-512, lora_r=8, adamw_torch`

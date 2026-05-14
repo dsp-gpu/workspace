@@ -291,6 +291,74 @@ mv ~/Downloads/Qwen2.5-Coder-14B-Instruct \
 
 ---
 
+### 🎯 Inference Compare на checkpoint-50 v6 (early Phase 6 dry-run)
+
+После Smoke #3 у нас остался `checkpoint-50` (coder-7b × dataset_v6, 50 шагов = ~400 примеров обучения). Прогнали `inference_compare.py` на 6 контрольных вопросах:
+
+| # | Тема | Base coder-7b | FT (v6 ckpt-50) | Δ |
+|---|---|---|---|---|
+| Q1 HybridBackend | Bridge | «Adapter+Factory» ❌ | **«Bridge»** ✅✅ | **+1.0** |
+| Q2 ScopedHipEvent | RAII для hipEvent_t | общие слова ⚠️ | **«RAII-обёртка для hipEvent_t»** ✅✅ | **+1.0** |
+| Q3 FFTProcessor Python | `dsp_spectrum.FFT…ROCm` | `dspgpu.fft.…` ❌ | `pydspgpu.…` ❌ (ближе) | +0.3 |
+| Q4 IBackend impls | ROCm/OpenCL/Hybrid | «OpenCL/CUDA/HIP/SYCL» ❌ галлюц | «ROCm и CUDA» (частично) ⚠️ | +0.5 |
+| Q5 beam_count range | `[1, 50000]` | «любое > 0» (общо) | «1,2,4,8,…,2^31» ❌ выдумал степени 2 | −0.3 |
+| Q6 RochesterGPU? (anti-hall) | «нет такого» | «модуль OpenCL» ❌ | «репо ROCm с pytest» ❌ + 🚫 pytest | 0.0 |
+| **SCORE из 6** | | **0.0** | **2.8 / 6 (47%)** | **+2.8** ✅ |
+
+**Главные инсайты:**
+- ✅ FT уже **точно выучил** Q1 (Bridge) и Q2 (RAII) — это специфика DSP-GPU, которую base coder-7b НЕ знает в принципе.
+- ⚠️ Q3 (namespace) сдвинулся в правильное направление (`pydspgpu` ближе к `dsp_spectrum`), но ещё не точно.
+- ❌ Q5 и Q6 — fine-tune **переобучился на формат**: для test_params выдал список значений (но не те), для anti-hallucination ещё галлюцинирует.
+- **Прогноз Phase 5 (full ~2000 шагов на 14B Coder):** экстраполяция → **5/6 (83%+)**. Q5/Q6 требуют ×50 повторений negatives — это будет на ~1500+ шагах.
+
+Лог: `finetune-env/output/smoke_9070_coder7b_v6_2026-05-14/inference_compare.log`
+
+---
+
+### 🛡 Phase 6 infrastructure готова (2026-05-14 поздний обед)
+
+3 новых артефакта в `/home/alex/finetune-env/` готовы к Phase 5/6 (отдельный git репо `finetune-env`, не DSP-GPU workspace):
+
+#### 1. `post_train.sh` (~150 строк) — bash-аналог `post_train.ps1`
+End-to-end pipeline: merge_lora → HF→GGUF f16 → quantize Q4_K_M → Ollama deploy. Auto-clone+build llama.cpp при отсутствии. Skip уже сделанных шагов (идемпотентность).
+```bash
+./post_train.sh <checkpoint-dir> [<model-name>] [<base-model>] [<quant>]
+# например:
+./post_train.sh /home/alex/finetune-env/output/phase5_coder14b_2026-05-XX/checkpoint-best \
+    qwen-coder-14b-dsp-v6
+```
+Disk requirements (для 14B): merged ~28 GB + f16 ~28 GB + Q4_K_M ~8 GB = **~64 GB временно**, финал ~16 GB.
+
+#### 2. `run_with_resume.sh` (~110 строк) — auto-resume wrapper
+Без него Phase 5 (8-12 ч train на 14B Coder) **обречён** на HIP-race `is_nonzero/item illegal address` на ~50-120 шаге. Wrapper ловит non-zero exit, ищет последний `checkpoint-N`, перезапускает с `--resume-from-checkpoint`. До `--max-retries` (default 20).
+```bash
+./run_with_resume.sh --max-retries 20 \
+    --output-dir /home/alex/finetune-env/output/phase5_coder14b_2026-05-XX \
+    --model /home/alex/offline-debian-pack/1_models/Qwen2.5-Coder-14B-Instruct \
+    --dataset /home/alex/finetune-env/dataset_v6_train.jsonl \
+    --max-seq-len 1024 --epochs 3 --lora-r 16 --lora-alpha 32 \
+    --batch-size 1 --grad-accum 8 \
+    --eval-split 0.02 --eval-steps 20 --save-steps 20 \
+    --warmup-steps 30 --lr 2e-4 --seed 42 \
+    --bf16 --optim adamw_torch
+```
+Smoke на coder-7b × 30 шагов: PASS attempt=1 rc=0 OK, 3 checkpoints (10/20/30), eval_loss 2.00→1.95.
+
+#### 3. `train_simple.py` patch — флаг `--resume-from-checkpoint <path|auto>`
+Передаётся в `trainer.train(resume_from_checkpoint=)` — сохраняет optimizer/scheduler/step. `auto` = автопоиск последнего `checkpoint-N` в `--output-dir`.
+
+#### Также: `Modelfile.template` фикс
+`repeat_penalty 1.05 → 1.20` + добавлен `repeat_last_n 256` — лечит зацикливание FT моделей при низком разнообразии обучения.
+
+**Phase 5 commands** (когда приедут 14B модели):
+1. Скопировать модель в `/home/alex/offline-debian-pack/1_models/Qwen2.5-Coder-14B-Instruct/`
+2. Остановить ollama + dsp-asst перед train (`sudo systemctl stop ollama; systemctl --user stop dsp-asst.service`)
+3. Запустить `./run_with_resume.sh ...` (см. команду выше)
+4. После завершения: `./post_train.sh <output>/checkpoint-best qwen-coder-14b-dsp-v6`
+5. Inference compare: `python inference_compare.py --base ... --adapter ...`
+
+---
+
 ### 🧪 Phase 4 — Smoke #3 на dataset_v6 (coder-7b, в процессе)
 
 | Метрика | Day-1 (v4 1200) | Day-3 (v6 9159) |
