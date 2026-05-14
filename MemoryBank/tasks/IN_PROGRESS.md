@@ -10,6 +10,7 @@
 - **Phase 1** Smoke matrix: qwen3-8b eval **1.26** / coder-7b eval **1.18** → Coder выигрывает на 0.085
 - **Phase 3** Выгрузка пар из RAG-БД через `collect_rag_v6.py`: **dataset_v6_train = 9159** (×2.5 к v4) + 1490 val, 12+ source-типов
 - **Phase 4** Smoke #3 на v6 (coder-7b): **eval @ step 50 = 1.345 vs v4 1.44** → v6 ОБЫГРАЛ v4 на Δ=−0.095 на 1310 samples (×18 надёжнее) → **гипотеза Phase 3 подтверждена**
+- **Phase 3 v2** Расширение `collect_rag_v6.py` (+7 builders: files+includes+cmake+CLAUDE.md+Doc+arch+specs; extended negatives 24→99) → **dataset_v6 final = 10204 train / 1660 val** (×2.06 к v4)
 
 **Технические инсайты:**
 - `bnb 0.49.2` 4-bit kernel падает в `csrc/ops.hip:83` на gfx1201 при `max_seq=1024+adamw_8bit` → safe Plan-B `seq=256-512, lora_r=8, adamw_torch`

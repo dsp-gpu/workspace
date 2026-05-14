@@ -243,7 +243,13 @@
       "Bash(chmod +x /home/alex/finetune-env/run_smoke_9070_max.sh)",
       "Bash(ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no user@10.10.4.105 \"ls /home/user/ 2>/dev/null | head -5\")",
       "Bash(kill -TERM 1018102 1018100)",
-      "Bash(xargs -I{} sh -c 'echo \"$\\(wc -l < {}\\) {}\"')"
+      "Bash(xargs -I{} sh -c 'echo \"$\\(wc -l < {}\\) {}\"')",
+      "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"\\\\d rag_dsp.files\")",
+      "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"SELECT path,repo,language,size_bytes,line_count FROM rag_dsp.files WHERE repo IN \\('core','spectrum','stats','linalg','radar','heterodyne','signal_generators','strategies','DSP','workspace','common'\\) LIMIT 5;\")",
+      "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"SELECT f.path AS from_file, i.included_path, i.is_system FROM rag_dsp.includes i JOIN rag_dsp.files f ON f.id = i.file_id LIMIT 5;\")",
+      "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"\\\\d rag_dsp.cmake_targets\")",
+      "Bash(sudo -u postgres psql -d gpu_rag_dsp -c \"SELECT * FROM rag_dsp.cmake_targets LIMIT 3;\")",
+      "Bash(sudo -u postgres psql -d gpu_rag_dsp -c ' *)"
     ],
     "additionalDirectories": [
       "/home/alex/.continue"

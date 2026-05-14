@@ -250,6 +250,45 @@ mv ~/Downloads/Qwen2.5-Coder-14B-Instruct \
 
 **Target 12K не дожали** — пожертвовали качеством ради разнообразия. 9.2K с 12+ типами source > 12K синглетонов.
 
+### 🚀 Phase 3 v2 (расширение, 2026-05-14 после Smoke #3)
+
+Добавлены **7 новых builders** в `collect_rag_v6.py`:
+- БД: `build_file_pairs`, `build_include_pairs`, `build_cmake_pairs`
+- Filesystem: `build_claude_md_pairs` (10 CLAUDE.md), `build_doc_pairs` (~50 файлов Doc/*.md по секциям), `build_arch_pairs` (.architecture C4+Analysis), `build_specs_pairs` (.claude/specs 9 файлов)
+- Extended negatives: +33 fake (typo/legacy/wrong_ns) + 12 wrong_repo = **99 negatives** (vs 24 ранее)
+
+**Финальные цифры dataset_v6 v2:**
+
+| Стадия | Train | Val | Δ vs v1 |
+|---|---:|---:|---:|
+| Pool (raw) | 9609 | — | +1223 |
+| Dedup внутри | 7664 | — | (20% дубликатов) |
+| После merge v4 | 11864 | — | +1215 |
+| **Final train** | **10204** | **1660** | **+1045** |
+
+**Распределение source (top-7):**
+- v4_legacy: 35.3%
+- symbols (where/sig/what): 31.9%
+- test_params: 7.2%
+- doc_md секции (full/quick/api/patterns): 2.0%
+- include_graph: 1.8%
+- arch_C4 + spec_Ref03 + spec_ROCm: 0.9%
+- negative (anti-hallucination 33×3+12 wrong_repo): 0.7%
+
+**Sample качество** — резко выросло благодаря MD-builders:
+- `claude_md_repo` — каноничные правила repo с реальным content
+- `doc_section_full/quick/api/patterns` — выдержки из официальной документации DSP-GPU
+- `arch_DSP-GPU_Design_C4_Full` — C4 диаграммы и архитектурные ссылки
+- `spec_Ref03` — base of knowledge (6-layer model)
+- `negative_wrong_repo` — defensive (FFTProcessorROCm НЕ в stats, а в spectrum)
+
+**Файлы в `/home/alex/finetune-env/`:**
+- `dataset_v6_pool.jsonl` (9609 raw)
+- `dataset_v6_dedup.jsonl` (11864 после merge+dedup)
+- `dataset_v6_train.jsonl` (10204) ← **готов к Phase 5**
+- `dataset_v6_val.jsonl` (1660)
+- `dataset_v6_*.jsonl.bak_v1_*` — бэкап первой версии
+
 ---
 
 ### 🧪 Phase 4 — Smoke #3 на dataset_v6 (coder-7b, в процессе)
