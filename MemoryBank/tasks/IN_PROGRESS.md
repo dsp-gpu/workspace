@@ -1,10 +1,39 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-13 вечер (RAG bringup на Debian + RX 9070 ✅ + 19,961 row в БД + 5 systemd сервисов autostart)
+**Обновлено**: 2026-05-14 утро+обед (QLoRA Phase B Day-1 на RX 9070 + dataset_v6 ×2.5 → smoke #3 PASS)
 
 ---
 
-## 🆕 2026-05-13 вечер — RAG Stack Bringup на Debian
+## 🆕 2026-05-14 — QLoRA Phase B Day-1 на RX 9070
+
+Закрыто 3 фазы Phase B на работе (~4 часа):
+- **Phase 1** Smoke matrix: qwen3-8b eval **1.26** / coder-7b eval **1.18** → Coder выигрывает на 0.085
+- **Phase 3** Выгрузка пар из RAG-БД через `collect_rag_v6.py`: **dataset_v6_train = 9159** (×2.5 к v4) + 1490 val, 12+ source-типов
+- **Phase 4** Smoke #3 на v6 (coder-7b): **eval @ step 50 = 1.345 vs v4 1.44** → v6 ОБЫГРАЛ v4 на Δ=−0.095 на 1310 samples (×18 надёжнее) → **гипотеза Phase 3 подтверждена**
+
+**Технические инсайты:**
+- `bnb 0.49.2` 4-bit kernel падает в `csrc/ops.hip:83` на gfx1201 при `max_seq=1024+adamw_8bit` → safe Plan-B `seq=256-512, lora_r=8, adamw_torch`
+- HIP `is_nonzero/item` race в HF Trainer → `illegal address` на ~step 50-120 (фундаментальный ROCm 7.2 RDNA4 bug) → для Phase 5 нужен `--save-steps 20` + auto-resume
+- `expandable_segments` env молча игнорируется на ROCm 7.2 (warning «not supported»)
+- Все доп GPU-приложения (Telegram/браузер) во время train запрещены — GPU compositor race
+- Coder-7B > general-8B на DSP-GPU задачах → Phase 5 ставим **Qwen2.5-Coder-14B-Instruct**
+
+**Артефакты:**
+- `MemoryBank/prompts/prompt_for_sister_phase_b_2026-05-14.md` — переписан под нас (Debian + RX 9070), все 3 фазы + сравнительные таблицы
+- `MemoryBank/tasks/TASK_FINETUNE_phase_B_9070_2026-05-14.md` — DoD по 6 фазам
+- `MemoryBank/specs_Linux_Radion_9070/phase_b_models_analysis_2026-05-14.md` — VRAM budget + выбор моделей
+- `finetune-env/collect_rag_v6.py` — выгрузка RAG→JSONL (310 строк, sudo psql, переиспользуемая)
+- `finetune-env/dataset_v6_{pool,dedup,train,val}.jsonl` — Alpaca формат
+- `MemoryBank/sessions/2026-05-14.md` — полный summary дня
+
+**Не сделано / отложено:**
+- **Phase 2 (вечером дома):** скачать Qwen/Qwen2.5-Coder-14B-Instruct (~28 GB) + Qwen3-14B + Coder-7B-Instruct (~70 GB суммарно)
+- **Phase 5 (после привоза):** full Phase B на Coder-14B (8-12 ч ночью)
+- **Phase 6:** post_train.sh (bash-аналог post_train.ps1) + Ollama deploy + inference_compare Q1-Q6
+
+---
+
+## 2026-05-13 вечер — RAG Stack Bringup на Debian
 
 Подняли полный RAG стек с нуля. **19,961 row в `rag_dsp.*`** (5396 BGE-M3 embeddings + 2591 doc_blocks + 900 test_params + ...).
 Все 5 сервисов с autostart через systemd + linger=yes (PG/Qdrant/Ollama/embed/dsp-asst).
