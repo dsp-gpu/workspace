@@ -1,0 +1,502 @@
+{
+  "total_tests": 54,
+  "asserts": {
+    "P": 314,
+    "F": 1,
+    "S": 15
+  },
+  "by_status": {
+    "PASS": 49,
+    "FAIL": 1,
+    "IMPORT_FAIL": 1,
+    "SKIP_ALL": 3
+  },
+  "results": [
+    {
+      "status": "PASS",
+      "p": 9,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/common/io/t_smoke.py"
+    },
+    {
+      "status": "PASS",
+      "p": 6,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/common/plotting/t_smoke.py"
+    },
+    {
+      "status": "PASS",
+      "p": 4,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/common/references/t_references_smoke.py"
+    },
+    {
+      "status": "PASS",
+      "p": 14,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/common/validators/t_smoke.py"
+    },
+    {
+      "status": "PASS",
+      "p": 4,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/heterodyne/t_heterodyne.py"
+    },
+    {
+      "status": "FAIL",
+      "p": 0,
+      "f": 1,
+      "s": 0,
+      "rc": 0,
+      "tail": "  ────────────────────────────────────────────────────────────────────────────────────────\n  Ant |      f_true |  f_GPU err |  f_CPU err |    R_true | R_GPU err | R_CPU err\n  ────────────────────────────────────────────────────────────────────────────────────────\n    0 |      300000 |    66000.0 |      234.1 |  15000.00 |   3300.00 |     11.71\n    1 |      600000 |    66000.0 |      300.8 |  30000.00 |   3300.00 |     15.04\n    2 |      900000 |    66000.0 |      300.8 |  45000.00 |   3300.00 |     15.04\n    3 |     1200000 |    66000.0 |      234.1 |  60000.00 |   3300.00 |     11.71\n    4 |     1500000 |    66000.0 |        0.0 |  75000.00 |   3300.00 |      0.00\n\nReport saved: /home/alex/DSP-GPU/DSP/Python/heterodyne/../../Results/JSON/heterodyne_comparison_report.md\nPlot saved: /home/alex/DSP-GPU/DSP/Python/heterodyne/../../Results/Plots/heterodyne/comparison_gpu_vs_cpu.png\n\n======================================================================\nVERDICT: FAILED (max df=66300.8 Гц, tolerance=5000 Гц)\n======================================================================",
+      "test": "DSP/Python/heterodyne/t_heterodyne_comparison.py"
+    },
+    {
+      "status": "PASS",
+      "p": 6,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/heterodyne/t_heterodyne_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/heterodyne/t_heterodyne_step_by_step.py"
+    },
+    {
+      "status": "PASS",
+      "p": 8,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/integration/t_fft_integration.py"
+    },
+    {
+      "status": "PASS",
+      "p": 8,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/integration/t_hybrid_backend.py"
+    },
+    {
+      "status": "PASS",
+      "p": 5,
+      "f": 0,
+      "s": 2,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/integration/t_signal_gen_integration.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/integration/t_signal_to_spectrum.py"
+    },
+    {
+      "status": "PASS",
+      "p": 7,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/integration/t_zero_copy.py"
+    },
+    {
+      "status": "PASS",
+      "p": 8,
+      "f": 0,
+      "s": 6,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/linalg/t_capon.py"
+    },
+    {
+      "status": "PASS",
+      "p": 6,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/linalg/t_cholesky_inverter_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 3,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/linalg/t_matrix_csv_comparison.py"
+    },
+    {
+      "status": "PASS",
+      "p": 8,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/radar/t_fm_correlator.py"
+    },
+    {
+      "status": "PASS",
+      "p": 4,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/radar/t_fm_correlator_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 7,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/radar/t_range_angle.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/signal_generators/t_delayed_form_signal.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/signal_generators/t_form_signal.py"
+    },
+    {
+      "status": "PASS",
+      "p": 15,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/signal_generators/t_form_signal_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/signal_generators/t_lfm_analytical_delay.py"
+    },
+    {
+      "status": "PASS",
+      "p": 19,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/ai_pipeline/t_ai_pipeline.py"
+    },
+    {
+      "status": "IMPORT_FAIL",
+      "p": 0,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 897, in <module>\n    r = demo_fn()\n  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 863, in demo_russian_request\n    return run_ai_pipeline(\n        filter_request=\"Фильтр Баттерворта нижних частот, частота среза 2000 Hz, \"\n    ...<4 lines>...\n        plot_filename=\"ai_russian_request.png\"\n    )\n  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 756, in run_ai_pipeline\n    params = parse_filter_request(filter_request, fs)\n  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 287, in parse_filter_request\n    raw = ai_ask(prompt, system=SYSTEM_PROMPT)\n  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 134, in ai_ask\n    raise RuntimeError(\"pip install groq\")\nRuntimeError: pip install groq",
+      "test": "DSP/Python/spectrum/t_ai_filter_pipeline.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_ai_fir_demo.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_filters_stage1.py"
+    },
+    {
+      "status": "PASS",
+      "p": 5,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_fir_filter_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 5,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_iir_filter_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_iir_plot.py"
+    },
+    {
+      "status": "PASS",
+      "p": 7,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_kalman_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 8,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_kaufman_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_lch_farrow.py"
+    },
+    {
+      "status": "PASS",
+      "p": 5,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_lch_farrow_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 10,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_moving_average_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 7,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_process_magnitude_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_spectrum_find_all_maxima_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 14,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/spectrum/t_spectrum_maxima_finder_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 4,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/stats/t_compute_all.py"
+    },
+    {
+      "status": "SKIP_ALL",
+      "p": 0,
+      "f": 0,
+      "s": 1,
+      "rc": 0,
+      "tail": "[SKIP] Suite init failed: cfar_estimator.py not found: No module named 'cfar_estimator'",
+      "test": "DSP/Python/stats/t_snr_estimator.py"
+    },
+    {
+      "status": "PASS",
+      "p": 7,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/stats/t_statistics_float_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 7,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/stats/t_statistics_rocm.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/strategies/t_base_pipeline.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/strategies/t_debug_steps.py"
+    },
+    {
+      "status": "PASS",
+      "p": 20,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/strategies/t_farrow_pipeline.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/strategies/t_params.py"
+    },
+    {
+      "status": "PASS",
+      "p": 25,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/strategies/t_scenario_builder.py"
+    },
+    {
+      "status": "SKIP_ALL",
+      "p": 0,
+      "f": 0,
+      "s": 5,
+      "rc": 0,
+      "tail": "  fs=12 МГц  f0=2 МГц\n  n_fft=8192\n\n  GPU: AntennaProcessorTest создан ✓\n========================================\nTEST SUMMARY\n========================================\n[SKIP]  TestStrategiesPipeline.test_v1_cw_clean   (Pipeline n_fft mismatch GPU vs CPU: operands could not be broadcast together with shapes (81920,) (40960,) )\n[SKIP]  TestStrategiesPipeline.test_v2_cw_noise   (Pipeline n_fft mismatch GPU vs CPU: operands could not be broadcast together with shapes (81920,) (40960,) )\n[SKIP]  TestStrategiesPipeline.test_v3_cw_phase_delay   (Pipeline n_fft mismatch GPU vs CPU: operands could not be broadcast together with shapes (81920,) (40960,) )\n[SKIP]  TestStrategiesPipeline.test_v4_cw_phase_noise   (Pipeline n_fft mismatch GPU vs CPU: operands could not be broadcast together with shapes (81920,) (40960,) )\n[SKIP]  TestStrategiesPipeline.test_v5_from_file   (V5: file_path не задан (реальные данные ещё не готовы))\n----------------------------------------\nTotal: 0 passed, 0 failed, 5 skipped\n========================================",
+      "test": "DSP/Python/strategies/t_strategies_pipeline.py"
+    },
+    {
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "DSP/Python/strategies/t_strategies_step_by_step.py"
+    },
+    {
+      "status": "SKIP_ALL",
+      "p": 0,
+      "f": 0,
+      "s": 1,
+      "rc": 0,
+      "tail": "No timing files found in /home/alex/DSP-GPU/DSP/Results/strategies",
+      "test": "DSP/Python/strategies/t_timing_analysis.py"
+    },
+    {
+      "status": "PASS",
+      "p": 12,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "spectrum/python/t_cpu_fft.py"
+    },
+    {
+      "status": "PASS",
+      "p": 11,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "linalg/python/t_linalg.py"
+    },
+    {
+      "status": "PASS",
+      "p": 7,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "radar/python/t_radar.py"
+    },
+    {
+      "status": "PASS",
+      "p": 5,
+      "f": 0,
+      "s": 0,
+      "rc": 0,
+      "tail": "",
+      "test": "strategies/python/t_strategies.py"
+    }
+  ]
+}

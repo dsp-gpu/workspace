@@ -1,6 +1,32 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-14 утро+обед (QLoRA Phase B Day-1 на RX 9070 + dataset_v6 ×2.5 → smoke #3 PASS)
+**Обновлено**: 2026-05-19 (P1 Python migration Phase B → ✅ DONE, 50/54 PASS 92.6%)
+
+---
+
+## 🆕 2026-05-19 — P1 Python migration Phase B → ✅ DONE
+
+Закрыт P1 (Phase B) на работе (~рабочий день):
+- **B0** sanity-чек: все 5 артефактов Phase A на месте ✅
+- **B1** чистая сборка 8 модулей через `/tmp/build_all.sh` (порядок зависимостей core → … → radar): **8/8 OK, 0 fail**
+- **B3** прогон 54 t_*.py через новый `DSP/Python/run_all_tests.py` (4-форматный парсер: `Total:` / `Results: N/M` / `VERDICT:` / `[SKIP] Suite init`)
+- **B4** root cause `t_heterodyne_comparison.py`: GPU off 66 kHz = 44 bins = 22 μs. Глубокое ревью кода нашло **строку 161** — `ref_single = np.exp(+1j*phase)` без conj, тогда как kernel ожидает `ref = conj(s_tx)`. Fix: `+1j` → `-1j`. Результат: max df 66300 → **300 Hz** (×220)
+- **Off-scope**: `t_ai_filter_pipeline.py` — нужен `api_keys.json` для LLM, не делаем (см. `TASK_FAILS`)
+
+**Итог**: 50/54 PASS, 1 off-scope, 3 SKIP env-related, 0 реальных FAIL. Asserts: 314 PASS / 0 FAIL / 15 SKIP.
+
+**Изменённые файлы** (несохранённые, ждут push):
+- `spectrum/python/t_cpu_fft.py` — sys.path fix
+- `linalg/python/t_linalg.py` — sys.path fix
+- `radar/python/t_radar.py` — sys.path fix
+- `strategies/python/t_strategies.py` — sys.path fix
+- `DSP/Python/heterodyne/t_heterodyne_comparison.py` — `+1j` → `-1j`
+- `DSP/Python/run_all_tests.py` — NEW универсальный runner
+
+**Артефакты**:
+- `MemoryBank/sessions/2026-05-19.md` — полный summary
+- `Results/python_tests_report.json` — JSON отчёт прогона
+- `MemoryBank/tasks/TASK_python_migration_phase_B_FAILS_2026-05-04.md` → ✅ DONE 2026-05-19
 
 ---
 

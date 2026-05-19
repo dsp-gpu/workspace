@@ -262,10 +262,26 @@
       "Bash(timeout 600 ./test_radar_main)",
       "Bash(timeout 600 ./test_strategies_main)",
       "Bash(timeout 300 ./test_core_main)",
-      "Bash(file /home/alex/DSP-GPU/DSP/Python/spectrum/ai_pipeline/modules/*)"
+      "Bash(file /home/alex/DSP-GPU/DSP/Python/spectrum/ai_pipeline/modules/*)",
+      "Bash([ -d \"/home/alex/DSP-GPU/$d/.git\" ])",
+      "Bash([ -f \"$r/python/CMakeLists.txt\" ])",
+      "Bash(cd /home/alex/DSP-GPU *)",
+      "Bash(LC_ALL=C bash acceptance_namespace_migration.sh --only-build)",
+      "Bash(tee /tmp/p1_build.log)",
+      "Bash(bash /tmp/build_all.sh)",
+      "Bash(tee /tmp/p1_build2.log)",
+      "Bash(tee /tmp/p1_build3.log)",
+      "Bash(tee /tmp/p1_tests.log)",
+      "Bash(echo \"[rc=$?]\")",
+      "Bash(rocm-smi --showmemuse)",
+      "Bash(mkdir -p /home/alex/finetune-env/Core/phase5_qwen14b_train && ls -la /home/alex/finetune-env/Core/)",
+      "Bash(chmod +x /home/alex/finetune-env/Core/phase5_qwen14b_train/*.sh)",
+      "Bash(echo \"DSP:       $\\(git -C DSP log -1 --format='%h %s'\\)\")"
     ],
     "additionalDirectories": [
-      "/home/alex/.continue"
+      "/home/alex/.continue",
+      "/home/alex/DSP-GPU/build",
+      "/home/alex/finetune-env/Core"
     ]
   },
   "enableAllProjectMcpServers": true,

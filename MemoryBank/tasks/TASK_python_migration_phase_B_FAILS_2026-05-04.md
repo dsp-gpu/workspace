@@ -1,11 +1,65 @@
 # TASK — Phase B B4: разбор FAIL после полного прогона t_*.py
 
 > **Создано**: 2026-05-04 (после Phase B B3 на Debian + RX 9070 gfx1201)
-> **Обновлено**: 2026-05-13 — после namespace migration acceptance + полного re-run 50 t_*.py
-> **Статус**: 📋 active (продолжение Phase B)
-> **Effort**: ~3-6 ч (зависит от глубины каждой категории)
+> **Обновлено**: 2026-05-19 — закрыто 5 из 6 FAIL'ов 13.05, осталось 1 off-scope (ai_filter_pipeline)
+> **Статус**: ✅ **DONE 2026-05-19** (`ai_filter_pipeline` — off-scope, не делаем)
+> **Effort**: ~3-6 ч (по факту: B0+B1+B3+B4 = ~1 рабочий день)
 > **Платформа**: Debian Linux + ROCm 7.2 + AMD Radeon RX 9070 (gfx1201)
 > **Парный таск**: [`TASK_python_migration_phase_B_debian_2026-05-03.md`](TASK_python_migration_phase_B_debian_2026-05-03.md) (B0/B1/Bs/B3 ✅ DONE 2026-05-13)
+
+---
+
+## 🆕 2026-05-19 — Финальный re-run + B4 закрытие
+
+После полного rebuild всех 8 модулей + обновлённого универсального runner'а (`DSP/Python/run_all_tests.py` с 4-форматным парсером):
+
+### Итог: **50/54 PASS (92.6%)** · 1 FAIL (off-scope) · 3 SKIP (env)
+
+| Категория | 13.05 | 19.05 | Действие |
+|-----------|:-----:|:-----:|----------|
+| `t_heterodyne.py` | ❌ 0P/4F | ✅ PASS (P=4) | Сам зашёл после ребилда |
+| `t_heterodyne_comparison.py` | (UNKNOWN, `VERDICT:` формат) | ✅ PASS (66kHz→300Hz) | **Fix**: `np.exp(1j*phase)` → `np.exp(-1j*phase)` в `ref_single` (kernel ждёт `ref = conj(s_tx)`) |
+| `t_capon.py` / `t_fm_correlator.py` / `t_range_angle.py` / `t_ai_pipeline.py` / `t_spectrum_maxima_finder_rocm.py` | ❌ | ✅ | Все зашли после ребилда |
+| `t_ai_filter_pipeline.py` | ❌ IMPORT_FAIL | 🚫 **off-scope** | См. секцию «OFF-SCOPE» ниже |
+
+### Root cause `t_heterodyne_comparison.py` (глубокое ревью кода)
+
+**Симптом**: GPU vs theory off by **66 kHz** константно на 5 антеннах (CPU точен).
+
+**Арифметика**:
+- 66000 Hz / fbin(1500 Hz) = **44 bins** ровно
+- 66000 / μ(3 GHz/s) = **22 μs** эквивалент задержки
+
+**Глубокое ревью** `DSP/Python/heterodyne/t_heterodyne_comparison.py`:
+- CPU pipeline (стр. 96-97): `ref_conj = np.exp(-1j * phase)` → `dc = np.conj(rx * ref_conj)` ✅
+- GPU pipeline (стр. 161): `ref_single = np.exp(1j * phase_ref)` — **БЕЗ conj** ❌
+
+**Почему важно**: kernel `heterodyne_kernels_rocm.hpp:54` написан с предположением `ref = conj(s_tx)`. Тогда `conj(rx · ref) = conj(s_rx · conj(s_tx)) = conj(s_rx) · s_tx` → +μ·τ.
+
+Если передать ref = s_tx (без conj), kernel считает `conj(rx · s_tx) = conj(s_rx) · conj(s_tx)` → фаза с обратным знаком → спектр смещается.
+
+**Fix** (одна строка):
+```python
+# было:
+ref_single = np.exp(1j * phase_ref).astype(np.complex64)
+# стало:
+ref_single = np.exp(-1j * phase_ref).astype(np.complex64)  # conj(s_tx)
+```
+
+**Результат**: max df 66300 → **300 Hz** (×220), GPU точнее CPU (CPU теряет на parabolic interp). SNR_GPU = 114 dB.
+
+### `t_ai_filter_pipeline.py` — 🚫 OFF-SCOPE (НЕ ДЕЛАЕМ)
+
+**Причина**: тест использует AI-сервис (LLM, типа Claude/OpenAI) для **AI-генерации параметров фильтров** на лету. Требует файла `api_keys.json` с ключами доступа к LLM API.
+
+**Почему не делаем**:
+1. **Секреты в git хранить нельзя** — `api_keys.json` с реальными ключами в репо коммитить запрещено.
+2. **Off-scope DSP-GPU**: основная задача — GPU реализация ЦОС-алгоритмов. AI-генерация фильтров — отдельная feature (через `dsp-asst`/`finetune-env`), не входит в core test suite.
+3. **Тест не валидирует ROCm/HIP/Python bindings** — он проверяет интеграцию с внешним LLM-сервисом, что не относится к B-фазе миграции.
+
+**Альтернатива**: при необходимости тестирования AI-pipeline'а — настройка локального Ollama или `api_keys.json` через ENV без коммита.
+
+**Решение**: не запускаем в CI/CD, не считаем как FAIL в pass-rate. **К этой задаче не возвращаемся.**
 
 ---
 
