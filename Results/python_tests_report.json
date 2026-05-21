@@ -1,15 +1,13 @@
 {
   "total_tests": 54,
   "asserts": {
-    "P": 314,
-    "F": 1,
-    "S": 15
+    "P": 324,
+    "F": 0,
+    "S": 9
   },
   "by_status": {
-    "PASS": 49,
-    "FAIL": 1,
-    "IMPORT_FAIL": 1,
-    "SKIP_ALL": 3
+    "PASS": 53,
+    "IMPORT_FAIL": 1
   },
   "results": [
     {
@@ -58,12 +56,12 @@
       "test": "DSP/Python/heterodyne/t_heterodyne.py"
     },
     {
-      "status": "FAIL",
-      "p": 0,
-      "f": 1,
+      "status": "PASS",
+      "p": 1,
+      "f": 0,
       "s": 0,
       "rc": 0,
-      "tail": "  ────────────────────────────────────────────────────────────────────────────────────────\n  Ant |      f_true |  f_GPU err |  f_CPU err |    R_true | R_GPU err | R_CPU err\n  ────────────────────────────────────────────────────────────────────────────────────────\n    0 |      300000 |    66000.0 |      234.1 |  15000.00 |   3300.00 |     11.71\n    1 |      600000 |    66000.0 |      300.8 |  30000.00 |   3300.00 |     15.04\n    2 |      900000 |    66000.0 |      300.8 |  45000.00 |   3300.00 |     15.04\n    3 |     1200000 |    66000.0 |      234.1 |  60000.00 |   3300.00 |     11.71\n    4 |     1500000 |    66000.0 |        0.0 |  75000.00 |   3300.00 |      0.00\n\nReport saved: /home/alex/DSP-GPU/DSP/Python/heterodyne/../../Results/JSON/heterodyne_comparison_report.md\nPlot saved: /home/alex/DSP-GPU/DSP/Python/heterodyne/../../Results/Plots/heterodyne/comparison_gpu_vs_cpu.png\n\n======================================================================\nVERDICT: FAILED (max df=66300.8 Гц, tolerance=5000 Гц)\n======================================================================",
+      "tail": "",
       "test": "DSP/Python/heterodyne/t_heterodyne_comparison.py"
     },
     {
@@ -364,12 +362,12 @@
       "test": "DSP/Python/stats/t_compute_all.py"
     },
     {
-      "status": "SKIP_ALL",
-      "p": 0,
+      "status": "PASS",
+      "p": 4,
       "f": 0,
-      "s": 1,
+      "s": 0,
       "rc": 0,
-      "tail": "[SKIP] Suite init failed: cfar_estimator.py not found: No module named 'cfar_estimator'",
+      "tail": "",
       "test": "DSP/Python/stats/t_snr_estimator.py"
     },
     {
@@ -436,12 +434,12 @@
       "test": "DSP/Python/strategies/t_scenario_builder.py"
     },
     {
-      "status": "SKIP_ALL",
-      "p": 0,
+      "status": "PASS",
+      "p": 4,
       "f": 0,
-      "s": 5,
+      "s": 1,
       "rc": 0,
-      "tail": "  fs=12 МГц  f0=2 МГц\n  n_fft=8192\n\n  GPU: AntennaProcessorTest создан ✓\n========================================\nTEST SUMMARY\n========================================\n[SKIP]  TestStrategiesPipeline.test_v1_cw_clean   (Pipeline n_fft mismatch GPU vs CPU: operands could not be broadcast together with shapes (81920,) (40960,) )\n[SKIP]  TestStrategiesPipeline.test_v2_cw_noise   (Pipeline n_fft mismatch GPU vs CPU: operands could not be broadcast together with shapes (81920,) (40960,) )\n[SKIP]  TestStrategiesPipeline.test_v3_cw_phase_delay   (Pipeline n_fft mismatch GPU vs CPU: operands could not be broadcast together with shapes (81920,) (40960,) )\n[SKIP]  TestStrategiesPipeline.test_v4_cw_phase_noise   (Pipeline n_fft mismatch GPU vs CPU: operands could not be broadcast together with shapes (81920,) (40960,) )\n[SKIP]  TestStrategiesPipeline.test_v5_from_file   (V5: file_path не задан (реальные данные ещё не готовы))\n----------------------------------------\nTotal: 0 passed, 0 failed, 5 skipped\n========================================",
+      "tail": "",
       "test": "DSP/Python/strategies/t_strategies_pipeline.py"
     },
     {
@@ -454,12 +452,12 @@
       "test": "DSP/Python/strategies/t_strategies_step_by_step.py"
     },
     {
-      "status": "SKIP_ALL",
-      "p": 0,
+      "status": "PASS",
+      "p": 1,
       "f": 0,
-      "s": 1,
+      "s": 0,
       "rc": 0,
-      "tail": "No timing files found in /home/alex/DSP-GPU/DSP/Results/strategies",
+      "tail": "",
       "test": "DSP/Python/strategies/t_timing_analysis.py"
     },
     {

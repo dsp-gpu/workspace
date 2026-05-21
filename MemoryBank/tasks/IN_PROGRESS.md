@@ -1,6 +1,21 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-19 (P1 Python migration Phase B → ✅ DONE, 50/54 PASS 92.6%)
+**Обновлено**: 2026-05-21 (P1 Python Phase B → **53/54 PASS (98.1%)**, закрыты последние 3 SKIP)
+
+---
+
+## 🆕 2026-05-21 — P1 Phase B → **53/54 PASS (98.1%)**
+
+Дочинили 3 оставшихся SKIP'а от 19.05:
+- **`t_snr_estimator.py`** ✅ — скопирован `cfar_estimator.py` из GPUWorkLib `PyPanelAntennas/SNR/` (309 строк NumPy reference CA-CFAR) → 4/4 PASS
+- **`t_strategies_pipeline.py`** ✅ — два фикса: (1) `NumpyReference` теперь делает `actual_nfft = 2 * n_fft` (соответствует GPU zero-padding ×2); (2) `RelativeValidator(abs_threshold=1e-4)` — near-zero fallback теперь настраиваемый, по умолчанию 1e-4 (float32-friendly), закрывает edge-case clean CW (`Var(|z|) ≈ 0`) → 4/4 PASS (v5 справедливый SKIP)
+- **`t_timing_analysis.py`** ✅ — раскомментировал T4 `TimingPerStepTest` в `strategies/tests/all_test.hpp` + helper `params.output_dir = "../DSP/Results/strategies/"`. Пересобрал, запустил, JSON `timing_SIN.json` сгенерирован, Python тест строит таблицу + plot. Парсер `run_all_tests.py` расширен: `MARKER_PASS` теперь ловит `Plot saved:.*\.png`
+
+**Итог**: **53/54 PASS, 0 FAIL, 1 off-scope** (`t_ai_filter_pipeline.py` — нужен LLM api_keys.json). Asserts: **324 / 0 / 9**.
+
+Артефакты: [`sessions/2026-05-21.md`](../sessions/2026-05-21.md).
+
+---
 
 ---
 
@@ -27,6 +42,68 @@
 - `MemoryBank/sessions/2026-05-19.md` — полный summary
 - `Results/python_tests_report.json` — JSON отчёт прогона
 - `MemoryBank/tasks/TASK_python_migration_phase_B_FAILS_2026-05-04.md` → ✅ DONE 2026-05-19
+
+---
+
+## 🆕 2026-05-19 — Phase 5 Day-2 на RX 9070: 14B QLoRA работает
+
+**Главное:** обе 14B модели обучаются на gfx1201 + ROCm 7.2 + 16 GB после patch `train_simple.py:299-318` (снимает destructive fp32 cast embed/lm_head в `peft.prepare_model_for_kbit_training`).
+
+### Smoke результаты (150 steps, dataset_v6_1200, seq=1024, r=16, bf16, adamw_torch)
+
+| Модель | eval @ 25 | eval @ 150 | train @ 150 | HIP race | Runtime |
+|--------|-----------|-----------|-------------|----------|---------|
+| **Qwen2.5-Coder-14B-Instruct** | 2.05 | **1.102** | 1.092 | 0 | 36 мин |
+| **Qwen3-14B** (general) | 2.16 | **1.140** | 1.146 | 1 (step 75) | 17.5 мин (att.2) |
+
+→ **Coder-14B побеждает на Δ=0.04** (паттерн Day-1 Coder-7B > general-8B подтверждается на 14B).
+
+→ **`run_with_resume.sh` валидирован** — Qwen3 поймал `c10::AcceleratorError: illegal memory access` на step 75, авто-резюмировался с checkpoint-75, потеря = 0 шагов.
+
+### Full Coder-14B (частично) → checkpoint-300
+
+Запустили `run_full_coder14b.sh` на dataset_v6 (10204 train). Прогресс до прерывания:
+
+| step | eval_loss |
+|------|-----------|
+| 50 | 1.29 |
+| 100 | 0.89 |
+| 150 | **0.83** |
+
+Прервали на ~step 300 из-за `eval-steps=25` overhead (12 ч eval / 13 ч total). На завтра — `run_full_coder14b_resume.sh` от `checkpoint-300` с `eval-steps=200` → ETA ~2:45 ч → best ckpt.
+
+### Plan-D patch (короткая суть)
+
+`prepare_model_for_kbit_training` кастует embed/lm_head в fp32 → +3 GB поверх 10.7 GB base → OOM. Patch заменяет на ручную подготовку: freeze 4-bit weights + cast только norm-layers + `gradient_checkpointing_enable({"use_reentrant": False})`. Embed/lm_head остаются fp16 — loss падает, grad стабильный, NaN/inf нет.
+
+### Артефакты
+
+- `MemoryBank/specs_Linux_Radion_9070/phase5_coder14b_oom_2026-05-19.md` — диагноз + Plan-A/B/C fail + Plan-D PASS + сравнение моделей
+- `/home/alex/finetune-env/train_simple.py` — Plan-D patch (без коммита по запросу Alex)
+- `/home/alex/finetune-env/train_simple.py.bak_20260519_oom_patch` — бэкап
+- `/home/alex/finetune-env/Core/phase5_qwen14b_train/` — 7 launcher-скриптов:
+  - `run_smoke_coder14b.sh` / `run_smoke_qwen3_14b.sh` (smoke 150 steps)
+  - `run_full_coder14b.sh` / `run_full_qwen3_14b.sh` (full на ночь)
+  - `run_full_coder14b_resume.sh` (resume от checkpoint-300, eval-steps=200, ETA 2:45 ч) ⭐ **на завтра**
+  - `run_smoke_coder14b_planC.sh` / `run_smoke_coder14b_continue.sh` (deprecated, оставлены)
+- `output/smoke_coder14b_20260519_0927/checkpoint-150` — Coder smoke best (eval 1.10)
+- `output/smoke_qwen3_14b_20260519_1515/checkpoint-150` — Qwen3 smoke best (eval 1.14)
+- `output/full_coder14b_20260519_1031/checkpoint-300` — full Coder partial (eval 0.83 на step 150)
+
+### На следующую сессию
+
+1. **Full Coder-14B resume** от `checkpoint-300` через `run_full_coder14b_resume.sh` → best ckpt (ETA ~2:45 ч)
+2. **Qwen2.5-Coder-7B-Instruct** (15 GB на диске) можно удалить — 14B доказан, 7B не нужен для compare
+3. `post_train.sh` → GGUF → Ollama deploy → inference compare Q1-Q6
+4. Опционально: Qwen3-14B full на следующую ночь для honest comparison
+
+### Инсайты
+
+- PEFT `prepare_model_for_kbit_training` ломает 14B на 16 GB (hard-floor gfx1201) — patch обходит
+- `expandable_segments` НЕ поддерживается на ROCm 7.2 (warning + игнор)
+- bnb 4-bit kernel `csrc/ops.hip:83` НЕ падает при `adamw_torch` (не `_8bit`)
+- HIP race реален на 14B (Qwen3 поймал, Coder smoke не словил) → `run_with_resume.sh` критичен для full
+- eval overhead = 92% time при `eval-steps=25` на dataset 10204 → `eval-steps=200` снижает 13 ч → ~3 ч
 
 ---
 

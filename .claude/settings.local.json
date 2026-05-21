@@ -276,12 +276,21 @@
       "Bash(rocm-smi --showmemuse)",
       "Bash(mkdir -p /home/alex/finetune-env/Core/phase5_qwen14b_train && ls -la /home/alex/finetune-env/Core/)",
       "Bash(chmod +x /home/alex/finetune-env/Core/phase5_qwen14b_train/*.sh)",
-      "Bash(echo \"DSP:       $\\(git -C DSP log -1 --format='%h %s'\\)\")"
+      "Bash(python -c \"import ast; ast.parse\\(open\\('/home/alex/finetune-env/train_simple.py'\\).read\\(\\)\\); print\\('✅ syntax OK'\\)\")",
+      "Bash(rm -rf /home/alex/finetune-env/output/smoke_coder14b_planC_*)",
+      "Bash(sed -n '53,80p' stats/include/dsp/stats/kernels/statistics_kernels_rocm.hpp)",
+      "Bash(awk '/welford_fused/,/^}$/' stats/include/dsp/stats/kernels/statistics_kernels_rocm.hpp)",
+      "Bash(rocm-smi --showpids)",
+      "Bash(systemctl --user is-active ollama.service)",
+      "Bash(ps -p 1187052 -o pid,etime,cmd)",
+      "Bash(echo \"DSP:        $\\(git -C DSP log -1 --format='%h %s'\\)\")",
+      "Bash(echo \"strategies: $\\(git -C strategies log -1 --format='%h %s'\\)\")"
     ],
     "additionalDirectories": [
       "/home/alex/.continue",
       "/home/alex/DSP-GPU/build",
-      "/home/alex/finetune-env/Core"
+      "/home/alex/finetune-env/Core",
+      "/home/alex/C++/GPUWorkLib/PyPanelAntennas/SNR"
     ]
   },
   "enableAllProjectMcpServers": true,
