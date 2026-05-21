@@ -391,13 +391,14 @@
 
 | # | Таск | Статус | Effort | Платформа |
 |---|------|--------|--------|-----------|
-| O1 | [TASK_remove_opencl_legacy_classes_2026-05-08.md](TASK_remove_opencl_legacy_classes_2026-05-08.md) — миграция 5 legacy OpenCL классов на `*_rocm.hpp` | 📋 medium | 2-4 ч | Debian |
 | O2 | [TASK_remove_opencl_pybind_2026-05-06.md](TASK_remove_opencl_pybind_2026-05-06.md) — Part A ✅ DONE 08.05; Part B/C/D — wait для конкретики | ⚠️ partial | — | Debian |
-| P1 | [TASK_python_migration_phase_B_debian_2026-05-03.md](TASK_python_migration_phase_B_debian_2026-05-03.md) — реальный прогон 54 t_*.py на gfx1201 | 📋 ожидает | ~3-5 ч | Debian + RX 9070 |
+| P1 | [TASK_python_migration_phase_B_debian_2026-05-03.md](TASK_python_migration_phase_B_debian_2026-05-03.md) — реальный прогон 54 t_*.py на gfx1201 | ✅ **DONE 21.05** (53/54 PASS) | ~3-5 ч | Debian + RX 9070 |
 | P2 | [TASK_KernelCache_v2_Closeout_2026-04-27.md](TASK_KernelCache_v2_Closeout_2026-04-27.md) — MemoryBank sync + Doc | 📋 готов | 3-5 ч | Windows |
 | P3 | [TASK_Profiler_v2_INDEX.md](TASK_Profiler_v2_INDEX.md) — 3 закрывающих таска (доки, CI, Q7 roctracer) | 📋 ждёт OK | 4-30 ч | Windows + опц. Debian |
 | V1 | [TASK_validators_port_from_GPUWorkLib_2026-05-03.md](TASK_validators_port_from_GPUWorkLib_2026-05-03.md) — `MaxRelError/RmseError/...` | ✅ ≈90% | — | Debian |
-| V2 | [TASK_validators_linalg_pilot_2026-05-04.md](TASK_validators_linalg_pilot_2026-05-04.md) — пилот `gpu_test_utils::*` | 📋 active | ~3-4 ч | Debian + RX 9070 |
+| V2 | [TASK_validators_linalg_pilot_2026-05-04.md](TASK_validators_linalg_pilot_2026-05-04.md) — пилот `gpu_test_utils::*` | ✅ **DONE 13.05** (15 уч. `ScalarAbsError` в linalg/tests) | — | Debian + RX 9070 |
+
+> ~~O1 (TASK_remove_opencl_legacy_classes)~~ перенесён в `MemoryBank/.future/` 21.05.26 после попытки выполнения — задача больше чем «удалить 5 файлов»: классы активно используются в `signal_generator_factory.cpp` и `signal_service.hpp` как public API. Требует переписывания factory + миграции зависимых caller'ов на `*ROCm` версии. Возможно вернёмся позже отдельным TASK с инвентаризацией caller'ов.
 
 ### Phase B+ (после 12.05)
 
