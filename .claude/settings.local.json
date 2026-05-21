@@ -287,7 +287,12 @@
       "Bash(sed -i 's|Path\\(r\"C:\\\\\\\\finetune-env\\\\\\\\dataset_patterns_md.jsonl\"\\)|Path\\(\"/home/alex/finetune-env/dataset_patterns_v7.jsonl\"\\)|g' /home/alex/finetune-env/collect_patterns_md.py)",
       "Bash(sed -n '50,65p' signal_generators/include/dsp/signal_generators/signal_service.hpp)",
       "Bash(sed -n '50,62p' signal_generators/include/dsp/signal_generators/signal_generator_factory.hpp)",
-      "Bash(sed -n '8,14p' signal_generators/src/signal_generators/signal_generator_factory.cpp)"
+      "Bash(sed -n '8,14p' signal_generators/src/signal_generators/signal_generator_factory.cpp)",
+      "Bash(ls -la \"E:/finetune-env/\" 2>&1 | head -30)",
+      "Read(//e/finetune-env/**)",
+      "Bash(python \"e:/tmp/replace_finetune_path.py\")",
+      "Bash(mkdir -p \"E:/finetune-env/tmp\")",
+      "Bash(mv \"e:/tmp/replace_finetune_path.py\" \"E:/finetune-env/tmp/\")"
     ],
     "additionalDirectories": [
       "/home/alex/.continue",

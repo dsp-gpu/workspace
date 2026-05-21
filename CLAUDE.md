@@ -140,7 +140,7 @@ Workflow сессии → [02](.claude/rules/02-workflow.md).
 
 | Платформа | Путь |
 |-----------|------|
-| Windows (дома) | `C:\finetune-env` |
+| Windows (дома) | `E:\finetune-env` |
 | Debian (работа) | `/home/alex/finetune-env` |
 
 **Расположение** (дистрибутивов исходников библиотек на Debian):
