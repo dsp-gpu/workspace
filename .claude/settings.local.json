@@ -292,7 +292,8 @@
       "Read(//e/finetune-env/**)",
       "Bash(python \"e:/tmp/replace_finetune_path.py\")",
       "Bash(mkdir -p \"E:/finetune-env/tmp\")",
-      "Bash(mv \"e:/tmp/replace_finetune_path.py\" \"E:/finetune-env/tmp/\")"
+      "Bash(mv \"e:/tmp/replace_finetune_path.py\" \"E:/finetune-env/tmp/\")",
+      "Bash(awk '{print $1}')"
     ],
     "additionalDirectories": [
       "/home/alex/.continue",
