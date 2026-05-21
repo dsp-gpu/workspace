@@ -50,12 +50,28 @@ step_warn()    { echo -e "${YELLOW}⚠️  WARN${NC} — $*"; }
 RUN_BUILD=1
 RUN_TEST=1
 RUN_PYTHON=1
+RUN_PULL=1
 for arg in "$@"; do
     case "$arg" in
         --only-build)  RUN_TEST=0; RUN_PYTHON=0 ;;
         --only-test)   RUN_BUILD=0; RUN_PYTHON=0 ;;
         --only-python) RUN_BUILD=0; RUN_TEST=0 ;;
         --skip-python) RUN_PYTHON=0 ;;
+        --no-pull)     RUN_PULL=0 ;;
+        -h|--help)
+            cat <<USAGE
+acceptance_namespace_migration.sh — acceptance checks для DSP-GPU
+
+Использование: bash acceptance_namespace_migration.sh [FLAGS]
+
+  --only-build    только сборка по слоям
+  --only-test     только C++ ctest
+  --only-python   только Python тесты
+  --skip-python   пропустить Python (только C++)
+  --no-pull       не делать git pull (при медленном github)
+  -h, --help      эта справка
+USAGE
+            exit 0 ;;
     esac
 done
 
@@ -71,12 +87,16 @@ echo "  PRESET    = $PRESET"
 echo "  hipcc     = $(command -v hipcc || echo MISSING)"
 echo "  python3   = $(command -v python3 || echo MISSING)"
 
-# git pull всех 10 репо
-echo -e "\n  Pulling all repos..."
-git -C "$DSP_ROOT" pull --ff-only 2>&1 | tail -1
-for repo in core spectrum stats strategies signal_generators heterodyne linalg radar DSP; do
-    git -C "$DSP_ROOT/$repo" pull --ff-only 2>&1 | tail -1 | sed "s/^/    [$repo] /"
-done
+# git pull всех 10 репо (можно пропустить --no-pull)
+if [[ $RUN_PULL -eq 1 ]]; then
+    echo -e "\n  Pulling all repos..."
+    git -C "$DSP_ROOT" pull --ff-only 2>&1 | tail -1
+    for repo in core spectrum stats strategies signal_generators heterodyne linalg radar DSP; do
+        git -C "$DSP_ROOT/$repo" pull --ff-only 2>&1 | tail -1 | sed "s/^/    [$repo] /"
+    done
+else
+    echo -e "\n  ${YELLOW}⚠️  --no-pull: пропускаем git pull всех 10 репо${NC}"
+fi
 
 # ── A. Сборка (порядок зависимостей) ─────────────────────────────────────────
 if [[ $RUN_BUILD -eq 1 ]]; then

@@ -283,8 +283,8 @@
       "Bash(rocm-smi --showpids)",
       "Bash(systemctl --user is-active ollama.service)",
       "Bash(ps -p 1187052 -o pid,etime,cmd)",
-      "Bash(echo \"DSP:        $\\(git -C DSP log -1 --format='%h %s'\\)\")",
-      "Bash(echo \"strategies: $\\(git -C strategies log -1 --format='%h %s'\\)\")"
+      "Bash(sed -i 's|Path\\(\"e:/DSP-GPU\"\\)|Path\\(\"/home/alex/DSP-GPU\"\\)|g' /home/alex/finetune-env/collect_patterns_md.py)",
+      "Bash(sed -i 's|Path\\(r\"C:\\\\\\\\finetune-env\\\\\\\\dataset_patterns_md.jsonl\"\\)|Path\\(\"/home/alex/finetune-env/dataset_patterns_v7.jsonl\"\\)|g' /home/alex/finetune-env/collect_patterns_md.py)"
     ],
     "additionalDirectories": [
       "/home/alex/.continue",

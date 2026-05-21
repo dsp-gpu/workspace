@@ -1,13 +1,14 @@
 {
   "total_tests": 54,
   "asserts": {
-    "P": 324,
-    "F": 0,
+    "P": 323,
+    "F": 3,
     "S": 9
   },
   "by_status": {
-    "PASS": 53,
-    "IMPORT_FAIL": 1
+    "PASS": 52,
+    "OFF_SCOPE": 1,
+    "FAIL": 1
   },
   "results": [
     {
@@ -39,7 +40,7 @@
     },
     {
       "status": "PASS",
-      "p": 14,
+      "p": 16,
       "f": 0,
       "s": 0,
       "rc": 0,
@@ -227,12 +228,12 @@
       "test": "DSP/Python/spectrum/ai_pipeline/t_ai_pipeline.py"
     },
     {
-      "status": "IMPORT_FAIL",
+      "status": "OFF_SCOPE",
       "p": 0,
       "f": 0,
       "s": 0,
       "rc": 0,
-      "tail": "  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 897, in <module>\n    r = demo_fn()\n  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 863, in demo_russian_request\n    return run_ai_pipeline(\n        filter_request=\"Фильтр Баттерворта нижних частот, частота среза 2000 Hz, \"\n    ...<4 lines>...\n        plot_filename=\"ai_russian_request.png\"\n    )\n  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 756, in run_ai_pipeline\n    params = parse_filter_request(filter_request, fs)\n  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 287, in parse_filter_request\n    raw = ai_ask(prompt, system=SYSTEM_PROMPT)\n  File \"/home/alex/DSP-GPU/DSP/Python/spectrum/t_ai_filter_pipeline.py\", line 134, in ai_ask\n    raise RuntimeError(\"pip install groq\")\nRuntimeError: pip install groq",
+      "tail": "off-scope (см. DSP/Python/.skip-tests.txt)",
       "test": "DSP/Python/spectrum/t_ai_filter_pipeline.py"
     },
     {
@@ -470,12 +471,12 @@
       "test": "spectrum/python/t_cpu_fft.py"
     },
     {
-      "status": "PASS",
-      "p": 11,
-      "f": 0,
+      "status": "FAIL",
+      "p": 8,
+      "f": 3,
       "s": 0,
-      "rc": 0,
-      "tail": "",
+      "rc": 1,
+      "tail": "============================================================\n  [PASS] import dsp_linalg\n  [PASS] ROCmGPUContext(0)  (device=AMD Radeon RX 9070)\n  [PASS] SymmetrizeMode enum\n  [PASS] Cholesky identity 5x5  (err=0.00e+00)\n  [PASS] Cholesky HPD 64x64  (||A*A^-1 - I||=3.7339e-06)\n  [PASS] Cholesky batch 4x32x32  (shape=(4, 32, 32))\n  [PASS] CaponParams  (n_ch=8, mu=0.009999999776482582)\n  [PASS] Capon relief (noise)  (len=16, min=0.1463, max=0.2592)\n  [FAIL] Capon interference peak  (CholeskyInverterROCm: rocblas_create_handle failed (5))\n  [FAIL] Capon beamform dims  (CholeskyInverterROCm: rocblas_create_handle failed (5))\n  [FAIL] repr  (CholeskyInverterROCm: rocblas_create_handle failed (5))\n============================================================\n  Results: 8/11 passed, 3 FAILED\n============================================================",
       "test": "linalg/python/t_linalg.py"
     },
     {

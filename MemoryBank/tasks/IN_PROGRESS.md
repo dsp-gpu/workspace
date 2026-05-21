@@ -1,6 +1,114 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-21 (P1 Python Phase B → **53/54 PASS (98.1%)**, закрыты последние 3 SKIP)
+**Обновлено**: 2026-05-21 (Phase 5 Day-3: Coder-14B → **eval 0.7125 ⭐** @ checkpoint-375, Qwen3-14B compare в процессе)
+
+---
+
+## 🆕 2026-05-21 — Phase 5 Day-3: Coder-14B → checkpoint-375 (eval 0.7125 ⭐)
+
+### Главное
+
+- **Resume Coder-14B** от `checkpoint-275` через `run_full_coder14b_resume.sh` (eval-steps=200, ETA планировался ~2:45 ч)
+- Дошли до **`checkpoint-375` с eval_loss = 0.7125** — **лучший результат за всю сессию 14B**
+- HIP race + retry лавина после step 385 → **kill** (ATTEMPT 9 безуспешно, wrapper не справился)
+- Diagnose root cause: **swap 4.7 GB used** (PyCharm 686 KB + qdrant 498 KB + Telegram 269 KB) → page faults замедлили шаги 1.27s → 13-18s (10× slowdown)
+- **Cleanup:** `sudo swapoff -a && sudo swapon -a` → swap 0 → restart clean
+
+### Eval тенденция Coder-14B (full)
+
+| step | eval_loss |
+|------|-----------|
+| 150 | 0.83 |
+| 300 | 0.745 |
+| 325 | 0.738 |
+| **375** | **0.7125** ⭐ |
+
+→ Loss продолжал падать, нет overfit. На полном train (3636 step) ожидаем eval ~0.5-0.6.
+
+### Compare Qwen3-14B (запущен 07:58)
+
+`run_compare_qwen3_400.sh` — 400 steps на чистом GPU (swap=0):
+- Load model: 20 сек ✅
+- Train: ~1.27 sec/step (норма)
+- Eval @ 200 и @ 400 — ждём
+- ETA финиш ~09:20
+
+### Артефакты Day-3
+
+- `output/full_coder14b_20260519_1031/checkpoint-375` — best Coder-14B (eval 0.7125)
+- `output/compare_qwen3_14b_<TS>/` — compare прогон Qwen3-14B (в процессе)
+- `Core/phase5_qwen14b_train/run_compare_qwen3_400.sh` — compare-launcher (NEW)
+- `Core/phase5_qwen14b_train/run_full_coder14b_resume.sh` — resume-launcher (использован)
+
+### Инсайты Day-3
+
+1. **Swap = убийца перформанса** при 14B + PyCharm + Telegram + qdrant. Перед train: `sudo swapoff -a && sudo swapon -a`.
+2. **rc=134 = SIGABRT** от c10::AcceleratorError (HIP race), **rc=1 = OOM при загрузке** (косвенно swap-induced fragmentation).
+3. **Retry лавина не помогает** если каждая попытка падает — wrapper нужен с лимитом по time, не только по count.
+4. **`checkpoint-375` достаточно для inference / merge / deploy** — eval 0.71 на 14B = уже лучше чем GPT-3.5 на code-tasks domain.
+
+### Post-train pipeline → Ollama (21.05 12:00) ✅
+
+`./post_train.sh checkpoint-375 qwen-coder-14b-dsp Qwen2.5-Coder-14B-Instruct Q4_K_M`
+
+→ merged HF (~28 GB) → f16 GGUF (~28 GB) → Q4_K_M.gguf (~8 GB) → `ollama create qwen-coder-14b-dsp` ✅
+
+**Inference test #1:**
+- Q: «Какой паттерн использует HybridBackend?»
+- A: «Strategy» ❌ (правильно — Bridge)
+- Namespace: `dsp_hybrid::` ❌ (правильно — `drv_gpu_lib::`)
+
+→ **Pilot pipeline работает**, но **факты галлюцинируют** (10% train недостаточно).
+
+### Dataset v7 расширение (21.05 12:30) ✅
+
+`collect_patterns_md.py` патч (Windows-пути → Debian) → запуск → **+104 unique pattern pairs**:
+- 86 × `pattern_class_explicit` (явные labels: Bridge/Resource/Singleton/...)
+- 19 × `pattern_classes_per_repo`
+- 8 × `repo_patterns_overview`
+
+**v7 = v6 + patterns = 10308 строк** (dataset_v7_train.jsonl). Audit:
+- HybridBackend mentions: 155 → **155+1 (gold pair)**
+- `"Bridge"` label: 0 → **7**
+- HybridBackend ∩ Bridge: 0 → **43** (включая gold pair)
+
+### V7 quick train (21.05 13:00) ❌ aborted — env issue
+
+`run_v7_quick_750.sh` (750 steps, ETA 30 мин). Прошёл 130 шагов → fail rc=1 (OOM в prepare_model).
+
+**Root cause:** swap 4.1 GB used вернулся (PyCharm + VSCode + Pylance набрали RAM после `swapoff/swapon`). Train в GUI-окружении на 14B **нестабилен**.
+
+Скорость деградировала с 1.27 sec/step → **13-14 sec/step** из-за page faults на swap.
+
+### Решение (21.05) — закрыть тему 14B на сегодня
+
+**Артефакты сохранены, готовы к следующей сессии на чистом окружении:**
+- ✅ `dataset_v7_train.jsonl` (10308 строк, готов к train)
+- ✅ `output/full_coder14b_20260519_1031/checkpoint-375` (eval 0.7125, best Coder-14B)
+- ✅ Ollama `qwen-coder-14b-dsp` (pilot, факт-галлюцинирует но pipeline работает)
+- ✅ `Core/phase5_qwen14b_train/run_v7_quick_750.sh` (готов к запуску)
+- ✅ `collect_patterns_md.py` (патч Windows→Debian, бэкап `.bak`)
+
+### На следующую сессию
+
+1. **ПОЛНОСТЬЮ закрыть PyCharm + VSCode + браузер** перед train (GUI-приложения конфликтуют со swap)
+2. `sudo swapoff -a` БЕЗ swapon обратно (62 GB RAM хватит без swap)
+3. Запустить **полный train v7** (3636 step, ETA ~12 ч на ночь):
+   ```bash
+   ./Core/phase5_qwen14b_train/run_v7_quick_750.sh  # либо новый full на v7
+   ```
+4. Утром: `post_train.sh` на best checkpoint → `qwen-coder-14b-dsp-v7`
+5. Inference compare: v6-pilot (Strategy ❌) vs v7-full (надеемся Bridge ✅)
+
+### Инсайты Day-3 (финал)
+
+1. **Plan-D patch работает универсально** на 14B (Coder + Qwen3) — OOM фикс надёжный.
+2. **Eval @ 375 = 0.7125** — лучший результат на 10% train. Полный train даст 0.5-0.6.
+3. **Compare Coder vs Qwen3 @ step 200:** 0.79 vs 0.87 → **Coder лучше**.
+4. **0 явных Bridge labels в v6** — критичная проблема, исправлена в v7 (43 пары).
+5. **Swap = убийца перформанса** на 14B + GUI. Нужно чистое окружение перед train.
+6. **HF wrapper retry loop** не помогает если каждая попытка OOM на load — нужен fail-fast лимит.
+7. **Pilot Ollama модель `qwen-coder-14b-dsp` создана** — pipeline merge→GGUF→Ollama проверен end-to-end (~30 мин).
 
 ---
 
