@@ -1,0 +1,38 @@
+# ============================================================================
+#  rag-pao/config/access_policy.yaml — SINGLE SOURCE OF TRUTH
+#  Read by: rag_pao/core/access_control/nda_guard.py + policy_loader.py
+#  D35 (было C3 в review): вынесено из hardcoded SAFE_ENDPOINTS frozenset
+# ============================================================================
+
+endpoints:
+
+  # --- Safe — доступны в production + debug (любой codo_access) ---
+  safe:
+    - /health
+    - /search
+    - /show_signature
+    - /show_symbols
+    - /run_filler
+    - /run_judge
+    - /save_rag
+
+  # --- Debug-only — ТОЛЬКО когда mode=debug AND codo_access=full ---
+  #     В production / NDA-drops — 403 Forbidden
+  debug_only:
+    - /show_file
+    - /show_journal
+    - /dump_target
+
+# --- Sanitization rules (production mode) -----------------------------------
+sanitization:
+  run_filler_output:
+    # Удалять из Qwen output (D31)
+    redact_patterns:
+      - "internal_file_path"           # пути типа /srv/pao_xxxx_acme/...
+      - "implementation_body"          # если Qwen скопировал raw C++
+    keep_only_doxygen: true            # схема выхода JSON — только doxygen блоки
+
+# --- Audit (R-NDA-1 mitigation) ---------------------------------------------
+audit:
+  log_all_denials: true                # в eval_runs.access_denials
+  alert_on_nda_target_deny: true       # email/Telegram при попытке /show_file на NDA

@@ -53,7 +53,7 @@
 | Claude API | через Claude Code (sub-agent) |
 | Журнал per-prompt | `rag_mentor/journal/per_prompt.py` |
 | Журнал per-class | `rag_mentor/journal/per_class.py` |
-| Anti-hallucination check | `rag_mentor/name_validator/` |
+| Anti-hallucination check | `rag_mentor/anti_hallucination/` (D34, через common/) |
 | Logger | Loguru (`utils/logging_setup.py`) |
 | Pathlib | только `pathlib.Path`, никаких string concat |
 

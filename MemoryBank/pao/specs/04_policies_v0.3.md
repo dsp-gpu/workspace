@@ -38,7 +38,8 @@ allow-list-related: [JsonParser, JsonWriter, ...]
 #### Барьер 2 — Name validator (после Qwen, до сохранения)
 
 ```python
-# в обоих сторонах: rag_mentor/name_validator/ + rag_pao/core/llm_serving/name_validator.py
+# D34: в обоих сторонах через shared common/anti_hallucination/:
+#   rag_mentor/anti_hallucination/ + rag_pao/core/anti_hallucination/name_validator.py
 def name_validator(qwen_json, ctx) -> ValidationResult:
     used_names = extract_names_from_doxygen(qwen_json)
     allowed = ctx.symbols.flatten_names()
@@ -159,7 +160,7 @@ escalated: false
 | `/show_symbols?...` | ✅ | ✅ | ✅ | yes (D31) |
 | `/run_filler?prompt=...` | ✅ | ✅ (sanitized output) | ✅ | yes |
 | `/run_judge?...` | ✅ | ✅ | ✅ | yes |
-| `/save_rag?class=...&content=...` | ✅ | ✅ | ✅ | yes (write) |
+| `/save_rag?class=...&content=...` | ✅ | ✅ | ✅ | yes (write, **idempotency_key required** — D37) |
 | `/show_file?path=...` | ✅ | ❌ | ❌ | **NO в production** |
 | `/show_journal?class=...` | ✅ | ❌ | ❌ | **NO в production** |
 | `/dump_target?...` | ✅ | ❌ | ❌ | **NO в production** |
@@ -262,32 +263,40 @@ targets:
     codo_access: rest-only               # всегда rest-only, даже при mode=debug
 ```
 
-### E.3 Логика `nda_guard`
+### E.3 Логика `nda_guard` (D35 — config-driven)
+
+`config/access_policy.yaml` — **single source of truth**:
+
+```yaml
+endpoints:
+  safe:       [/health, /search, /show_signature, /show_symbols, /run_filler, /run_judge, /save_rag]
+  debug_only: [/show_file, /show_journal, /dump_target]
+```
 
 ```python
 # rag_pao/core/access_control/nda_guard.py
-SAFE_ENDPOINTS = {
-    "/health", "/search", "/show_signature", "/show_symbols",
-    "/run_filler", "/run_judge", "/save_rag"
-}
+class NDAGuard:
+    def __init__(self, policy: AccessPolicy, targets: TargetsConfig):
+        self.policy = policy           # из access_policy.yaml
+        self.targets = targets
 
-def check_access(target: str, endpoint: str, mode: str) -> bool:
-    """
-    Returns True if Кодо может вызвать endpoint для target в текущем mode.
+    def check_access(self, target: str, endpoint: str, mode: str) -> bool:
+        """
+        - production → forced safe-only для ВСЕХ targets (codo_access игнорируется)
+        - debug + codo_access=full → разрешено всё
+        - debug + codo_access=rest-only → safe-only
+        """
+        if mode == "production":
+            return endpoint in self.policy.safe_endpoints
 
-    - production: ВСЕГДА только safe-endpoints (per-target codo_access игнорируется)
-    - debug + codo_access=full: разрешено всё
-    - debug + codo_access=rest-only: только safe-endpoints
-    """
-    if mode == "production":
-        return endpoint in SAFE_ENDPOINTS
+        cfg = self.targets.get(target)
+        if cfg.codo_access == "full":
+            return True
 
-    target_cfg = load_targets_yaml()[target]
-    if target_cfg.codo_access == "full":
-        return True
-
-    return endpoint in SAFE_ENDPOINTS
+        return endpoint in self.policy.safe_endpoints
 ```
+
+OCP: добавление нового endpoint = правка yaml, **не кода**.
 
 ### E.4 Когда flip debug → production
 
@@ -401,6 +410,103 @@ echo "✅ Pre-flight OK — go train"
 ```
 
 Запускать перед каждым `train_v8.sh`.
+
+---
+
+## §J — Idempotency & Resilience (D37, D38)
+
+### J.1 `POST /save_rag` idempotency (D37, R-RES-1)
+
+При network retry клиент может отправить save_rag дважды. Сервер должен **дедуплицировать**.
+
+```python
+# Request body:
+{
+  "target": "pao_contrib",
+  "class_fqn": "boost::filesystem::path",
+  "layer": "L3",
+  "content": {...},
+  "idempotency_key": "sha256(target + class_fqn + attempt_id)"   # 🔒 D37
+}
+
+# Server:
+@app.post("/save_rag")
+def save_rag(req: SaveRagRequest):
+    if pg.exists("idempotency_keys", req.idempotency_key):
+        return existing_result(req.idempotency_key)   # дедуп
+    result = persist(req)
+    pg.insert("idempotency_keys", req.idempotency_key, ts=now())
+    return result
+```
+
+Retention idempotency_keys: 30 дней (pg cleanup job).
+
+### J.2 Post-push verify (D38, R-RES-2)
+
+После `git push origin main` в bare remote — `post-receive` hook должен сделать `git pull` на `/srv/rag-pao`. Если hook **silent fail** — mentor видит «push OK» но сервер не sync'нулся.
+
+```bash
+# scripts/sync_prompts_to_pao.sh
+git push origin main
+LOCAL_HEAD=$(git rev-parse HEAD)
+REMOTE_HEAD=$(ssh alex@10.10.4.105 'cd /srv/rag-pao && git rev-parse HEAD')
+
+if [ "$LOCAL_HEAD" != "$REMOTE_HEAD" ]; then
+    echo "❌ Post-receive hook failed! Server still at $REMOTE_HEAD"
+    exit 1
+fi
+echo "✅ Sync verified: $LOCAL_HEAD"
+```
+
+---
+
+## §K — Bootstrap validators (D39, SEC-1)
+
+### K.1 `validate_targets_config()` — на старте rag-pao
+
+```python
+# rag_pao/core/access_control/validators.py
+def validate_targets_config(targets: list[Target]) -> None:
+    """Falls fast если targets.yaml имеет небезопасную конфигурацию."""
+    for t in targets:
+        if t.nda_level != "open" and t.codo_access == "full":
+            raise InvalidConfig(
+                f"SECURITY: Target {t.name} has nda_level={t.nda_level} "
+                f"but codo_access=full. NDA-drops MUST have codo_access=rest-only."
+            )
+
+        if t.source.startswith("../") or "../" in t.source:
+            raise InvalidConfig(f"SECURITY: Target {t.name}.source has path traversal")
+```
+
+Запуск:
+- `bash scripts/bootstrap.sh` (Phase 01 init)
+- `bash scripts/add_target.sh` (при добавлении нового)
+- `systemd ExecStartPre=/usr/bin/python -m rag_pao.core.access_control.validators` (при старте сервиса)
+
+Любая ошибка валидации → **systemd НЕ запускает FastAPI** → fail fast.
+
+### K.2 Smoke test перед flip debug → production
+
+`tests/test_nda_smoke.py`:
+```python
+class NDASmokeTests(TestRunner):
+    def test_show_file_denied_on_nda_target(self) -> AssertionGroup:
+        # Симулируем production mode для NDA target
+        guard = NDAGuard(policy, targets)
+        g = AssertionGroup("smoke")
+        g.add(
+            not guard.check_access("pao_xxxx_acme", "/show_file", "production"),
+            "production mode blocks /show_file on NDA target"
+        )
+        g.add(
+            not guard.check_access("pao_xxxx_acme", "/show_file", "debug"),
+            "debug + codo_access=rest-only blocks /show_file"
+        )
+        return g
+```
+
+Выполнить **до** flip'а `mode: debug → production`.
 
 ---
 

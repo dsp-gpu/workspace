@@ -43,6 +43,23 @@ cd /srv/rag-pao && git pull --ff-only
 
 → после `git push` с laptop сервер автоматически синхронизируется.
 
+### Шаг 4 — Post-push verify (D38, R-RES-2)
+
+Hook может **silent fail**. Обязательно сверить HEAD после push:
+
+```bash
+LOCAL_HEAD=$(git rev-parse HEAD)
+REMOTE_HEAD=$(ssh alex@10.10.4.105 'cd /srv/rag-pao && git rev-parse HEAD')
+
+if [ "$LOCAL_HEAD" != "$REMOTE_HEAD" ]; then
+    echo "❌ Post-receive hook failed! Server at $REMOTE_HEAD, local at $LOCAL_HEAD"
+    exit 1
+fi
+echo "✅ Sync verified: $LOCAL_HEAD"
+```
+
+Внести в `scripts/sync_prompts_to_pao.sh` + `scripts/git_push_with_verify.sh`.
+
 ## Setup bare remote (Phase 01)
 
 ```bash

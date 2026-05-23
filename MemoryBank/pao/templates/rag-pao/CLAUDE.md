@@ -74,7 +74,7 @@ mode: debug          # debug | production
 | LLM call | `rag_pao/core/llm_serving/{ollama,vllm}_client.py` |
 | Retrieval | `rag_pao/core/retrieval/hybrid_retriever.py` |
 | Журнал | `rag_pao/core/journal/{per_prompt,per_class}.py` |
-| Name validator | `rag_pao/core/llm_serving/name_validator.py` |
+| Name validator | `rag_pao/core/anti_hallucination/name_validator.py` (D34) |
 | Access control | `rag_pao/core/access_control/nda_guard.py` |
 | Logger | Loguru |
 

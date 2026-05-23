@@ -7,37 +7,49 @@
 
 Когда mentor вызывает любой REST endpoint, **FastAPI middleware** прогоняет запрос через `nda_guard.check_access`:
 
+**D35 (config-driven, OCP)**: endpoints вынесены в `config/access_policy.yaml`:
+
+```yaml
+endpoints:
+  safe:       [/health, /search, /show_signature, /show_symbols, /run_filler, /run_judge, /save_rag]
+  debug_only: [/show_file, /show_journal, /dump_target]
+```
+
 ```python
 # rag_pao/core/access_control/nda_guard.py
 
-SAFE_ENDPOINTS = {
-    "/health",
-    "/search",
-    "/show_signature",
-    "/show_symbols",
-    "/run_filler",
-    "/run_judge",
-    "/save_rag",
-}
+class NDAGuard:
+    """Guard (GoF) — server-side, config-driven."""
 
-DEBUG_ONLY_ENDPOINTS = {
-    "/show_file",
-    "/show_journal",
-    "/dump_target",
-}
+    def __init__(self, policy: AccessPolicy, targets: TargetsConfig):
+        self.policy = policy
+        self.targets = targets
 
+    def check_access(self, target: str, endpoint: str, mode: str) -> bool:
+        if mode == "production":
+            return endpoint in self.policy.safe_endpoints
 
-def check_access(target: str, endpoint: str, mode: str) -> bool:
-    """True если Кодо может вызвать endpoint."""
-    if mode == "production":
-        return endpoint in SAFE_ENDPOINTS              # forced safe-only
+        cfg = self.targets.get(target)
+        if cfg.codo_access == "full":
+            return True
 
-    cfg = load_targets_yaml()["targets"][target]
-    if cfg["codo_access"] == "full":
-        return True                                    # debug + full = всё
+        return endpoint in self.policy.safe_endpoints
 
-    return endpoint in SAFE_ENDPOINTS                  # debug + rest-only = safe
+# Loader:
+class AccessPolicy(BaseSettings):
+    safe_endpoints: frozenset[str]
+    debug_only_endpoints: frozenset[str]
+
+    @classmethod
+    def load(cls, yaml_path: Path) -> "AccessPolicy":
+        data = yaml.safe_load(yaml_path.read_text())
+        return cls(
+            safe_endpoints=frozenset(data["endpoints"]["safe"]),
+            debug_only_endpoints=frozenset(data["endpoints"]["debug_only"]),
+        )
 ```
+
+**OCP**: добавление endpoint = правка yaml, не кода.
 
 ## FastAPI middleware
 

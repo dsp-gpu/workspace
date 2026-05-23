@@ -66,6 +66,41 @@ def call_rest(endpoint, **kwargs): ...
 
 MCP — это **wrapper** над REST. Под капотом дёргает те же endpoints с теми же policy. **`nda_guard` применяется на стороне сервера**, MCP-клиент не может обойти.
 
+## AccessAwareMixin (D36 — LSP-correct)
+
+Чтобы `RestClient.show_file()` и `MCPClient.show_file()` вели себя одинаково (не нарушали LSP) — общая логика pre-check вынесена в **mixin**:
+
+```python
+# rag_mentor/rag_pao_client/base.py
+class AccessAwareMixin:
+    """Pre-check на клиентской стороне. Server side (nda_guard) — second line of defense."""
+
+    mode: AccessMode
+
+    def _check_access(self, method_name: str) -> None:
+        """Raise NotAllowedInProduction если method не в safe-list."""
+        SAFE = {"search", "run_filler", "run_judge", "show_signature",
+                "show_symbols", "save_rag", "health"}
+        if self.mode == AccessMode.PRODUCTION and method_name not in SAFE:
+            raise NotAllowedInProduction(method_name)
+
+
+class RestClient(AccessAwareMixin, RagPaoClient):
+    def show_file(self, path: str) -> str:
+        self._check_access("show_file")     # 🔒 pre-check — fail fast
+        return self._http_get("/show_file", params={"path": path}).text
+
+
+class MCPClient(AccessAwareMixin, RagPaoClient):
+    def show_file(self, path: str) -> str:
+        self._check_access("show_file")     # 🔒 тот же pre-check — LSP-correct
+        return self._mcp_call("show_file", {"path": path})
+```
+
+**Защита в 2 уровня (defense in depth)**:
+1. Client-side `AccessAwareMixin._check_access()` — fail fast перед HTTP/MCP вызовом
+2. Server-side `nda_guard.check_access()` — final authority, не может быть обойдено клиентом
+
 ## Связь с правилом 17
 
 `17-access-modes.md` детализирует когда какой mode используется и как flip'ать debug → production.

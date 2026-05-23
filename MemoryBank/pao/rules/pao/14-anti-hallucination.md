@@ -26,7 +26,9 @@ forbidden_substrings:
   - "dsp_hybrid::"             # wrong namespace
 ```
 
-### Барьер 2 — Name validator (server-side в `rag_pao/core/llm_serving/name_validator.py` + client-side в `rag_mentor/name_validator/`)
+### Барьер 2 — Name validator (D34: shared `common/anti_hallucination/`)
+
+Server-side в `rag_pao/core/anti_hallucination/name_validator.py` + client-side в `rag_mentor/anti_hallucination/`. Оба импортируют логику из shared `common/anti_hallucination/` (git submodule).
 
 ```python
 def name_validator(qwen_json, ctx) -> ValidationResult:

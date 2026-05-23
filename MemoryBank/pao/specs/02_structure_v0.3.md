@@ -21,6 +21,8 @@
 | **2 режима доступа Кодо** | `mode: debug | production` + per-target `codo_access` (D25) |
 | **rag-pao 3 слоя** | `core/` + `pipelines/<name>_vN/` + `current/` (D28) |
 | **Конфиги** | YAML; JSON Schema только для Qwen strict output (D30) |
+| **Shared anti-hallucination** | `common/anti_hallucination/` — git submodule в обоих репо (D34) |
+| **`access_policy.yaml`** | `rag-pao/config/access_policy.yaml` — single source of truth для safe/debug endpoints (D35) |
 
 ---
 
@@ -63,8 +65,9 @@ rag-mentor/
 │   │   ├── diff_vs_etalon.py
 │   │   └── issue_categorizer.py        # hallucination / generic / wrong_param / ...
 │   ├── critic/                         prompt_fix
-│   ├── rag_pao_client/                 rest_client (primary) + mcp_client (debug)
-│   ├── name_validator/                 # барьер 2 anti-hallucination
+│   ├── rag_pao_client/                 rest_client + mcp_client + AccessAwareMixin (D36)
+│   ├── anti_hallucination/             🆕 D34 — wrapper над common/anti_hallucination/
+│   │   └── client_side_validator.py    (после Qwen output, до save_rag)
 │   ├── journal/                        per_prompt, per_class
 │   └── utils/                          pathlib_helpers, logging_setup (Loguru)
 │
@@ -137,10 +140,14 @@ rag-pao/
 │   │   │   ├── reranker.py             bge-reranker-v2-m3
 │   │   │   ├── embedder/{bge_m3_local,bge_m3_remote}.py
 │   │   │   └── filters/                license + nda_level + layer + repo
-│   │   ├── llm_serving/
+│   │   ├── llm_serving/                # ТОЛЬКО clients + model_router (D34 — cohesion fix)
 │   │   │   ├── clients/{ollama_client,vllm_client}.py
-│   │   │   ├── model_router.py         # 14B / Coder-14B / 35B policy + pin sha256
-│   │   │   └── name_validator.py       # барьер 2 anti-hallucination (server side)
+│   │   │   └── model_router.py         # 14B / Coder-14B / 35B policy + pin sha256 + Registry
+│   │   ├── anti_hallucination/         🆕 D34 — отдельный подпакет
+│   │   │   ├── name_validator.py       # барьер 2 (server side, читает forbidden_terms.yaml)
+│   │   │   ├── schema_lint.py          # барьер 3 (JSON Schema + doxygen lint)
+│   │   │   ├── doxygen_lint.py
+│   │   │   └── forbidden_terms_loader.py
 │   │   ├── journal/{per_prompt,per_class}.py
 │   │   ├── api/
 │   │   │   ├── rest/                   # FastAPI endpoints

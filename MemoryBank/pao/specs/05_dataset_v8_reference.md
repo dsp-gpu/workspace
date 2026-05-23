@@ -1,9 +1,15 @@
-# Plan dataset v8 + train + deploy
+# Reference: dataset v8 collectors plan (от 2026-05-21)
 
-> **Дата:** 2026-05-21
-> **Цель:** Закрыть проблему factual hallucination (HybridBackend → Strategy вместо Bridge,
-> namespace `dsp_hybrid::` вместо `drv_gpu_lib::`) через расширение датасета и стабильный train.
-> **Контекст:** v7 pilot Ollama `qwen-coder-14b-dsp` факт-галлюцинирует на 10% обучения (375 step).
+> ⚠️ **Контекст**: этот документ — **референс** из проекта **DSP-GPU finetune-env** (сестра Sonnet 4.6, 21.05). Содержит DSP-GPU specific факты (HybridBackend / Bridge / drv_gpu_lib).
+>
+> **Для rag-mentor/rag-pao** применяется **методологически** (D33):
+> - 10 коллекторов P0/P1/P2 переносим как **абстрактный шаблон** в `pipelines/_template/collectors/`
+> - Per-target адаптация под `<target>/Doc/Patterns.md`, `_META.yaml`, key classes
+> - Q1-Q10 acceptance синтезируется per-target (Alex для DSP-GPU, Кодо для новых)
+>
+> **Не применять цитаты HybridBackend/Bridge напрямую** — это пример для DSP-GPU, не для customer drops.
+>
+> **Цель**: Закрыть problem factual hallucination (Qwen галлюцинирует на known names) через расширение датасета и стабильный train.
 
 ---
 

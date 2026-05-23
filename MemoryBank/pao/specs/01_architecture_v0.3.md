@@ -95,7 +95,7 @@ for class in target.classes:
 
 ---
 
-## 3. Принятые решения (D1-D33)
+## 3. Принятые решения (D1-D39)
 
 ### Архитектурные (D1-D20, из v0.2)
 
@@ -139,23 +139,50 @@ for class in target.classes:
 | **D31** | Safe endpoints (production): `/show_signature`, `/show_symbols`, `/search` (filtered), `/run_filler` (sanitized) |
 | **D32** | Oracle источник = Claude + retrieval из `mentor_db`. Без обращения в rag-pao |
 | **D33** | QLoRA dataset = 10 коллекторов из `dataset_v8_plan_2026-05-21.md` в `pipelines/_template/collectors/` (шаблон) + `_logs/L*_distillation.jsonl`. Веса: `weight = final_judge_score / 100` (policies §E:482) |
+| **D34** | Shared anti-hallucination package `common/anti_hallucination/` (git submodule в mentor + pao). На pao лежит отдельным подпакетом `rag_pao/core/anti_hallucination/` (НЕ в `llm_serving/`). Закрывает ENCAP-1 (drift) + COHES-1 (cohesion) |
+| **D35** | Safe/debug endpoints вынесены в `rag-pao/config/access_policy.yaml` (config-driven, OCP). `nda_guard` загружает через `AccessPolicy.load()` |
+| **D36** | `AccessAwareMixin` в `rag_mentor/rag_pao_client/base.py` — pre-check метода до HTTP/MCP вызова. Defense in depth с server-side `nda_guard`. LSP-correct: `RestClient.show_file` и `MCPClient.show_file` ведут себя одинаково |
+| **D37** | Idempotency для `POST /save_rag`: `payload.idempotency_key = sha256(target + class_fqn + attempt_id)`. Сервер дедуплицирует. Защита от network retry дублей (R-RES-1) |
+| **D38** | Post-push verify для bare remote: после `git push` mentor → `ssh server 'cd /srv/rag-pao && git log -1 --oneline'` — сверка с локальным HEAD. Защита от silent fail post-receive hook (R-RES-2) |
+| **D39** | Validator на старте rag-pao (`bootstrap.sh` + systemd `ExecStartPre`): `validate_targets_config()` падает если `nda_level != open && codo_access == full`. Защита от опечатки в targets.yaml (R-NDA-1 / SEC-1) |
 
 ---
 
-## 4. Risks (актуальные)
+## 4. Risk Register (с mitigation)
+
+### 4.1 Domain risks
+
+| # | Risk | Likelihood | Impact | Mitigation |
+|---|------|-----------|--------|-----------|
+| **R1** | 35B-judge swap-latency (5-10 сек на класс) | medium | 🟢 low | acceptable, контролируем в `eval_runs` |
+| **R2** | Customer code разнообразен по стилю doxygen | high | 🟡 medium | per-target `pipelines/<n>_v1/prompts_override/` |
+| **R5** | Prompt drift Claude 4.7 → 5.0 | medium | 🟡 medium | versioning `v1/v2/` + re-validation на golden_set |
+| **R6** | Дрейф Qwen 14B/Coder → новая revision | high | 🟡 medium | pin по sha256 в `model_router.py` |
+| **R7** | Win dev → Linux prod path-bugs | low | 🟡 medium | `pathlib.Path` + `RAGCTL_STAGE` env |
+| **R8** | PG schema coexistence с DSP-GPU | low | 🟢 low | разные schemas |
+| **R9** | Anti-hallucination не достигнет 95% target | medium | 🔴 critical | 4 барьера + escalate-to-human + `manual_review_queue.md` |
+| **R10** | 35B не обучается на 9070 (47 GB ROCm load) | — | — | known limit; QLoRA только на 14B (D12) |
+
+### 4.2 System-level risks (из deep review)
+
+| # | Risk | Likelihood | Impact | Mitigation |
+|---|------|-----------|--------|-----------|
+| **R-NDA-1** | Кодо leak NDA в Claude API через debug-mode на NDA-drop'е | medium | 🔴 critical | dual nda_guard (server+client) + SEC-1 validator (D39) + audit log |
+| **R-RES-1** | `POST /save_rag` дубли при network retry | medium | 🟡 medium | `idempotency_key` (D37) |
+| **R-RES-2** | Bare remote post-receive hook silent fail | low | 🟡 medium | post-push verify (D38) |
+| **R-OBS-1** | Нет Prometheus / OpenTelemetry — слепота в production | high | 🟡 medium | Prometheus в Phase 01 + OTel в Phase 02 |
+| **R-EVO-1** | FastAPI single-target через env — ограничение для multi-target | medium | 🟢 low (MVP) | resource-based URL `/v1/targets/{t}/...` в Phase 06+ |
+| **R-DRIFT-1** | Claude/Qwen model upgrade ломает промпты | high | 🟡 medium | pin + re-validation на golden_set перед deploy |
+| **R-GPU-1** | RX 9070 ROCm 7.2 bug регрессия | medium | 🔴 critical | pin ROCm version + smoke на каждом upgrade |
+| **R-COST-1** | Anthropic Max5 → spend > budget | low | 🟢 low | rate limit per session + monitor |
+| **R-GOV-1** | Customer «right to be forgotten» | low | 🟡 medium | `scripts/remove_target.sh` atomic команда |
+
+### 4.3 Migration / debt risks
 
 | # | Risk | Mitigation |
-|---|------|------------|
-| **R1** | 35B-judge swap-latency (5-10 сек на класс) | acceptable, контролируем в `eval_runs.metrics` |
-| **R2** | Customer code разнообразен по стилю doxygen | per-target `pipelines/<name>_v1/prompts_override/` |
-| **R5** | Prompt drift Claude 4.7 → 5.0 | версионирование `v1/v2/` + re-validation на golden_set |
-| **R6** | Дрейф Qwen 14B/Coder → новая ревизия | pin модели по sha256 в `model_router.py` |
-| **R7** | Win dev → Linux prod path-bugs | `pathlib.Path` + `RAGCTL_STAGE` env, никаких `E:\` |
-| **R8** | PG schema coexistence с DSP-GPU | разные schemas (`rag_mentor`, `rag_pao_<t>`, `dsp_gpu`) |
-| **R9** | Anti-hallucination не достигнет 95% target | escalate-to-human + manual prompt fix + `manual_review_queue.md` |
-| **R10** | 35B не обучается на 9070 (ROCm 47GB) | Phase 09 QLoRA только на 14B (Coder + Qwen3) |
-| **R11** 🆕 | Debug-режим Кодо имеет доступ к коду → утечка в продакшен через привычку | flip `mode: debug → production` ОБЯЗАТЕЛЕН перед NDA-drops + regression test |
-| **R12** 🆕 | Collectors v8 (DSP-GPU) не применимы 1:1 для нового customer drop | шаблон в `pipelines/_template/collectors/` адаптируется под target при `cp _template/ → <name>_v1/` |
+|---|------|-----------|
+| **R11** | Debug-режим Кодо имеет доступ к коду → утечка в production через привычку | flip `mode` ОБЯЗАТЕЛЕН перед NDA-drops + regression test (см. policies §E.4) |
+| **R12** | Collectors v8 (DSP-GPU) не применимы 1:1 для нового customer drop | шаблон в `pipelines/_template/collectors/` адаптируется под target |
 
 ---
 
@@ -202,9 +229,7 @@ for class in target.classes:
 
 | # | Вопрос |
 |---|--------|
-| **Q-D8** | Когда стартуем Phase 00 Bootstrap? Команда Alex'а «делай Phase 00» |
-
-Все Q11-Q20 + Q-D1..Q-D7 + Q-D9..Q-D12 + Q-R1..Q-R2 закрыты в раундах 1-5 (см. родители + dopolnenie v1.1 + review).
+| **Q-Start** | Команда Alex'а «делай Phase 00 Bootstrap» — единственный блокер для старта |
 
 ---
 

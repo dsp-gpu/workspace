@@ -48,6 +48,9 @@ dependencies = [
     # Tree-sitter (для local AST checks — опционально)
     # "tree-sitter>=0.21.0",
     # "tree-sitter-cpp>=0.21.0",
+
+    # Shared anti-hallucination (D34) — git submodule в обоих репо
+    "rag-anti-hallucination @ file://../common",
 ]
 
 [project.optional-dependencies]

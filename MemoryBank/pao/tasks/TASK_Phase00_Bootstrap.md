@@ -1,19 +1,16 @@
-# TASK_RAG_MENTOR_Phase00_Bootstrap
+# TASK_Phase00_Bootstrap
 
-> **Версия**: 0.4 (учитывает dopolnenie v1.1 + 3 слоя rag-pao + 2 режима доступа Кодо + collectors) · **Дата**: 2026-05-23 · **Owner**: Alex + Кодо
-> **Status**: ✅ READY TO START — после OK Alex на Q-D8 в dopolnenie
-> **Estimate**: **2 рабочих дня** (12-16 часов, увеличено с v0.3 из-за 3 слоёв + access_control + 7 MCP скелетов)
-> **Зависит от**: spec v0.2 + [dopolnenie v1.1](../specs/rag_mentor_structure_dopolnenie_2026-05-23.md) + [review v1.0](../specs/rag_mentor_review_2026-05-23.md)
+> **Версия**: 0.4 (3 слоя rag-pao + 2 режима доступа + 9 mentor подпакетов + access_control + collectors + observability) · **Дата**: 2026-05-23
+> **Status**: ✅ READY TO START — ждёт команды Alex «делай Phase 00»
+> **Estimate**: **2 рабочих дня** (12-16 часов)
+> **Зависит от**: 6 spec'ов v0.3 в `../specs/` (см. INDEX.md)
 >
-> **Принятые ответы Alex (2026-05-20)**:
-> - GitHub org = `rag-mentor` (Q-P0-1)
-> - LICENSE = Apache-2.0 (Q-P0-2)
-> - Git email = `diving_73@gmail.com` (Q-P0-3) ⚠️ НЕ `ltestai73@gmail.com`
-> - Rules pipeline = Кодо пишет → Alex ревьюит → Alex правит (Q-P0-4)
->
-> **Принятые ответы Alex (2026-05-23)**:
-> - Collectors → `pipelines/_template/collectors/` (Q-R1)
-> - Q1-Q10 acceptance: Alex для DSP-GPU, Кодо синтезирует для новых targets (Q-R2)
+> **Конфигурация (зафиксирована в spec 01 §3)**:
+> - GitHub org = `rag-mentor`
+> - LICENSE = Apache-2.0
+> - Git email = `diving_73@gmail.com`
+> - Collectors → `pipelines/_template/collectors/` (D33)
+> - Q1-Q10 acceptance: Alex для DSP-GPU pilot, Кодо синтезирует для новых targets
 
 ---
 
@@ -24,7 +21,7 @@
 К концу фазы оба каталога открываются в Claude Code, CLAUDE.md грузится, rules видны, mentor имеет скелет `mentor_db/`, pao имеет 3 слоя (`core/ + pipelines/_template/ + current/`) + `access_control/` + `targets.yaml`.
 
 **Из чего исходим**:
-- 4 spec файла v0.2 + dopolnenie v1.1 + review v1.0 — все утверждены.
+- 6 spec'ов v0.3 в `MemoryBank/pao/specs/` (см. INDEX.md) — все утверждены.
 - Code (`*.py`, БД init scripts) **ещё не пишем** — Phase 00 чисто организационная.
 
 ---
@@ -93,7 +90,7 @@ git config user.email "diving_73@gmail.com"
 # NO remote (D18)
 ```
 
-### 00-3 — Скелет rag-mentor/ (обновлено под dopolnenie v1.1)
+### 00-3 — Скелет rag-mentor/ (9 подпакетов + mentor_db + 7 MCP)
 
 ```
 rag-mentor/
@@ -111,7 +108,7 @@ rag-mentor/
 │   ├── changelog/
 │   └── feedback/
 │
-├── rag_mentor/                     🆕 Python пакет (v0.4) — 8 подпакетов
+├── rag_mentor/                     🆕 Python пакет (v0.5) — 9 подпакетов
 │   ├── __init__.py
 │   ├── orchestrator/__init__.py
 │   ├── prompt_builder/__init__.py
@@ -119,8 +116,8 @@ rag-mentor/
 │   ├── reviewer/__init__.py
 │   ├── comparator/__init__.py      🆕 diff_vs_etalon/issue_categorizer
 │   ├── critic/__init__.py
-│   ├── rag_pao_client/__init__.py
-│   ├── name_validator/__init__.py
+│   ├── rag_pao_client/__init__.py  + AccessAwareMixin (D36)
+│   ├── anti_hallucination/__init__.py  🆕 D34 (client-side wrapper над common/)
 │   ├── journal/__init__.py
 │   └── utils/__init__.py
 │
@@ -150,7 +147,7 @@ rag-mentor/
     └── secrets.env.example
 ```
 
-### 00-4 — Скелет rag-pao/ (обновлено под dopolnenie v1.1 — 3 слоя)
+### 00-4 — Скелет rag-pao/ (3 слоя core/pipelines/current + access_control + anti_hallucination)
 
 ```
 rag-pao/
@@ -165,7 +162,8 @@ rag-pao/
 │   ├── core/                       🔵 STABLE CORE (8 подпакетов)
 │   │   ├── indexer/{ast,chunking,hash_skip}/  doxytags_reuse.py
 │   │   ├── retrieval/{embedder,filters}/  hybrid_retriever.py  reranker.py
-│   │   ├── llm_serving/clients/  model_router.py  name_validator.py
+│   │   ├── llm_serving/clients/  model_router.py    # D34: name_validator вынесен
+│   │   ├── anti_hallucination/                     🆕 D34: name_validator/schema_lint/doxygen_lint/forbidden_terms_loader
 │   │   ├── journal/{per_prompt,per_class}.py.template
 │   │   ├── api/{rest,mcp}/         show_file/show_signature/show_symbols/retrieve/run_filler/run_judge/save_rag/health (placeholders)
 │   │   ├── access_control/         🆕 mode_switch.py + nda_guard.py (D25)
@@ -199,7 +197,7 @@ rag-pao/
 ├── targets/                        📁 symlinks/submodules (D21)
 │   ├── README.md                   «здесь только symlinks к /srv/pao_<name>/»
 │   └── _meta/
-│       └── targets.yaml            🆕 ИСТОЧНИК ИСТИНЫ путей (см. dopolnenie §1.2)
+│       └── targets.yaml            🆕 ИСТОЧНИК ИСТИНЫ путей (см. spec 02 §5)
 │
 ├── finetune/
 │   ├── dataset_builders/           v8.py + dedup.py placeholders (D33)
@@ -441,7 +439,7 @@ Manual checklist:
 
 | Зависит от | Что |
 |------------|-----|
-| Spec v0.2 + dopolnenie v1.1 + review v1.0 | ✅ 2026-05-23 |
+| 6 spec'ов v0.3 в `MemoryBank/pao/specs/` | ✅ 2026-05-23 |
 | GitHub org `rag-mentor` создан | ⏳ Alex делает в 00-12 (manual) |
 | Anthropic API key | Опционально (Max5 plan, Кодо через Claude Code) |
 
@@ -462,19 +460,6 @@ Manual checklist:
 | **R-P0-7** | `~/.claude/CLAUDE.md` отсутствует на новой машине | 00-0 проверяет |
 | **R-P0-8** 🆕 | 3 слоя rag-pao + `pipelines/_template/collectors/` — много пустых каталогов | `.gitkeep` + README с TODO Phase 02-09 |
 | **R-P0-9** 🆕 | access_control логика не покрывает `mode=production AND codo_access=full` | в 00-7 rule 17 — описать: production → forced rest-only, codo_access игнорируется |
-
----
-
-## ✅ Closed questions
-
-| # | Вопрос | Ответ |
-|---|--------|-------|
-| Q-P0-1 | GitHub org | `rag-mentor` |
-| Q-P0-2 | LICENSE | Apache-2.0 |
-| Q-P0-3 | Git email | `diving_73@gmail.com` |
-| Q-P0-4 | Кто пишет rules | Кодо → Alex review/правки |
-| **Q-R1** 🆕 | Куда collectors | `pipelines/_template/collectors/` |
-| **Q-R2** 🆕 | Q1-Q10 кто пишет | Alex для DSP-GPU; Кодо синтезирует для новых |
 
 ---
 
@@ -505,15 +490,20 @@ Gates: [ ] G1-G15 (15 gates, +6 новых: G10-G15 для пакетов/3 сл
 
 ## 📚 References
 
-- [rag_mentor_architecture_2026-05-20.md](../specs/rag_mentor_architecture_2026-05-20.md)
-- [rag_mentor_structure_2026-05-20.md](../specs/rag_mentor_structure_2026-05-20.md)
-- [rag_mentor_phases_2026-05-20.md](../specs/rag_mentor_phases_2026-05-20.md)
-- [rag_mentor_policies_2026-05-20.md](../specs/rag_mentor_policies_2026-05-20.md)
-- 🆕 [rag_mentor_structure_dopolnenie_2026-05-23.md](../specs/rag_mentor_structure_dopolnenie_2026-05-23.md) v1.1
-- 🆕 [rag_mentor_review_2026-05-23.md](../specs/rag_mentor_review_2026-05-23.md) v1.0
-- 🆕 [dataset_v8_plan_2026-05-21.md](../specs_Linux_Radion_9070/dataset_v8_plan_2026-05-21.md) — collectors source
-- DSP-GPU rules: `e:\DSP-GPU\.claude\rules\*.md`
-- DSP-GPU CLAUDE.md: `e:\DSP-GPU\CLAUDE.md`
+6 spec'ов v0.3 в `MemoryBank/pao/specs/` (см. INDEX.md):
+- `01_architecture_v0.3.md` — overview + 39 ADR + Risk Register
+- `02_structure_v0.3.md` — структура каталогов rag-mentor / rag-pao / pao_<name>
+- `03_phases_v0.3.md` — HI-RAG L0-L5 + 11 фаз
+- `04_policies_v0.3.md` — anti-hallucination + 2 режима + idempotency + validators
+- `05_dataset_v8_reference.md` — reference для collectors
+- `06_architecture_diagrams.md` — C4 (Mermaid) + контракты + DDD
+
+Шаблоны:
+- `../templates/rag-mentor/` — CLAUDE.md + README + .env + .gitignore + pyproject.toml + config/
+- `../templates/rag-pao/` — то же + pipelines/_template/
+- `../templates/pao_drop/_META.yaml.template`
+
+Rules: `../rules/{mentor,pao}/00-17*.md` (17+17)
 
 ---
 
@@ -546,4 +536,4 @@ Phase 00 **DONE** когда:
 
 ---
 
-*v0.4 учитывает dopolnenie v1.1 + review v1.0 + ответы Alex Q-R1/Q-R2. Готов к старту по команде Alex'а.*
+*v0.4 final. Готов к старту по команде Alex'а «делай Phase 00».*

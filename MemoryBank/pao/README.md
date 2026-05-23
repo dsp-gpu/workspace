@@ -1,7 +1,7 @@
 # MemoryBank/pao/ — Starter Kit для rag-mentor / rag-pao
 
 > **Назначение**: полностью рабочий набор документов и шаблонов для старта проекта **rag-mentor ↔ rag-pao** (dual-RAG: oracle + executor).
-> **Источник**: 4 spec'и v0.2 от 2026-05-20 + dopolnenie v1.1 + review v1.0 от 2026-05-23.
+> **Версия**: v0.3 (финальная, нормативная)
 > **Применение**: копировать в новые репо одной командой (см. §3).
 
 ---
@@ -15,11 +15,12 @@ MemoryBank/pao/
 │
 ├── specs/                          📚 финальные спецификации v0.3
 │   ├── INDEX.md                    ← карта документов + порядок чтения
-│   ├── 01_architecture_v0.3.md     ← обзор + dual-RAG диаграмма + 33 решения
+│   ├── 01_architecture_v0.3.md     ← overview + ADR + 39 решений + Risk Register
 │   ├── 02_structure_v0.3.md        ← структура rag-mentor + rag-pao + pao_<name>
 │   ├── 03_phases_v0.3.md           ← HI-RAG L0-L5 + 11 фаз (00-09 + 09.A collectors)
-│   ├── 04_policies_v0.3.md         ← anti-hallucination + journal + 2 режима доступа
-│   └── 05_dataset_v8_reference.md  ← план collectors для QLoRA (от сестры Sonnet 4.6)
+│   ├── 04_policies_v0.3.md         ← anti-hallucination + 2 режима + журнал + idempotency
+│   ├── 05_dataset_v8_reference.md  ← reference: collectors для QLoRA
+│   └── 06_architecture_diagrams.md ← C1-C4 (Context/Container/Component/Code) Mermaid + DDD
 │
 ├── tasks/                          📋 готовые таски для старта
 │   ├── TASK_Phase00_Bootstrap.md   ← создать скелет 2 репо (1.5-2 дня)
@@ -151,31 +152,14 @@ vim config/targets.yaml      # добавить свои pao_<name>
 
 ---
 
-## 5. Источники (внешние)
+## 5. Версионирование starter kit
 
-| Файл в DSP-GPU MemoryBank | Что |
-|---------------------------|-----|
-| `specs/rag_mentor_architecture_2026-05-20.md` | v0.2 architecture (родитель) |
-| `specs/rag_mentor_structure_2026-05-20.md` | v0.2 structure (родитель) |
-| `specs/rag_mentor_phases_2026-05-20.md` | v0.2 phases (родитель) |
-| `specs/rag_mentor_policies_2026-05-20.md` | v0.2 policies (родитель) |
-| `specs/rag_mentor_structure_dopolnenie_2026-05-23.md` | v1.1 — правки за раунды 1-5 |
-| `specs/rag_mentor_review_2026-05-23.md` | v1.0 — deep review (gaps + collectors gap) |
-| `specs_Linux_Radion_9070/dataset_v8_plan_2026-05-21.md` | план 10 коллекторов для QLoRA (сестра Sonnet 4.6) |
-| `tasks/TASK_RAG_MENTOR_Phase00_Bootstrap.md` | v0.4 (источник для `tasks/TASK_Phase00_Bootstrap.md` здесь) |
+`v0.3` = финальная нормативная версия.
 
----
-
-## 6. Версионирование starter kit
-
-| Что меняем здесь | Когда |
-|------------------|-------|
-| `specs/*.md` v0.3 | при появлении нового spec'а в DSP-GPU родителях |
-| `templates/**` | при изменении принятых решений D21-D33 |
-| `rules/{mentor,pao}/*.md` | при появлении нового правила в DSP-GPU |
-| `tasks/*.md` | при обновлении Phase 00 / Phase 01 в DSP-GPU |
-
-**Bump version**: меняем `specs/01_architecture_v0.3.md` header → v0.4, обновляем зависимые.
+При обновлении принятых решений (новый D-номер):
+1. Обновить `specs/01_architecture_v0.3.md §3` (таблица D1-DN)
+2. Обновить зависимые spec'и + rules + templates
+3. Bump → `v0.4`, переименовать файлы `*_v0.3.md` → `*_v0.4.md`
 
 ---
 

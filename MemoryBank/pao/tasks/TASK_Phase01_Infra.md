@@ -28,6 +28,12 @@
 | **G11** | `nda_guard.py` smoke-test (debug mode `pao_contrib`) | unit test `tests/test_nda_guard.py` PASS |
 | **G12** | bare remote `/srv/git-remotes/rag-pao.git` создан | `git ls-remote /srv/git-remotes/rag-pao.git` отвечает |
 | **G13** | Pre-flight `infra/healthcheck.sh` работает | bash run → returns 0 + «✅ Pre-flight OK» |
+| **G14** 🆕 | `common/anti_hallucination/` git submodule подключён (D34) | `git submodule status` показывает common/ + `pip show rag-anti-hallucination` |
+| **G15** 🆕 | `access_policy.yaml` загружается через `AccessPolicy.load()` (D35) | unit test `tests/test_policy_loader.py` PASS |
+| **G16** 🆕 | `validate_targets_config()` падает на bad config (D39) | unit test bad-config FAIL with `InvalidConfig` |
+| **G17** 🆕 | Prometheus + Grafana запущены (R-OBS-1) | `curl localhost:9090/-/healthy` + `curl localhost:3000/api/health` |
+| **G18** 🆕 | FastAPI `/metrics` endpoint отвечает (Prometheus instrument) | `curl localhost:8080/metrics` показывает `http_requests_total` |
+| **G19** 🆕 | Idempotency для `/save_rag` (D37) — unit test | `tests/test_save_rag_idempotency.py` PASS |
 
 ---
 
@@ -101,6 +107,113 @@ git init --bare /srv/git-remotes/rag-pao.git
 
 Pre-flight train hygiene (см. `04_policies_v0.3.md §H`).
 
+### 01-11 — Shared `common/anti_hallucination/` submodule (D34, was C1)
+
+```bash
+# Создать отдельный репо (или git init локально + добавить submodule):
+mkdir -p /srv/git-remotes/common.git
+git init --bare /srv/git-remotes/common.git
+
+# Скелет common/
+mkdir -p ~/common/anti_hallucination/tests
+cd ~/common
+git init && git remote add origin /srv/git-remotes/common.git
+# написать name_validator.py / schema_lint.py / doxygen_lint.py / forbidden_terms_loader.py
+git add -A && git commit -m "init shared anti_hallucination" && git push -u origin main
+
+# Подключить в rag-mentor:
+cd ~/rag-mentor && git submodule add /srv/git-remotes/common.git common
+# Подключить в rag-pao:
+cd /srv/rag-pao && git submodule add /srv/git-remotes/common.git common
+
+# pyproject.toml уже имеет:
+# "rag-anti-hallucination @ file://../common"
+```
+
+### 01-12 — `access_policy.yaml` + `AccessPolicy.load()` (D35, was C3)
+
+```bash
+# Файл уже в templates/rag-pao/config/access_policy.yaml
+cp templates/rag-pao/config/access_policy.yaml /srv/rag-pao/config/
+
+# Реализовать loader:
+# rag_pao/core/access_control/policy_loader.py
+# rag_pao/core/access_control/nda_guard.py с DI AccessPolicy + TargetsConfig
+
+# Unit tests:
+python tests/test_policy_loader.py
+python tests/test_nda_guard.py
+```
+
+### 01-13 — Bootstrap validators (D39, was SEC-1)
+
+```bash
+# rag_pao/core/access_control/validators.py
+# validate_targets_config() — raise InvalidConfig если nda_level != open && codo_access == full
+
+# Интеграция:
+# 1. scripts/bootstrap.sh    — вызывает validator
+# 2. scripts/add_target.sh   — вызывает validator
+# 3. infra/systemd/rag-pao-api.service — добавить:
+#    ExecStartPre=/srv/rag-pao/venv/bin/python -m rag_pao.core.access_control.validators
+```
+
+### 01-14 — Prometheus + Grafana (R-OBS-1)
+
+```yaml
+# infra/docker-compose.prod.yml — добавить services:
+prometheus:
+  image: prom/prometheus:v2.51.0
+  ports: ["9090:9090"]
+  volumes: ["./infra/prometheus.yml:/etc/prometheus/prometheus.yml"]
+
+grafana:
+  image: grafana/grafana:10.4.0
+  ports: ["3000:3000"]
+  environment:
+    GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+  volumes: ["grafana_data:/var/lib/grafana"]
+```
+
+```python
+# rag_pao/core/api/rest/server.py — добавить:
+from prometheus_fastapi_instrumentator import Instrumentator
+Instrumentator().instrument(app).expose(app, endpoint="/metrics")
+```
+
+Готовые dashboards для Grafana (импортировать):
+- HTTP latency P50/P95/P99 per endpoint
+- Qwen filler/judge throughput
+- VRAM / CPU / disk I/O
+- `access_denials` count (R-NDA-1 visibility)
+
+### 01-15 — Idempotency для `/save_rag` (D37)
+
+```python
+# pao_db/postgres_init.sql — добавить:
+CREATE TABLE rag_pao_<target>.idempotency_keys (
+    key CHAR(64) PRIMARY KEY,           -- sha256 hex
+    result_json JSONB NOT NULL,
+    ts TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+# Cleanup job (cron):
+# DELETE FROM idempotency_keys WHERE ts < now() - INTERVAL '30 days';
+```
+
+```python
+# rag_pao/core/api/rest/save_rag.py
+@app.post("/save_rag")
+def save_rag(req: SaveRagRequest):
+    cached = pg.fetchone("SELECT result_json FROM idempotency_keys WHERE key=%s", req.idempotency_key)
+    if cached:
+        return cached.result_json
+    result = persist(req)
+    pg.execute("INSERT INTO idempotency_keys(key, result_json) VALUES(%s, %s)",
+               req.idempotency_key, result.json())
+    return result
+```
+
 ---
 
 ## ⏭️ Next phase preview
@@ -109,6 +222,8 @@ Pre-flight train hygiene (см. `04_policies_v0.3.md §H`).
 - crawler external_corpus (boost_selected, fmt, spdlog, nlohmann)
 - indexer `pao_contrib` (L0 на base of customer code в `/srv/pao_contrib/`)
 - 🆕 запустить 3 P0 коллектора (`reverse_patterns`, `synonym_pairs`, `confusion_negatives`) на DSP-GPU pilot (как референс), потом адаптация для `pao_contrib`
+- 🆕 **OpenTelemetry tracing**: spans `process_class` → `oracle.build_etalon` → `pao.search` → `pao.run_filler` (Jaeger / Tempo backend)
+- 🆕 **API versioning**: ввести `/v1/...` prefix для всех REST endpoints (R-EVO-1 fix)
 
 ---
 
