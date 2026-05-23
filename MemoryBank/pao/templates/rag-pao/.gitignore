@@ -1,0 +1,42 @@
+# --- Secrets ---
+.env
+config/secrets.env
+*.key
+*.pem
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# --- IDE ---
+.vscode/settings.json
+.idea/
+*.swp
+
+# --- Logs ---
+logs/
+*.log
+
+# --- DB binary blob (НЕ коммитим) ---
+pao_db/data/
+qdrant_storage/
+postgres_data/
+
+# --- Customer drops — symlinks к /srv/pao_<name>/, не копии (D21) ---
+# targets/<name>/ — это symlink, target по symlink'у НЕ коммитится
+# но сами symlink'и должны коммититься
+
+# --- Artefacts — КОММИТИМ (D18) ---
+# .rag/ → ✅ коммитим (per-target артефакты RAG)
+# _logs/ → ✅ коммитим (distillation logs для QLoRA)
+# pipelines/<name>_vN/_STABLE.md → ✅ коммитим
+# current/ → ✅ коммитим (журнал активной разработки)
+
+# --- macOS / Windows ---
+.DS_Store
+Thumbs.db

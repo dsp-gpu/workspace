@@ -1,0 +1,81 @@
+# 🗂️ rag-pao — MemoryBank MASTER INDEX
+
+> **Workspace**: `/srv/rag-pao` (Ubuntu 10.10.4.105) или `/home/alex/rag-pao` (laptop debug)
+> **Customer drops**: `/srv/pao_<name>/` (external roots)
+> **Bare remote**: `/srv/git-remotes/rag-pao.git`
+> **Связан с**: rag-mentor через REST (:8080) + git bare remote
+
+---
+
+## 🚦 Статус
+
+| Фаза | Описание | Статус |
+|------|----------|--------|
+| 00 Bootstrap | скелет + 17 rules + 3 слоя | 🟡 IN_PROGRESS |
+| 01 Infra | docker + PG schemas + Qdrant + Ollama + FastAPI :8080 + bare remote | 📋 |
+| 02 L0 corpus | external_corpus + indexer pao_contrib | 📋 |
+| 03 L1+L2 target | tree-sitter + libclang | 📋 |
+| 05-08 | L3/L3b/L4 (через mentor REST) | 📋 |
+| 09.A | collectors P0+P1+P2 | 📋 |
+| 09 | QLoRA train + acceptance | 📋 |
+
+---
+
+## 📚 Documents
+
+### Specs
+- [01_architecture_v0.3.md](specs/01_architecture_v0.3.md)
+- [02_structure_v0.3.md](specs/02_structure_v0.3.md)
+- [03_phases_v0.3.md](specs/03_phases_v0.3.md)
+- [04_policies_v0.3.md](specs/04_policies_v0.3.md)
+- [05_dataset_v8_reference.md](specs/05_dataset_v8_reference.md)
+
+### Tasks (синхрон с rag-mentor)
+- [tasks/IN_PROGRESS.md](tasks/IN_PROGRESS.md)
+
+### Rules
+`.claude/rules/00-new-task-workflow.md ... 17-access-modes.md`
+
+### Prompts (КОПИИ из rag-mentor через bare remote)
+- `prompts/v1/001_*.md ... 012_*.md` + `*.journal.md`
+
+---
+
+## 📁 Pipelines (per-target snapshots)
+
+| Pipeline | Status | Target |
+|----------|--------|--------|
+| `pipelines/_template/` | 🟢 шаблон | — |
+| `pipelines/pao_contrib_v1/` | 🟡 WIP / STABLE? | pao_contrib (open) |
+| `pipelines/pao_xxxx_acme_v1/` | 📋 ждёт drop | pao_xxxx_acme (NDA) |
+
+---
+
+## 🎯 Customer drops
+
+См. `config/targets.yaml` для актуальной картины:
+- `pao_contrib` (open, debug pilot) — `/srv/pao_contrib/`
+- `pao_xxxx_acme` (NDA customer-A) — `/srv/pao_xxxx_acme/`
+
+---
+
+## 🧱 3 слоя
+
+- **`rag_pao/core/`** — STABLE общий код (indexer + retrieval + llm_serving + api + access_control)
+- **`pipelines/<name>_vN/`** — FROZEN snapshots per-target
+- **`current/`** — ACTIVE development
+
+---
+
+## 🗣️ Команды
+
+| Команда | Действие |
+|---------|----------|
+| «Добавь target X» | `scripts/add_target.sh X` |
+| «Реиндексируй L2 target Y» | `scripts/reindex_target.sh Y` |
+| «Freeze pipeline current → vN» | `scripts/freeze_pipeline.sh <target> <N>` |
+| «Train v8 для target X» | `bash infra/healthcheck.sh && bash scripts/train_v8.sh X` |
+
+---
+
+*Maintained by: Кодо · template v0.3*

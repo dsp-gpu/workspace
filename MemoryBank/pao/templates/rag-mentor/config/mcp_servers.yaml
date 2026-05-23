@@ -1,0 +1,67 @@
+# ============================================================================
+#  rag-mentor — 7 локальных MCP-серверов для Кодо (D14, D23)
+#  Application: rag-mentor/.mcp.json (Claude Code project-level config)
+#  Подключаются автоматически при открытии rag-mentor/ в Claude Code.
+# ============================================================================
+
+mcpServers:
+
+  # --- 1. Filesystem (Anthropic official) ---
+  filesystem:
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-filesystem", "${HOME}/rag-mentor"]
+    description: "Кодо читает rag-mentor локально"
+
+  # --- 2. Git ---
+  git_mcp:
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-git", "--repository", "${HOME}/rag-mentor"]
+    description: "История промптов, спек, sessions"
+
+  # --- 3. PostgreSQL → rag_mentor schema (D23) ---
+  postgres_mentor:
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-postgres",
+           "postgresql://rag_mentor:${POSTGRES_PASSWORD}@localhost:5432/rag_mentor"]
+    description: "Кодо видит свою mentor_db PG schema"
+
+  # --- 4. Qdrant → mentor_v1 collection (D23) ---
+  qdrant_mentor:
+    command: python
+    args: ["-m", "qdrant_mcp"]
+    env:
+      QDRANT_URL:        "http://localhost:6333"
+      QDRANT_COLLECTION: "mentor_v1"
+    description: "Кодо видит свой mentor_v1 Qdrant"
+
+  # --- 5. Sequential thinking ---
+  sequential_thinking:
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    description: "Глубокий анализ"
+
+  # --- 6. Context7 (local copy) ---
+  context7_local:
+    command: python
+    args: ["-m", "context7_local"]
+    env:
+      DOCS_DIR: "${HOME}/rag-mentor/MemoryBank/.claude/specs"
+    description: "Локальная Context7 для частых либ"
+
+  # --- 7. Memory (Anthropic official, persistent across sessions) ---
+  memory:
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-memory"]
+    env:
+      MEMORY_FILE_PATH: "${HOME}/rag-mentor/MemoryBank/.mcp_memory.json"
+    description: "Persistent memory across Claude Code sessions"
+
+  # --- BRIDGE: rag-pao (REST + MCP wrapper) ---
+  rag_pao:
+    command: python
+    args: ["-m", "rag_pao.core.api.mcp.server"]
+    env:
+      RAG_PAO_URL:    "${RAG_PAO_URL}"
+      RAG_PAO_TARGET: "${RAGCTL_TARGET}"
+      RAG_PAO_MODE:   "${RAG_PAO_MODE}"
+    description: "Кодо → REST в rag-pao (через тоннель)"

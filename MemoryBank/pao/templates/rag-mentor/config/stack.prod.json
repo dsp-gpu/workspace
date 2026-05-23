@@ -1,0 +1,48 @@
+{
+  "_comment": "Prod stack — Ubuntu server 10.10.4.105 + vLLM",
+
+  "anthropic": {
+    "model_oracle":     "claude-opus-4-7",
+    "model_reviewer":   "claude-sonnet-4-6",
+    "model_critic":     "claude-opus-4-7"
+  },
+
+  "rag_pao": {
+    "url":            "http://10.10.4.105:8080",
+    "transport":      "rest",
+    "timeout_sec":    60,
+    "max_retries":    5
+  },
+
+  "mentor_db": {
+    "postgres":  { "host": "localhost", "port": 5432, "database": "rag_mentor", "schema": "rag_mentor" },
+    "qdrant":    { "url": "http://localhost:6333", "collection": "mentor_v1" }
+  },
+
+  "qwen_models": {
+    "filler": { "name": "qwen2.5-coder-14b",  "backend": "vllm", "endpoint": "http://10.10.4.105:8000" },
+    "judge":  { "name": "qwen3.6-35b",        "backend": "vllm", "endpoint": "http://10.10.4.105:8001", "queue_swap": true }
+  },
+
+  "embedder": {
+    "name":     "BAAI/bge-m3",
+    "endpoint": "http://10.10.4.105:8765",
+    "dim":      1024
+  },
+
+  "reranker": {
+    "name":     "BAAI/bge-reranker-v2-m3",
+    "endpoint": "http://10.10.4.105:8766"
+  },
+
+  "policy": {
+    "max_retries":          3,
+    "judge_threshold":      85,
+    "reviewer_threshold":   85,
+    "comparator_threshold": 80,
+    "temperature_filler":   0.3,
+    "temperature_judge":    0.0,
+    "temperature_oracle":   0.2,
+    "reviewer_sample_pct":  10
+  }
+}

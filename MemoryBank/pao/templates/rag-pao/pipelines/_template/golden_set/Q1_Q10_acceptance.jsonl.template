@@ -1,0 +1,10 @@
+{"id": "Q1", "category": "pattern_forward", "question": "Какой паттерн использует <KEY_CLASS_1>?", "expected": "<EXPECTED_PATTERN_1>", "trap_pattern": null, "difficulty": "easy"}
+{"id": "Q2", "category": "namespace_lookup", "question": "В каком namespace <KEY_CLASS_1>?", "expected": "<EXPECTED_NAMESPACE>", "trap_pattern": null, "difficulty": "easy"}
+{"id": "Q3", "category": "module_lookup", "question": "В каком репо <KEY_CLASS_1>?", "expected": "<EXPECTED_REPO>", "trap_pattern": "<WRONG_REPO_BUT_PLAUSIBLE>", "difficulty": "medium"}
+{"id": "Q4", "category": "class_listing", "question": "Какие <PATTERN_NAME> классы в <MODULE>?", "expected": ["<CLASS_A>", "<CLASS_B>", "<CLASS_C>"], "trap_pattern": null, "difficulty": "medium"}
+{"id": "Q5", "category": "pattern_reverse", "question": "Какие классы реализуют <PATTERN> в <PROJECT>?", "expected": ["<KEY_CLASS_1>"], "trap_pattern": null, "difficulty": "medium"}
+{"id": "Q6", "category": "migration_history", "question": "Как раньше назывался модуль <CURRENT_MODULE>?", "expected": "<LEGACY_NAME>", "trap_pattern": null, "difficulty": "medium"}
+{"id": "Q7", "category": "build_facts", "question": "Какой пресет CMake для <GPU_TARGET>?", "expected": "<PRESET_NAME>", "trap_pattern": null, "difficulty": "easy"}
+{"id": "Q8", "category": "config_facts", "question": "Какой optimizer стабилен для QLoRA на <GPU_ARCH>?", "expected": "adamw_torch", "trap_pattern": "adamw_8bit", "difficulty": "medium"}
+{"id": "Q9", "category": "anti_hallucination", "question": "Существует ли класс <FAKE_CLASS_NAME>?", "expected": "Нет, hallucination", "trap_pattern": null, "difficulty": "hard"}
+{"id": "Q10", "category": "anti_confusion", "question": "<KEY_CLASS_1> — это <WRONG_PATTERN>?", "expected": "Нет, <CORRECT_PATTERN>", "trap_pattern": "<WRONG_PATTERN>", "difficulty": "hard"}

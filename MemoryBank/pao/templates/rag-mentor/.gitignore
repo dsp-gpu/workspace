@@ -1,0 +1,51 @@
+# --- Secrets ---
+.env
+config/secrets.env
+config/*.local.json
+*.key
+*.pem
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+build/
+dist/
+.pytest_cache/      # хотя pytest запрещён, кэш на всякий случай
+
+# --- IDE ---
+.vscode/settings.json    # не глобальные settings, только локальные
+.idea/
+*.swp
+*.swo
+
+# --- Logs ---
+logs/
+*.log
+*.log.*
+
+# --- mentor_db data (binary blob) ---
+mentor_db/data/
+mentor_db/*.dump
+mentor_db/*.bak
+
+# --- Qdrant local data ---
+qdrant_local_data/
+
+# --- Memory MCP ---
+MemoryBank/.mcp_memory.json
+
+# --- Distillation logs БЫЛИ бы здесь, но их нет в mentor (они в rag-pao) ---
+
+# --- macOS / Windows ---
+.DS_Store
+Thumbs.db

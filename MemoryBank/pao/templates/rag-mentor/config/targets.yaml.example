@@ -1,0 +1,41 @@
+# ============================================================================
+#  rag-mentor/config/targets.yaml — ЗЕРКАЛО rag-pao/config/targets.yaml
+#  Mentor должен знать какие target'ы есть в pao + какой mode + codo_access
+# ============================================================================
+
+mode: debug                              # debug | production (D25)
+
+targets:
+  - name: pao_contrib
+    source: "/srv/pao_contrib"           # на сервере
+    # source: "/home/alex/pao_contrib"   # для локального моделирования
+    nda_level: open                      # open | customer-A | customer-B
+    indexable: true
+    primary_modules: [boost, qwt, sqlite, googletest]
+    layout:
+      modules_dir: "contrib"
+      cmake_infra_dir: "build"
+      our_overlays:
+        docs: "Doc"
+        examples: "Example"
+        native_tests: "Test"
+        gtest: "GTest"
+    pipeline: pao_contrib_v1             # current | pao_contrib_v1 | pao_contrib_v2
+    codo_access: full                    # full (debug full REST) | rest-only (safe only)
+
+  # ----- Example NDA drop (заполнится когда Alex даст доступ) -----
+  # - name: pao_xxxx_acme
+  #   source: "/srv/pao_xxxx_acme"
+  #   nda_level: customer-A
+  #   indexable: true
+  #   primary_modules: [module_X, module_Y]
+  #   layout:
+  #     modules_dir: "modules"            # может быть другая раскладка
+  #     cmake_infra_dir: "cmake"
+  #     our_overlays:
+  #       docs: "Doc"
+  #       examples: "Example"
+  #       native_tests: "Test"
+  #       gtest: "GTest"
+  #   pipeline: pao_xxxx_acme_v1
+  #   codo_access: rest-only              # 🔒 NDA — всегда rest-only

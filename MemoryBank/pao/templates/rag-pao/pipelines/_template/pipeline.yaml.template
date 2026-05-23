@@ -1,0 +1,96 @@
+# ============================================================================
+#  pipeline.yaml — описание этапов L0→L5 для конкретного target
+#  Скопировать в pipelines/<target>_v1/pipeline.yaml и адаптировать
+# ============================================================================
+
+target: <TARGET_NAME>                    # ← заменить (например, pao_contrib)
+version: v1
+status: WIP                              # WIP | STABLE
+created: <YYYY-MM-DD>
+
+# --- Layers HI-RAG ---
+layers:
+  L0:
+    enabled: true
+    source: external_corpus              # public open-source
+    crawlers: [doxygen_examples, test_examples]
+    license_filter: ["BSL-1.0", "MIT", "BSD-3-Clause", "Apache-2.0"]
+    size_limit_kb: 50
+    summarize_large: true
+    golden_set: golden_set/L0.jsonl
+
+  L1:
+    enabled: true
+    source: target                       # customer drop
+    extractors: [cmake_parser, c4_inferrer]
+    golden_set: golden_set/L1.jsonl
+
+  L2:
+    enabled: true
+    source: target
+    extractors: [tree_sitter_cpp, libclang_doxygen]
+    incremental: true                    # blake3 skip
+    golden_set: golden_set/L2.jsonl
+
+  L3:
+    enabled: true
+    source: target_and_L1_L2
+    filler:        qwen-coder-14b
+    judge:         qwen3.6-35b
+    reviewer:      claude-sonnet-4-6
+    critic:        claude-opus-4-7
+    oracle:        claude-opus-4-7        # source: mentor_db
+    max_retries:   3
+    thresholds:
+      judge:       80
+      reviewer:    80
+      comparator:  80
+    golden_set: golden_set/L3.jsonl
+
+  L3b:
+    enabled: true
+    description: GoogleTest skeleton после L3
+    filler: qwen-coder-14b
+    validators: [json_schema, cppcheck, gcc_fsyntax_only]
+    accumulate_to: external_corpus/test_examples/gtest_examples
+    threshold: gtest_compile_pass_pct >= 90
+
+  L4:
+    enabled: true
+    source: L3
+    filler:   qwen-coder-14b
+    reviewer: claude-sonnet-4-6
+    golden_set: golden_set/L4.jsonl
+
+  L5:
+    enabled: true
+    description: QLoRA на base_model
+    base_models: [qwen2.5-coder-14b, qwen3-14b]
+    collectors: [P0, P1]                 # P2 optional
+    dataset_source: [collectors, distillation_logs]
+    weight_formula: "final_judge_score / 100.0"
+    filters:
+      judge_score_min: 85
+      total_retries_max: 2
+    acceptance: golden_set/Q1_Q10_acceptance.jsonl
+    threshold_acceptance: 9              # из 10
+
+# --- Collectors (D33) ---
+collectors:
+  P0:   # ~1000 пар (must-have)
+    - patterns/reverse_patterns.py
+    - patterns/synonym_pairs.py
+    - patterns/confusion_negatives.py
+  P1:   # ~150-230 пар (high-value)
+    - listings/multi_class_listing.py
+    - facts/migration_history.py
+    - docs/lessons_learned.py
+    - facts/build_cmake_facts.py
+  P2:   # ~100-150 пар (nice-to-have)
+    - code/hip_primitives.py
+    - code/cross_references.py
+    - style/api_style_guide.py
+
+# --- Overrides ---
+prompts_override_dir: prompts_override
+golden_set_dir:       golden_set

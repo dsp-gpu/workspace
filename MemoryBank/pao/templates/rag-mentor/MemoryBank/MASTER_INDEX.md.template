@@ -1,0 +1,74 @@
+# 🗂️ rag-mentor — MemoryBank MASTER INDEX
+
+> **Workspace**: `/home/alex/rag-mentor` (laptop Debian)
+> **Связан с**: rag-pao (server Ubuntu 10.10.4.105) через REST + git bare remote
+> **Последнее обновление**: <DATE> (Phase 00 in progress)
+
+---
+
+## 🚦 Статус
+
+| Фаза | Описание | Статус |
+|------|----------|--------|
+| 00 Bootstrap | скелет + 17 rules + 7 MCP | 🟡 IN_PROGRESS |
+| 01 Infra | docker + PG + Qdrant + Ollama + MCP подключены | 📋 ждёт |
+| 02 L0 corpus | external_corpus + customer drop indexer | 📋 |
+| 03 L1+L2 target | tree-sitter + libclang на pao_contrib | 📋 |
+| 04 Prompts v1 | builder/judge/reviewer/critic + fewshot | 📋 |
+| 05 L3 pilot 5 classes | end-to-end на 5 классах | 📋 |
+| 05b L3b GTest pilot | gtest skeleton + compile check | 📋 |
+| 06 L3+L3b full | автомат на всех классах pao_contrib | 📋 |
+| 07 L4 use_cases | use_cases + pipelines | 📋 |
+| 08 Eval + replicate | replicate на 2-ом target | 📋 |
+| 09.A Dataset synthesis | collectors P0+P1 | 📋 |
+| 09 QLoRA | train Qwen-Coder-14B + Qwen3-14B | 📋 |
+
+---
+
+## 📚 Documents
+
+### Specs
+- [01_architecture_v0.3.md](specs/01_architecture_v0.3.md) — overview + dual-RAG
+- [02_structure_v0.3.md](specs/02_structure_v0.3.md) — структура каталогов
+- [03_phases_v0.3.md](specs/03_phases_v0.3.md) — 11 фаз + HI-RAG
+- [04_policies_v0.3.md](specs/04_policies_v0.3.md) — anti-hallucination + 2 режима + журнал
+- [05_dataset_v8_reference.md](specs/05_dataset_v8_reference.md) — collectors для QLoRA
+
+### Tasks
+- [tasks/IN_PROGRESS.md](tasks/IN_PROGRESS.md) — что сейчас в работе
+- [tasks/TASK_Phase00_Bootstrap.md](tasks/TASK_Phase00_Bootstrap.md) v0.4
+- [tasks/TASK_Phase01_Infra.md](tasks/TASK_Phase01_Infra.md) v0.1 preview
+
+### Rules (17 файлов)
+`.claude/rules/00-new-task-workflow.md` ... `17-access-modes.md`
+
+### Prompts
+- `prompts/for_mentor/v1/{reviewer,critic,builder_meta,comparator}/` — для самой Claude
+- `prompts/for_rag_pao/v1/001_*.md ... 012_*.md` — нумерованные для Qwen
+
+---
+
+## 🔗 rag-pao (sister project)
+
+- **Server**: Ubuntu 10.10.4.105, RX 9070, ROCm 7.2
+- **Workspace**: `/srv/rag-pao/`
+- **Customer drops**: `/srv/pao_<name>/` (external roots)
+- **REST**: `http://10.10.4.105:8080` (через SSH tunnel `-L 8080:8080`)
+- **Bare remote**: `ssh://alex@10.10.4.105:/srv/git-remotes/rag-pao.git`
+
+---
+
+## 🗣️ Команды Alex
+
+| Команда | Действие |
+|---------|----------|
+| «Покажи статус» | этот файл + `tasks/IN_PROGRESS.md` |
+| «Делай Phase 00» | старт `tasks/TASK_Phase00_Bootstrap.md` |
+| «Добавь задачу: ...» | `tasks/TASK_<topic>_<phase>.md` |
+| «Создай prompt» | `prompts/for_rag_pao/v1/NNN_<topic>.md` |
+| «Прогнать на классе X» | orchestrator → loop (см. phases §2) |
+| «Сравни эталон vs Qwen» | comparator → score |
+
+---
+
+*Maintained by: Кодо · template version v0.3*

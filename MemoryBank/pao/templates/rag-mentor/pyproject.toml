@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-mentor"
+version = "0.1.0"
+description = "Oracle для dual-RAG (mentor ↔ pao) — Claude-based ментор C++ doxygen + tests генерации"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Alex Lan", email = "diving_73@gmail.com" }
+]
+
+dependencies = [
+    # Anthropic (опционально — если без Claude Code wrapper)
+    # "anthropic>=0.40.0",
+
+    # Vector store / search
+    "qdrant-client>=1.13.0",
+    "sentence-transformers>=3.0.0",   # BGE-M3 embed
+    "rank-bm25>=0.2.2",                # BM25 sparse
+
+    # PG
+    "psycopg[binary]>=3.2.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.13.0",
+
+    # YAML / JSON
+    "pyyaml>=6.0",
+    "jsonschema>=4.21.0",
+
+    # HTTP / REST client to rag-pao
+    "httpx>=0.27.0",
+    "tenacity>=8.2.0",                 # retries
+
+    # Logging
+    "loguru>=0.7.0",
+
+    # CLI
+    "typer>=0.12.0",
+    "rich>=13.7.0",
+
+    # Diff / comparator
+    "deepdiff>=7.0.0",
+
+    # Tree-sitter (для local AST checks — опционально)
+    # "tree-sitter>=0.21.0",
+    # "tree-sitter-cpp>=0.21.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    # "pytest" — ЗАПРЕЩЁН (см. rules/04-testing-python.md). Используем TestRunner.
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rag_mentor*"]
+exclude = ["tests*", "MemoryBank*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RET"]
+ignore = ["E501"]                     # длинные строки разрешены для коммент-блоков
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true

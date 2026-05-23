@@ -1,0 +1,75 @@
+# ============================================================================
+#  rag-pao/config/targets.yaml — ИСТОЧНИК ИСТИНЫ путей customer drops
+#  Скопировать в targets.yaml и адаптировать.
+# ============================================================================
+
+# 🔒 GLOBAL MODE — переключатель доступа Кодо к pao (D25)
+mode: debug                              # debug | production
+
+# 📁 ROOT каталог где живут pao_<name>/ (через env override PAO_DROPS_DIR)
+drops_root: "${PAO_DROPS_DIR:/srv}"
+
+# --- Targets -----------------------------------------------------------------
+
+targets:
+
+  # --- pao_contrib (OPEN, debug pilot) ---
+  - name: pao_contrib
+    source: "${drops_root}/pao_contrib"
+    nda_level: open                      # open | customer-A | customer-B
+    indexable: true
+    primary_modules: [boost, qwt, sqlite, googletest, openssl]
+    layout:
+      modules_dir: "contrib"             # где модули
+      cmake_infra_dir: "build"           # cmake glue (НЕ build artifacts!)
+      our_overlays:
+        docs: "Doc"
+        examples: "Example"
+        native_tests: "Test"
+        gtest: "GTest"
+      ignore: [".git", "_doxygen_html"]
+    pipeline: pao_contrib_v1             # current | pao_contrib_v1 | pao_contrib_v2
+    codo_access: full                    # debug-mode полный REST + production all-rest-only
+
+  # --- pao_xxxx_acme (NDA, customer-A) ---
+  # - name: pao_xxxx_acme
+  #   source: "${drops_root}/pao_xxxx_acme"
+  #   nda_level: customer-A
+  #   indexable: true
+  #   primary_modules: [module_X, module_Y]
+  #   layout:
+  #     modules_dir: "modules"
+  #     cmake_infra_dir: "cmake"
+  #     our_overlays:
+  #       docs: "Doc"
+  #       examples: "Example"
+  #       native_tests: "Test"
+  #       gtest: "GTest"
+  #     ignore: [".git", ".obj", "*.tar.gz"]
+  #   pipeline: pao_xxxx_acme_v1
+  #   codo_access: rest-only             # 🔒 NDA — всегда rest-only, даже в debug
+
+  # --- pao_yyyy_globex (NDA, customer-B) ---
+  # - name: pao_yyyy_globex
+  #   source: "${drops_root}/pao_yyyy_globex"
+  #   nda_level: customer-B
+  #   indexable: true
+  #   layout: { modules_dir: "src", cmake_infra_dir: "cmake_glue", our_overlays: {docs: "Doc", examples: "Example", native_tests: "Test", gtest: "GTest"} }
+  #   pipeline: pao_yyyy_globex_v1
+  #   codo_access: rest-only
+
+# --- Safe endpoints для production-mode (D31) -------------------------------
+safe_endpoints:
+  - /health
+  - /search
+  - /show_signature
+  - /show_symbols
+  - /run_filler
+  - /run_judge
+  - /save_rag
+
+# --- Запрещённые endpoints (debug only, never in production) ---------------
+debug_only_endpoints:
+  - /show_file
+  - /show_journal
+  - /dump_target
