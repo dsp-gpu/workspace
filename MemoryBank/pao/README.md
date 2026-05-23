@@ -19,8 +19,11 @@ MemoryBank/pao/
 │   ├── 02_structure_v0.3.md        ← структура rag-mentor + rag-pao + pao_<name>
 │   ├── 03_phases_v0.3.md           ← HI-RAG L0-L5 + 11 фаз (00-09 + 09.A collectors)
 │   ├── 04_policies_v0.3.md         ← anti-hallucination + 2 режима + журнал + idempotency
-│   ├── 05_dataset_v8_reference.md  ← reference: collectors для QLoRA
-│   └── 06_architecture_diagrams.md ← C1-C4 (Context/Container/Component/Code) Mermaid + DDD
+│   └── 05_dataset_v8_reference.md  ← reference: collectors для QLoRA
+│
+├── .rag/                           📐 архитектурные диаграммы + паттерны
+│   ├── architecture_C1_C4.md       ← C4 model (Context/Container/Component/Code) Mermaid + DDD
+│   └── design_patterns_applied.md  ← применённые ООП / SOLID / GRASP / GoF паттерны
 │
 ├── tasks/                          📋 готовые таски для старта
 │   ├── TASK_Phase00_Bootstrap.md   ← создать скелет 2 репо (1.5-2 дня)

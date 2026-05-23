@@ -12,7 +12,10 @@
 | 3 | [03_phases_v0.3.md](03_phases_v0.3.md) | HI-RAG L0-L5 + 11 фаз 00→09 + 09.A collectors + cycle of self-correction | Понять порядок работ |
 | 4 | [04_policies_v0.3.md](04_policies_v0.3.md) | anti-hallucination + 2 режима доступа + журнал + idempotency + validators | Понять критические правила |
 | 5 | [05_dataset_v8_reference.md](05_dataset_v8_reference.md) | reference: 10 коллекторов для QLoRA dataset | Источник `pipelines/_template/collectors/` |
-| 6 | [06_architecture_diagrams.md](06_architecture_diagrams.md) | C1-C4 model (Mermaid) + REST контракты + DDD Bounded Contexts | Визуальная карта системы |
+
+**Визуальные референсы** в `../.rag/`:
+- [`architecture_C1_C4.md`](../.rag/architecture_C1_C4.md) — C4 диаграммы (Context/Container/Component/Code) + Mermaid + DDD Bounded Contexts
+- [`design_patterns_applied.md`](../.rag/design_patterns_applied.md) — применённые ООП / SOLID / GRASP / GoF паттерны
 
 ## Граф зависимостей
 
@@ -25,7 +28,8 @@
        ↓          │
 05_dataset_v8 ←──┘  (referenced from 03 §10 Phase 09.A)
 
-06_architecture_diagrams (visual companion к 01 + 02)
+.rag/architecture_C1_C4.md       (visual companion к 01 + 02)
+.rag/design_patterns_applied.md  (паттерны как референс для всех 5 spec)
 ```
 
 ## Принятые решения (D1-D39)
