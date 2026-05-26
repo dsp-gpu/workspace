@@ -1,6 +1,72 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-21 (Phase 5 Day-3: Coder-14B → **eval 0.7125 ⭐** @ checkpoint-375, Qwen3-14B compare в процессе)
+**Обновлено**: 2026-05-25 вечер (Phase 6 LLM Benchmark — cross-project compare 3 моделей DONE)
+
+---
+
+## 🆕 2026-05-25 — Phase 6: LLM Benchmark Suite + cross-project compare ✅
+
+### Главное
+
+**3 модели в Ollama** проверены на 2 проектах:
+
+| Модель | DSP-GPU avg_q | pao-contrib avg_q | Δ |
+|--------|--------------:|------------------:|---:|
+| `qwen-coder-14b-dsp` (наш FT) | **3.2** | **3.2** | **0.0** ⭐ no forgetting |
+| `qwen3.6:35b-a3b-q8_0` | 4.8 | 4.7 | 0.1 (most stable) |
+| `qwen3-coder-30b-a3b` | 4.3 | 3.8 | 0.5 (repeat-bug T2) |
+
+**Открытия:**
+1. **Catastrophic forgetting НЕ произошёл** — 14B-DSP даёт identical качество на чужом проекте (3.2=3.2). Plan-D patch + LoRA on attention сохраняют generic skills.
+2. **Никто не определил pattern HybridBackend = Bridge** — подтверждает план v7 fine-tune (43 пары Bridge already в dataset_v7).
+3. **35B-Q8 thinking-trap** через system prompt не отключается надёжно — нужен native API `think: false` (Ollama 0.21+).
+4. **30B-A3B repeat-loop** в Python review — нужен `repeat_penalty: 1.15` для следующих compare.
+
+### PostgreSQL `llm_bench` schema
+
+База `gpu_rag_dsp.llm_bench` (multi-project):
+- `projects` (3): dsp-gpu, pao-contrib, rag-mentor
+- `runs` (2): id=1 dsp-gpu, id=2 pao-contrib
+- `responses` (36 ответов, все scored)
+- 4 views: `v_best_per_category`, `v_ft_progress`, `v_transfer_learning`, `v_latest_compare`
+
+### Артефакты Phase 6
+
+- `/home/alex/finetune-env/Core/phase6_qwen3coder_30b_moe/`:
+  - `sql/01_create_llm_bench_schema.sql` — schema (применён)
+  - `import_results_to_db.py` — psycopg3 импорт md→DB
+  - `run_compare_v2.sh` — DSP-GPU runner (18 ответов)
+  - `run_compare_pao.sh` — pao-contrib runner (18 ответов)
+  - `convert_30b_to_ollama.sh` — конвертер 30B HF→GGUF→Ollama
+  - `results_v2/`, `results_pao/` — все md ответы (36 файлов)
+- `/home/alex/rag-mentor/MemoryBank/llm_bench_protocol_2026-05-25.md` — protocol для подружки
+- `MemoryBank/sessions/2026-05-25.md` — полный summary дня
+- `MemoryBank/.claude/rules/17-llm-bench.md` — правило для будущих compare
+
+### Финальное расписание моделей по задачам
+
+| Use case | Модель |
+|----------|--------|
+| Generic C++/HIP/Python кодинг (быстро) | `qwen3-coder-30b-a3b` |
+| Deep code review | `qwen3.6:35b-a3b-q8_0` |
+| Doc/Full.md документация | `qwen3.6:35b-a3b-q8_0` |
+| Quick JSON indexing | `qwen-coder-14b-dsp` или 30B-A3B |
+| DSP-GPU specifics | `qwen-coder-14b-dsp` (пока не дообучен v7) |
+
+### На следующую сессию
+
+1. **v7 full train на 14B-DSP** (на ночь, ~3 ч на чистом env) — ожидание прироста на dsp-gpu 3.2 → ≥4.0 при сохранении generic 3.2 на pao-contrib
+2. Возможный новый MTP variant Qwen3.6 для compare (Alex упоминал)
+3. Сестрёнка `rag-mentor` заливает свои данные через protocol
+
+### Инсайты
+
+1. **psycopg3 + TCP + password** — единственный надёжный путь подключения к gpu_rag_dsp (peer auth не работает для dsp_asst как system user)
+2. **Ollama 0.21.2 + Qwen3.6** — `/no_think` через system prompt buggy, использовать `think: false` в API
+3. **num_predict=4000 минимум** для thinking-моделей, иначе response пустой
+4. **postgres user не читает /home/alex/** — SQL через `cat file | sudo -u postgres psql` или /tmp/
+
+---
 
 ---
 
