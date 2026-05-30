@@ -487,7 +487,9 @@
       "Bash(bash -n /home/alex/finetune-env/run_with_resume.sh)",
       "Bash(rsync -a /home/alex/finetune-env/run_with_resume.sh user@10.10.4.105:/home/user/finetune-env/run_with_resume.sh)",
       "Bash(rsync -a --info=stats1 --mkpath /home/alex/finetune-env/output/v7_smoke100_2026-05-26/checkpoint-100/ user@10.10.4.105:/home/user/finetune-env/output/v7_smoke100_2026-05-26/checkpoint-100/)",
-      "Bash(ssh -o ConnectTimeout=15 user@10.10.4.105 ' *)"
+      "Bash(ssh -o ConnectTimeout=15 user@10.10.4.105 ' *)",
+      "Bash(node -e \"const d=require\\(require\\('os'\\).homedir\\(\\)+'/.claude/settings.local.json'\\);console.log\\('theme:',d.theme\\);console.log\\('keys:',Object.keys\\(d\\)\\)\")",
+      "PowerShell(Set-Content *)"
     ],
     "additionalDirectories": [
       "/home/alex/.continue",

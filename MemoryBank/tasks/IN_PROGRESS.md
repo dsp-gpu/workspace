@@ -1,6 +1,21 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-25 вечер (Phase 6 LLM Benchmark — cross-project compare 3 моделей DONE)
+**Обновлено**: 2026-05-30 (DeepSeek stack скачан → Phase 7 готова к старту 2026-06-01)
+
+---
+
+## 🆕 2026-05-30 — DeepSeek stack скачан, Phase 7 запланирована
+
+**Скачано** (50.7 GB, `D:\offline-debian-pack\1_models\DeepSeek\`): 6 GGUF — 2 draft (Qwen2.5-Coder-1.5B, R1-Distill-1.5B) + R1-0528-Qwen3-8B + R1-Distill-14B + DeepSeek-Coder-V2-Lite + R1-Distill-32B. Все целые.
+
+**Активный таск** → `TASK_Phase7_deepseek_2026-06-01.md` (фазы A-E):
+- A: deploy 6 моделей на Debian + симлинки + smoke
+- B: speculative drafts (Coder-14B + R1-14B + R1-32B) → ×1.5-2.5
+- C: **RAG → единый llama-server** (embeddings + reranker + generation, убрать dsp-asst)
+- D: Phase 7 compare → llm_bench run_id 12-16, планка = Qwen2.5-Coder-14B
+- E: QLoRA train DeepSeek (8B пилот → 14B) vs Qwen2.5-Coder-14B-FT
+
+Research → `specs/deepseek_analysis_2026-05-28.md`. Память → `project_deepseek_models_downloaded_2026-05-30.md`.
 
 ---
 
