@@ -43,3 +43,4 @@ desktop.ini
 # ── Папки сборки (если вдруг появятся в корне) ───────────────────
 build/
 dist/
+scratch_myCommand.md
