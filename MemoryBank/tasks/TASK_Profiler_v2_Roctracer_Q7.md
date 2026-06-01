@@ -1,5 +1,7 @@
 # TASK: Profiler v2 — Q7 rocprofiler-sdk integration (full 5-field GPU timing)
 
+> ✅ **✅ DONE 2026-06-01 — rocprofiler_timing_source.cpp в main, Q7 timing-source тесты 12/12 PASS на gfx1201.**
+
 > **Дата создания**: 2026-04-27 · **Обновлено**: 2026-05-04 (планирование + 4 decisions)
 > **Effort**: **15-22 ч** (rocprofiler-sdk без counters; counters → отдельный Q7.F +6-8 ч)
 > **Scope**: `core/services/profiling/` + `core/CMakeLists.txt` + новые тесты

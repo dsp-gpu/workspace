@@ -1,5 +1,7 @@
 # TASK: Profiler v2 — Q7.F dispatch counters (rocprofiler-sdk)
 
+> ✅ **✅ DONE 2026-06-01 — SetCounters реализован, counter-тесты PASS.**
+
 > **Дата создания**: 2026-05-04 (после Q7 5-field timing DONE)
 > **Effort**: ~3-5 часов (implementation + tests + doc)
 > **Scope**: `core/services/profiling/rocprofiler_timing_source.cpp` (extend) +

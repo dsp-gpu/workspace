@@ -1,5 +1,7 @@
 # TASK: Profiler v2 — Closeout (что осталось после RemoveLegacy)
 
+> ✅ **✅ DONE 2026-06-01 — все 3 закрывающих таска (Documentation/CI/Q7) закрыты; Profiler v2 production на gfx1201.**
+
 > **Статус**: 🟡 Active — закрываем последние документационные хвосты + Q7 backlog
 > **Дата обновления**: 2026-04-27 (после `TASK_Profiler_v2_RemoveLegacy DONE`)
 > **Источник спеки**: `MemoryBank/specs/GPUProfiler_Rewrite_Proposal_2026-04-16.md`

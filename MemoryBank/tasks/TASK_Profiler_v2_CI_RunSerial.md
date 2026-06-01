@@ -1,5 +1,7 @@
 # TASK: Profiler v2 — CI workflow + RUN_SERIAL polish
 
+> ✅ **✅ DONE 2026-06-01 — решено архитектурно: один последовательный test_core_main, RUN_SERIAL не нужен (правило 06).**
+
 > **Дата создания**: 2026-04-27
 > **Effort**: 1-2 часа
 > **Scope**: `core/tests/CMakeLists.txt` (RUN_SERIAL) + опционально `workspace/.github/workflows/`

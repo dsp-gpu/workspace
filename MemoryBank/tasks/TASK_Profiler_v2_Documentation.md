@@ -1,5 +1,7 @@
 # TASK: Profiler v2 — Documentation Closeout
 
+> ✅ **✅ DONE 2026-06-01 — core/Doc/Services/Profiling/Full.md написан + правило 06 актуализировано.**
+
 > **Дата создания**: 2026-04-27
 > **Effort**: 4-6 часов
 > **Scope**: `core/Doc/`, `MemoryBank/specs/`, `MemoryBank/sessions/`, doxygen-комментарии в `*_benchmark_rocm.hpp` 5 репо

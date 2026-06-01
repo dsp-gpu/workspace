@@ -1,5 +1,7 @@
 # TASK: KernelCache v2 — Closeout (2026-04-27)
 
+> ✅ **✅ DONE 2026-06-01 — kernel_cache_v2 слита в core/main, ручной hiprtc вычищен, pre-warm cache работает.**
+
 > **Дата создания**: 2026-04-27 утро (после deep review + 12 fixes + 7 репо зелёные)
 > **Статус**: code DONE на 100%, осталась документация + git + опц. acceptance проверки
 > **Effort оценка**: 3-5 ч (без опц.) / 5-8 ч (с опц.)

@@ -1,150 +1,131 @@
 # 🗂️ DSP-GPU — MemoryBank MASTER INDEX
 
-> **Workspace**: `E:\DSP-GPU\`
+> **Workspace**: `/home/alex/DSP-GPU/` (Debian 13 trixie — рабочий полигон)
 > **Organization**: `github.com/dsp-gpu`
-> **Исходный проект**: `E:\C++\GPUWorkLib\` (монолит, не трогаем!)
-> **Последнее обновление**: 2026-05-12 ночь (namespace migration 7/7 + Debian deploy scripts — см. `sessions/2026-05-12.md`)
+> **Эталон-монолит**: `/home/alex/C++/GPUWorkLib/` (не трогаем!)
+> **GPU**: AMD Radeon RX 9070 (gfx1201) + MI100 (gfx908) · **ROCm 7.2+ / HIP**
+> **Последнее обновление**: 2026-06-01 (Profiler/KernelCache v2 техдолг закрыт + верифицирован на gfx1201)
 
 ---
 
-## 🚦 Статус: Миграция GPUWorkLib → dsp-gpu
+## 🚦 Статус проекта
+
+Миграция GPUWorkLib (монолит) → dsp-gpu (10 модульных репо) — **завершена и принята на GPU**.
 
 | Фаза | Описание | Статус |
 |------|----------|--------|
-| [Фаза 0](tasks/TASK_ModArch_Phase0_Audit.md) | Аудит зависимостей | ✅ DONE |
-| [Фаза 1](tasks/TASK_ModArch_Phase1_Skeleton.md) | CMake-скелеты 9 репо | ✅ DONE + pushed |
-| [Фаза 2](tasks/TASK_ModArch_Phase2_Copy.md) | Копирование кода | ✅ DONE |
-| [Фаза 3](tasks/TASK_ModArch_Phase3_CMake.md) | CMake-адаптация | ✅ DONE |
-| [Фаза 3b](tasks/TASK_ModArch_Phase3b_Python.md) | Python bindings | ✅ DONE |
-| **Фаза 3c** | **AMD-стандарт миграция + ScopedHipEvent RAII** | ✅ **DONE 2026-04-15** |
-| **Фаза 3d** | **Namespace migration legacy → `dsp::<repo>::*`** | ✅ **DONE 2026-05-12** (7/7 модулей в origin/main, ждёт Debian acceptance) |
-| [Фаза 4](tasks/TASK_ModArch_Phase4_Test.md) | Тестирование на Linux GPU | 🟡 **IN_PROGRESS** — Фаза 4.1 acceptance 13.05 |
-| **Фаза 4.1** | **Debian Acceptance namespace migration** | ⬜ **ГОТОВО К ЗАПУСКУ 13.05** — `tasks/TASK_morning_handoff_2026-05-13.md` |
+| 0 | Аудит зависимостей | ✅ DONE |
+| 1 | CMake-скелеты 9 репо | ✅ DONE + pushed |
+| 2 | Копирование кода | ✅ DONE |
+| 3 | CMake-адаптация | ✅ DONE |
+| 3b | Python bindings | ✅ DONE |
+| 3c | AMD-стандарт + ScopedHipEvent RAII | ✅ DONE 2026-04-15 |
+| 3d | Namespace `dsp::<repo>::*` (7/7) | ✅ DONE 2026-05-12 |
+| **4** | **Testing на Debian GPU (gfx1201 + ROCm 7.2)** | ✅ **DONE 2026-06-01** |
+
+### Фаза 4 — что принято (acceptance на RX 9070)
+
+- ✅ **Namespace acceptance 26/26 PASS** (2026-05-13) — 7/7 build, 9/9 ctest, 8/8 Python imports
+- ✅ **Python migration 53/54 PASS** (2026-05-21) — 1 off-scope (нужен LLM api_keys.json)
+- ✅ **Profiler v2** — `new_profiler` слита в main 7/7 репо; **core: 108 PASS / 0 FAIL / 3 SKIP** на gfx1201 (2026-06-01); Record latency 276 ns, golden export, Q7 timing-source
+- ✅ **KernelCache v2** — `kernel_cache_v2` слита в core/main; ручной hiprtc вычищен; pre-warm cache (.hsaco + manifest SHA256)
+- 🔜 Tag `v0.2.0` — готов к простановке (ждёт OK Alex)
 
 ---
 
-## 🎯 Что завтра на Linux GPU (Radeon 9070 + ROCm 7.2)
+## 📊 Статус репо (2026-06-01, всё в origin/main)
 
-**Точка входа**: → [`tasks/TASK_morning_handoff_2026-05-13.md`](tasks/TASK_morning_handoff_2026-05-13.md)
-
-```bash
-# 3 шага, скрипты автоматизации в scripts/debian_deploy/:
-cd /home/alex/DSP-GPU
-
-# Шаг 1 — ROCm devkit install (5-10 мин)
-bash scripts/debian_deploy/install_rocm_devkit.sh
-
-# Шаг 2 — Acceptance 7 мигрированных модулей (1-2 ч)
-bash scripts/debian_deploy/acceptance_namespace_migration.sh
-
-# Шаг 3 (опц.) — embed_server для Continue (1 ч)
-# Подробности в scripts/debian_deploy/README.md
-```
-
-**Подготовлено вечером 12.05**:
-- 76 .deb ROCm devkit в `D:\offline-debian-pack\7_dop_files\lib_deb\` (3.7 GB через WSL2 noble)
-- 5 deploy скриптов в `scripts/debian_deploy/`
-- 7 модулей с `dsp::<repo>::*` namespace в origin/main
-
----
-
-## 📊 Статус репо (2026-05-12 ночь, после namespace migration)
-
-| Репо | Последний commit | Namespace |
-|------|------------------|-----------|
-| **core** | (без изменений 2026-05-12) | `drv_gpu_lib::*` (canonical for core infra) |
-| **spectrum** | `f7a9a26` Phase B structural cleanup + CMake | `dsp::spectrum` ✅ |
-| **stats** | `228d01e` Phase B structural cleanup + CMake | `dsp::stats` ✅ |
-| **strategies** | `4808688` Phase B structural cleanup + CMake | `dsp::strategies` ✅ |
-| **signal_generators** | `ac5ac2b` Phase B structural cleanup + CMake | `dsp::signal_generators` ✅ |
-| **linalg** | `7474571` CMake target_sources update | `dsp::linalg` ✅ |
-| **radar** | `57e85d7` fm_correlator drv_gpu_lib → dsp::radar | `dsp::radar` ✅ |
-| **heterodyne** | `f353e42` Phase 3+B Doc/RAG + structural | `dsp::heterodyne` ✅ |
-| **DSP** (meta) | (без изменений 2026-05-12) | — |
-| **workspace** | `3af4bb8` TASK morning handoff 2026-05-13 | — |
-
-**⏳ Все 7 модулей запушены, ждут Debian acceptance 13.05.**
+| Репо | HEAD | Namespace | Тесты на GPU |
+|------|------|-----------|--------------|
+| **core** | `8a9c17b` | `drv_gpu_lib::*` (canonical) | ✅ 108/0/3 (gfx1201) |
+| **spectrum** | `ef9e899` | `dsp::spectrum` | ✅ acceptance |
+| **stats** | `88e5e79` | `dsp::stats` | ✅ acceptance |
+| **signal_generators** | `0ffb8fb` | `dsp::signal_generators` | ✅ acceptance |
+| **heterodyne** | `d7686ac` | `dsp::heterodyne` | ✅ acceptance |
+| **linalg** | `934e424` | `dsp::linalg` | ✅ acceptance + 15× ScalarAbsError |
+| **radar** | `bc96301` | `dsp::radar` | ✅ acceptance |
+| **strategies** | `a8022a4` | `dsp::strategies` | ✅ 53/54 Python |
+| **DSP** (meta) | `b5c6679` | — | — |
+| **workspace** | `285b9e9` | — | — |
 
 ---
 
 ## 📁 Структура workspace
 
 ```
-E:\DSP-GPU\
-├── CLAUDE.md
-├── DSP-GPU.code-workspace
-├── MemoryBank/                     ← spec + tasks + changelog + prompts
+/home/alex/DSP-GPU/
+├── CLAUDE.md · DSP-GPU.code-workspace
+├── MemoryBank/                     ← spec + tasks + changelog + rules (canonical)
 ├── .vscode/ + .claude/
 │
-├── core/                           ← DrvGPU + ScopedHipEvent (generic)
+├── core/                           ← DrvGPU + ProfilingFacade v2 + ScopedHipEvent
 ├── spectrum/                       ← FFT + filters + lch_farrow
-├── stats/                          ← statistics + SNR_05
+├── stats/                          ← statistics + SNR
 ├── signal_generators/              ← CW/LFM/Noise/Script/Form
 ├── heterodyne/                     ← Dechirp/NCO/Mix
 ├── linalg/                         ← vector_algebra + capon
 ├── radar/                          ← range_angle + fm_correlator
 ├── strategies/                     ← pipelines v1
-└── DSP/                            ← мета-репо + Python/ + Doc/
+└── DSP/                            ← мета-репо + Python/ + Doc/ + Results/
 ```
+
+---
+
+## 🧪 Параллельный трек — LLM & RAG (finetune-env, отдельный репо)
+
+> Полная история → `tasks/IN_PROGRESS.md` (верхние секции) + `.claude/rules/17-llm-bench.md`.
+
+- **RAG-стек** на Debian: PG + Qdrant + Ollama + embed + dsp-asst (systemd autostart). 19,961 row в `rag_dsp.*`.
+- **llm_bench** schema (`gpu_rag_dsp.llm_bench`) — multi-project compare (dsp-gpu / pao-contrib / rag-mentor).
+- **Phase 6** — 3 модели × 2 проекта, no catastrophic forgetting (14B-DSP 3.2=3.2).
+- **Phase 7** (2026-06-01) — DeepSeek compare A→D done; ни одна не бьёт production-стек. Phase E (train R1-Distill-14B) ждёт FP16 base (качается дома).
+- **Production LLM**: `qwen3.6-mtp-llamaserver` Q4_K_M (с 2026-05-26).
 
 ---
 
 ## 📚 Ключевые документы
 
-### 📝 Specs (ревью)
-| Документ | Дата | Тема |
-|----------|------|------|
-| [review_core_deep_2026-04-16.md](specs/review_core_deep_2026-04-16.md) | 16.04 | **core глубокое ревью — 15 находок** |
-| [core_spectrum_REVIEW_2026-04-15.md](specs/core_spectrum_REVIEW_2026-04-15.md) | 15.04 | core + spectrum follow-ups |
-| [review_stats_2026-04-15.md](specs/review_stats_2026-04-15.md) | 15.04 | stats SNR_05 блокер |
-| [review_heterodyne_2026-04-15.md](specs/review_heterodyne_2026-04-15.md) | 15.04 | heterodyne — почти чист |
-| [review_linalg_2026-04-15.md](specs/review_linalg_2026-04-15.md) | 15.04 | linalg |
-| [agents_orchestrators_REVIEW.md](specs/agents_orchestrators_REVIEW.md) | 14.04 | 17 правок агентов |
-| [modular_architecture_plan.md](specs/modular_architecture_plan.md) | 12.04 | Общий план архитектуры |
+### 📝 Specs (ревью / аудиты)
+| Документ | Тема |
+|----------|------|
+| [core_spectrum_REVIEW_2026-04-15.md](specs/core_spectrum_REVIEW_2026-04-15.md) | core + spectrum review |
+| [GPUProfiler_Rewrite_Proposal_2026-04-16.md](specs/GPUProfiler_Rewrite_Proposal_2026-04-16.md) | Profiler v2 proposal |
+| [KernelCache_v2_Proposal_2026-04-16.md](specs/KernelCache_v2_Proposal_2026-04-16.md) | KernelCache v2 proposal |
+| [phase7_compare_2026-06-01.md](specs/phase7_compare_2026-06-01.md) | LLM Phase 7 DeepSeek compare |
 
-### 📋 Tasks
+### 📐 Doc (новое)
+| Документ | Тема |
+|----------|------|
+| `core/Doc/Services/Profiling/Full.md` | ProfilingFacade v2 — полный API (01.06) |
+
+### 📋 Активные / отложенные таски
 | Документ | Статус |
 |----------|--------|
-| [TASK_Core_Spectrum_Review_2026-04-15.md](tasks/TASK_Core_Spectrum_Review_2026-04-15.md) | ⏸ T0+T5 на GPU завтра |
-| [TASK_Stats_Review_2026-04-15.md](tasks/TASK_Stats_Review_2026-04-15.md) | ⏸ T6 на GPU завтра |
-| [TASK_Radar_Migration_2026-04-15.md](tasks/TASK_Radar_Migration_2026-04-15.md) | ✅ DONE |
-| [TASK_Core_Review_Fixes_2026-04-16.md](tasks/TASK_Core_Review_Fixes_2026-04-16.md) | ✅ DONE (T1-T10 verified) |
-| [TASK_Spectrum_Review_Followups.md](tasks/TASK_Spectrum_Review_Followups.md) | Частично закрыт |
-
-### 📊 Changelog (ночная сессия 2026-04-15)
-| Файл | Что сделано |
-|------|-------------|
-| [2026-04-15_core_spectrum_followups.md](changelog/2026-04-15_core_spectrum_followups.md) | core+spectrum — ScopedHipEvent + shim |
-| [2026-04-15_stats_snr_integration.md](changelog/2026-04-15_stats_snr_integration.md) | stats CMake→spectrum, SNR_05 |
-| [2026-04-15_signal_generators_cleanup.md](changelog/2026-04-15_signal_generators_cleanup.md) | compile fix + ScopedHipEvent |
-
-### 📨 Prompts (готовые для новых сессий)
-| Файл | Использование |
-|------|---------------|
-| [prompts/README.md](prompts/README.md) | Как использовать |
-| [prompts/TEMPLATE_continue_review.md](prompts/TEMPLATE_continue_review.md) | Шаблон |
-| [prompts/2026-04-16_continue_core_spectrum.md](prompts/2026-04-16_continue_core_spectrum.md) | **На завтра** |
+| `tasks/IN_PROGRESS.md` | 🟢 актуальный указатель (LLM Phase 7 + техдолг закрыт) |
+| `tasks/TASK_Phase7E_train_r1distill14b_2026-06-01.md` | 🟡 ждёт FP16 base |
+| `.future/TASK_remove_opencl_legacy_classes_2026-05-08.md` | ⏸ инвентаризация caller'ов factory |
+| `.future/TASK_pybind_review.md` · `TASK_gtest_variant...` · `TASK_script_dsl_rocm.md` · `TASK_namespace_migration_legacy...` | ⏸ перспективные |
 
 ---
 
-## 🔖 TODO на завтра
+## 🔖 Что дальше (не горит)
 
 | # | Задача | Когда |
 |---|--------|-------|
-| 1 | Сборка всех 8 репо на Linux GPU (baseline + ctest) | утром |
-| 2 | ScopedHipEvent в linalg/tests/ (custom паттерны: `t_start`, `EventGuard8`) | после билда |
-| 3 | ~~Глубокое ревью core~~ → [review](specs/review_core_deep_2026-04-16.md) + [task](tasks/TASK_Core_Review_Fixes_2026-04-16.md) | ✅ DONE — T1-T10 верифицированы, R16-R19 отложены |
-| 4 | Git push tags v0.2.0 (если сборка зелёная) | после OK Alex |
+| 1 | Tag `v0.2.0` на все 10 репо (release) | после OK Alex |
+| 2 | LLM Phase 7E — train R1-Distill-14B (FP16) | после привоза base |
+| 3 | `.future/` — OpenCL legacy classes, pybind review | по необходимости |
 
 ---
 
 ## ⚠️ Важные ссылки
 
-- **Рабочий код**: `E:\C++\GPUWorkLib\` (эталон, не трогать!)
+- **Эталон-монолит**: `/home/alex/C++/GPUWorkLib/` (не трогать!)
 - **GitHub org**: `github.com/dsp-gpu`
-- **Новый workspace**: `E:\DSP-GPU\`
-- **Ветки**: `main` = Linux/ROCm, `nvidia` = Windows/OpenCL (не объединяются)
+- **LLM/RAG**: `/home/alex/finetune-env/` (отдельный git-репо)
+- **Ветки**: `main` = Linux/ROCm (рабочая). Профайлер/кэш-ветки удалены 01.06 (слиты в main).
+- **Полигон**: 🏠 домашняя RX 9070 (тесты/обучение). Дома RTX 2080 Ti (качать). Сервер 10.10.4.105 — не для обучения.
 
 ---
 
-*Created: 2026-04-12 | Updated: 2026-04-15 (night) | Maintained by: Кодо*
+*Created: 2026-04-12 · Updated: 2026-06-01 (Phase 4 DONE + Profiler/KernelCache v2 closed) · Maintained by: Кодо*
