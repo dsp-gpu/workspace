@@ -44,3 +44,4 @@ desktop.ini
 build/
 dist/
 scratch_myCommand.md
+unsloth_compiled_cache/

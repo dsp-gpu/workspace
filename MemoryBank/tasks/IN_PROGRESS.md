@@ -1,10 +1,27 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-05-30 (DeepSeek stack скачан → Phase 7 готова к старту 2026-06-01)
+**Обновлено**: 2026-06-01 (Phase 7 A→D ✅ DONE, Phase E ждёт FP16 base)
 
 ---
 
-## 🆕 2026-05-30 — DeepSeek stack скачан, Phase 7 запланирована
+## 🆕 2026-06-01 — Phase 7 A→D закрыта, Phase E (train R1-Distill-14B) готова
+
+**Сделано сегодня** (→ `specs/phase7_compare_2026-06-01.md`, БД run 11 dsp / 12 pao):
+- **A** deploy+smoke 6 GGUF (gfx1201, llama-server v196). ollama+dsp-asst остановлены.
+- **B** baseline FT-14B = 46 tok/s. Speculative **заблокирован** vocab 152064≠151936 (Qwen2.5 padded). Флаги v196: `--spec-draft-n-max` + `--spec-type draft-simple`.
+- **D** compare 4 моделей × dsp+pao, 48 judge-scores. **Вывод: НИ ОДНА не бьёт production-стек** (4.67-4.83); лучшее новое dsv2-lite/r1-32b = 3.83 (выше планки 3.2, ниже боевых).
+- **Удалены GGUF** r1-distill-14b + r1-distill-32b (-28 ГБ). Оставлены dsv2-lite, r1-0528-8b, драфты. Записи в БД сохранены.
+
+**Активный таск** → `TASK_Phase7E_train_r1distill14b_2026-06-01.md`:
+- Alex качает дома FP16 `deepseek-ai/DeepSeek-R1-Distill-Qwen-14B` (~28 ГБ) → SSD → локально.
+- Кодо: train ЛОКАЛЬНО (тот же конфиг что Qwen v7) → GGUF → compare vs Qwen-FT.
+- 🏠 **Полигон = домашняя RX 9070** (НЕ сервер). Локальный venv рабочий: torch 2.11.0+rocm7.2, unsloth 2026.5.8, peft/trl. bnb 0.49.2 — проверить NaN на smoke-100.
+
+**Follow-up:** speculative-fix (draft с vocab 152064 / ngram), завершить Qwen v7 (100→750) для равного сравнения.
+
+---
+
+## 🗄 2026-05-30 — DeepSeek stack скачан (история)
 
 **Скачано** (50.7 GB, `D:\offline-debian-pack\1_models\DeepSeek\`): 6 GGUF — 2 draft (Qwen2.5-Coder-1.5B, R1-Distill-1.5B) + R1-0528-Qwen3-8B + R1-Distill-14B + DeepSeek-Coder-V2-Lite + R1-Distill-32B. Все целые.
 
