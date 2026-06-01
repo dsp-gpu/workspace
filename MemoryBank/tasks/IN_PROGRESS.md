@@ -429,7 +429,7 @@ Research → `specs/deepseek_analysis_2026-05-28.md`. Память → `project_
 - `signal_generators/python/py_lfm_analytical_delay.hpp` (-184 строки)
 - `heterodyne/python/py_heterodyne.hpp` (-215 строк)
 - Doc DEPRECATED markers в `spectrum/Doc/{API,filters_API}.md` + `heterodyne/Doc/{API,Full,copy/heterodyne_Full}.md`
-- Часть B (5 legacy OpenCL .hpp классов) → `TASK_remove_opencl_legacy_classes_2026-05-08.md`
+- Часть B (5 legacy OpenCL .hpp классов) — ❌ ОТМЕНЕНА 2026-06-01 (Alex: оставить OpenCL-генераторы as-is, задача удалена)
 - Подробности: коммиты `74d7c0a` (spectrum) + `74c34dd` (signal_generators) + `cba392e` (heterodyne)
 
 ### Phase A QLoRA diagnostic
@@ -512,7 +512,7 @@ Research → `specs/deepseek_analysis_2026-05-28.md`. Память → `project_
 | V1 | [TASK_validators_port_from_GPUWorkLib_2026-05-03.md](TASK_validators_port_from_GPUWorkLib_2026-05-03.md) — `MaxRelError/RmseError/...` | ✅ ≈90% | — | Debian |
 | V2 | [TASK_validators_linalg_pilot_2026-05-04.md](TASK_validators_linalg_pilot_2026-05-04.md) — пилот `gpu_test_utils::*` | ✅ **DONE 13.05** (15 уч. `ScalarAbsError` в linalg/tests) | — | Debian + RX 9070 |
 
-> ~~O1 (TASK_remove_opencl_legacy_classes)~~ перенесён в `MemoryBank/.future/` 21.05.26 после попытки выполнения — задача больше чем «удалить 5 файлов»: классы активно используются в `signal_generator_factory.cpp` и `signal_service.hpp` как public API. Требует переписывания factory + миграции зависимых caller'ов на `*ROCm` версии. Возможно вернёмся позже отдельным TASK с инвентаризацией caller'ов.
+> ~~O1 (TASK_remove_opencl_legacy_classes)~~ — ❌ **ОТМЕНЕНА НАСОВСЕМ 2026-06-01**. Решение Alex: 5 OpenCL-генераторов (cw/form/form_script/delayed_form/lch_farrow) **оставить как есть**, не удалять. Таск-файл удалён из `.future/`. Больше не поднимать.
 
 ### Phase B+ (после 12.05)
 
@@ -524,7 +524,7 @@ Research → `specs/deepseek_analysis_2026-05-28.md`. Память → `project_
 
 ## Перспективные (`.future/`)
 
-- [TASK_script_dsl_rocm.md](../.future/TASK_script_dsl_rocm.md) — runtime HIP DSL
+- ~~TASK_script_dsl_rocm~~ — ✅ РЕАЛИЗОВАН (ScriptGeneratorROCm + FormScriptGeneratorROCm, DSL→HIP через GpuContext+kernel_cache_v2 disk cache); таск удалён 2026-06-01
 - [TASK_pybind_review.md](../.future/TASK_pybind_review.md) — pybind issues
 - [TASK_gtest_variant_for_external_projects.md](../.future/TASK_gtest_variant_for_external_projects.md) — GTest вариант AI-генератора
 - [TASK_namespace_migration_legacy_to_dsp.md](../.future/TASK_namespace_migration_legacy_to_dsp.md) — `fft_processor::*` → `dsp::spectrum::*`

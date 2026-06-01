@@ -19,7 +19,7 @@
 - module.cpp очищены от dead include-комментариев
 - Doc DEPRECATED markers в `spectrum/Doc/{API,filters_API}.md` + `heterodyne/Doc/{API,Full,copy/heterodyne_Full}.md`
 
-→ **Замещающий TASK для остатков**: [TASK_remove_opencl_legacy_classes_2026-05-08.md](TASK_remove_opencl_legacy_classes_2026-05-08.md) (5 legacy OpenCL .hpp классов — миграция include'ов на `*_rocm.hpp` версии).
+→ **Остаток (5 legacy OpenCL .hpp классов)**: ❌ ОТМЕНЁН 2026-06-01 — Alex решил оставить OpenCL-генераторы (cw/form/form_script/delayed_form/lch_farrow) as-is. Отдельный таск удалён.
 
 ## 📋 Part B/C/D — ждут конкретики
 

@@ -103,8 +103,7 @@
 |----------|--------|
 | `tasks/IN_PROGRESS.md` | 🟢 актуальный указатель (LLM Phase 7 + техдолг закрыт) |
 | `tasks/TASK_Phase7E_train_r1distill14b_2026-06-01.md` | 🟡 ждёт FP16 base |
-| `.future/TASK_remove_opencl_legacy_classes_2026-05-08.md` | ⏸ инвентаризация caller'ов factory |
-| `.future/TASK_pybind_review.md` · `TASK_gtest_variant...` · `TASK_script_dsl_rocm.md` · `TASK_namespace_migration_legacy...` | ⏸ перспективные |
+| `.future/TASK_pybind_review.md` · `TASK_gtest_variant...` · `TASK_namespace_migration_legacy...` | ⏸ перспективные |
 
 ---
 
@@ -114,7 +113,7 @@
 |---|--------|-------|
 | 1 | Tag `v0.2.0` на все 10 репо (release) | после OK Alex |
 | 2 | LLM Phase 7E — train R1-Distill-14B (FP16) | после привоза base |
-| 3 | `.future/` — OpenCL legacy classes, pybind review | по необходимости |
+| 3 | `.future/` — pybind review (по необходимости) | по необходимости |
 
 ---
 

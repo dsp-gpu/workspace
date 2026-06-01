@@ -32,7 +32,7 @@
 
 - Phase A migration: миграция тестов на новый pybind API → если тест падает не из-за миграции, а из-за самого pybind — сюда
 - `MemoryBank/specs/python/migration_plan_2026-04-29.md` §«API Reference» (или `api_reference_2026-04-30.md` после выноса)
-- `.future/TASK_script_dsl_rocm.md` — отдельная перспектива (ScriptGenerator runtime DSL)
+- ~~`.future/TASK_script_dsl_rocm.md`~~ — ✅ реализован (ScriptGeneratorROCm), таск удалён 2026-06-01
 
 ---
 
