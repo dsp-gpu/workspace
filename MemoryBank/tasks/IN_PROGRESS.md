@@ -1,6 +1,22 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-06-01 (Phase 7 A→D ✅ DONE, Phase E ждёт FP16 base)
+**Обновлено**: 2026-06-01 (Phase 7 A→D ✅ DONE, Phase E ждёт FP16 base + Profiler/KernelCache v2 техдолг закрыт)
+
+---
+
+## 🆕 2026-06-01 — Техдолг Profiler v2 / KernelCache v2 — фактически ЗАКРЫТ ✅
+
+Ревизия «что не сделано кроме LLM&RAG» (выбор A — техдолг профайлера). По живому коду:
+
+- **Profiler v2** — `new_profiler` смержена в `main` во **всех 7 репо**. Класса `GPUProfiler` НЕТ (только комментарии-история). `ProfilingFacade` v2 = единственный API. strategies/`new_profiler` содержит устаревший WIP (2026-04-21), main版 (2026-04-23) полнее → мержить нечего.
+- **KernelCache v2** — `kernel_cache_v2` смержена в core/main. Ручной hiprtc вычищен везде (spectrum: «Legacy CompileKernels removed 2026-03-22», теперь `GpuContext::CompileModule()`).
+- **P2/P3 закрыты по факту** (см. таблицу активных — статусы обновлены).
+
+**Сделано сегодня:**
+- ✅ `core/Doc/Services/Profiling/Full.md` — полный Doc API v2 (12 секций: facade/exporters/Q7/Q7.F/типы/DI/частые ошибки).
+- ✅ Правило `06-profiling.md` — устранён рассинхрон: устаревший `Start()/Stop()/SetEnabled/SetGPUEnabled/SetGPUInfo` → реальный `SetGpuInfo/Enable/WaitEmpty/ExportJsonAndMarkdown` (canonical + synced).
+- 🔜 Удаление мёртвых веток `new_profiler` (×7) + `kernel_cache_v2` (core) — ждёт OK.
+- 🔜 Косметика `logger.hpp` — мёртвый закомментированный `DRVGPU_LOG` alias.
 
 ---
 
@@ -491,8 +507,8 @@ Research → `specs/deepseek_analysis_2026-05-28.md`. Память → `project_
 |---|------|--------|--------|-----------|
 | O2 | [TASK_remove_opencl_pybind_2026-05-06.md](TASK_remove_opencl_pybind_2026-05-06.md) — Part A ✅ DONE 08.05; Part B/C/D — wait для конкретики | ⚠️ partial | — | Debian |
 | P1 | [TASK_python_migration_phase_B_debian_2026-05-03.md](TASK_python_migration_phase_B_debian_2026-05-03.md) — реальный прогон 54 t_*.py на gfx1201 | ✅ **DONE 21.05** (53/54 PASS) | ~3-5 ч | Debian + RX 9070 |
-| P2 | [TASK_KernelCache_v2_Closeout_2026-04-27.md](TASK_KernelCache_v2_Closeout_2026-04-27.md) — MemoryBank sync + Doc | 📋 готов | 3-5 ч | Windows |
-| P3 | [TASK_Profiler_v2_INDEX.md](TASK_Profiler_v2_INDEX.md) — 3 закрывающих таска (доки, CI, Q7 roctracer) | 📋 ждёт OK | 4-30 ч | Windows + опц. Debian |
+| P2 | [TASK_KernelCache_v2_Closeout_2026-04-27.md](TASK_KernelCache_v2_Closeout_2026-04-27.md) — KernelCache v2 | ✅ **DONE 2026-06-01** (`kernel_cache_v2` слита в core/main, ручной hiprtc вычищен везде) | — | Debian |
+| P3 | [TASK_Profiler_v2_INDEX.md](TASK_Profiler_v2_INDEX.md) — Profiler v2 (доки, CI, Q7 roctracer) | ✅ **DONE 2026-06-01** (`new_profiler` слита 7/7 репо, Q7+Q7.F в коде, Doc Full.md написан 01.06) | — | Debian |
 | V1 | [TASK_validators_port_from_GPUWorkLib_2026-05-03.md](TASK_validators_port_from_GPUWorkLib_2026-05-03.md) — `MaxRelError/RmseError/...` | ✅ ≈90% | — | Debian |
 | V2 | [TASK_validators_linalg_pilot_2026-05-04.md](TASK_validators_linalg_pilot_2026-05-04.md) — пилот `gpu_test_utils::*` | ✅ **DONE 13.05** (15 уч. `ScalarAbsError` в linalg/tests) | — | Debian + RX 9070 |
 

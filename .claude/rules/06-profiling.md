@@ -23,18 +23,19 @@ using drv_gpu_lib::profiling::ProfilingFacade;
 ## Обязательный порядок
 
 ```
-SetGPUInfo(gpu_id, info)   ← ДО Start()!
-  → Start()
-  → SetEnabled(true)
-  → SetGPUEnabled(gpu_id, true)
+SetGpuInfo(gpu_id, info)   ← ДО первого Record()!
+  → Enable(true)
   → Record / BatchRecord / ScopedProfileTimer
   → WaitEmpty()              ← ДО Export*!
-  → PrintReport / ExportMarkdown / ExportJSON
-  → Stop()
+  → PrintReport / ExportJsonAndMarkdown / Export(IProfileExporter&)
 ```
 
-Пропуск `SetGPUInfo` → «Unknown GPU» в отчёте.
+Пропуск `SetGpuInfo` → «Unknown GPU» в отчёте.
 Пропуск `WaitEmpty()` перед Export → потерянные async-записи.
+
+> 🔑 v2 API: метод — `SetGpuInfo` (маленькая `g`), вкл/выкл — `Enable(bool)`.
+> Worker поднимается в ctor singleton'а — **нет** `Start()/Stop()/SetEnabled/SetGPUEnabled`
+> (это legacy `GPUProfiler`, удалён 2026-04-27). Полный API → `core/Doc/Services/Profiling/Full.md`.
 
 ## Режимы записи
 
@@ -42,7 +43,7 @@ SetGPUInfo(gpu_id, info)   ← ДО Start()!
 |-------|-------|
 | `Record(gpu, module, name, data)` | Одиночное событие |
 | `BatchRecord(gpu, module, vector<ProfEvent>)` | Много событий — **предпочтительно** |
-| `ScopedProfileTimer t(gpu, "M", "Op");` | RAII — auto-Record при выходе |
+| `ScopedProfileTimer t(gpu, "M", "Op", stream);` | RAII — auto-Record при выходе (move-only, [[nodiscard]]) |
 
 ## Паттерн CollectOrRelease
 

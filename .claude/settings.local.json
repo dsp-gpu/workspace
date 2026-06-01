@@ -516,7 +516,13 @@
       "Bash(/home/alex/finetune-env/.venv/bin/pip list *)",
       "Bash(ssh -o ConnectTimeout=8 user@10.10.4.105 'find ~/offline-debian-pack -iname \"*R1-Distill*\" -maxdepth 3 -type d 2>/dev/null; ls ~/offline-debian-pack/1_models/ 2>/dev/null')",
       "Bash(ssh -o ConnectTimeout=10 user@10.10.4.105 ' *)",
-      "Bash(xargs sed -n '1,200p')"
+      "Bash(xargs sed -n '1,200p')",
+      "Bash(tee /tmp/cmake_configure_core.log)",
+      "Bash(touch /home/alex/DSP-GPU/core/src/services/profiling/*.cpp)",
+      "Bash(touch /home/alex/DSP-GPU/core/include/core/services/profiling/*.hpp)",
+      "Bash(/home/alex/DSP-GPU/core/build/tests/test_core_main --help)",
+      "Bash(./test_core_main)",
+      "Bash(echo \"EXIT_CODE=$?\")"
     ],
     "additionalDirectories": [
       "/home/alex/.continue",
