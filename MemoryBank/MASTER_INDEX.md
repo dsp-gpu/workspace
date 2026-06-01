@@ -103,7 +103,7 @@
 |----------|--------|
 | `tasks/IN_PROGRESS.md` | 🟢 актуальный указатель (LLM Phase 7 + техдолг закрыт) |
 | `tasks/TASK_Phase7E_train_r1distill14b_2026-06-01.md` | 🟡 ждёт FP16 base |
-| `.future/TASK_pybind_review.md` · `TASK_gtest_variant...` · `TASK_namespace_migration_legacy...` | ⏸ перспективные |
+| `.future/TASK_pybind_review.md` (пустой сборник) · `TASK_gtest_variant...` (AI на внешних GTest-проектах) | ⏸ перспективные |
 
 ---
 

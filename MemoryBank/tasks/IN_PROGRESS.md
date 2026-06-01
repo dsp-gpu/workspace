@@ -527,7 +527,7 @@ Research → `specs/deepseek_analysis_2026-05-28.md`. Память → `project_
 - ~~TASK_script_dsl_rocm~~ — ✅ РЕАЛИЗОВАН (ScriptGeneratorROCm + FormScriptGeneratorROCm, DSL→HIP через GpuContext+kernel_cache_v2 disk cache); таск удалён 2026-06-01
 - [TASK_pybind_review.md](../.future/TASK_pybind_review.md) — pybind issues
 - [TASK_gtest_variant_for_external_projects.md](../.future/TASK_gtest_variant_for_external_projects.md) — GTest вариант AI-генератора
-- [TASK_namespace_migration_legacy_to_dsp.md](../.future/TASK_namespace_migration_legacy_to_dsp.md) — `fft_processor::*` → `dsp::spectrum::*`
+- ~~TASK_namespace_migration_legacy_to_dsp~~ — ✅ DONE 7/7 + Debian acceptance 26/26; таск прибран 2026-06-01
 
 ---
 

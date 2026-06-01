@@ -522,7 +522,12 @@
       "Bash(touch /home/alex/DSP-GPU/core/include/core/services/profiling/*.hpp)",
       "Bash(/home/alex/DSP-GPU/core/build/tests/test_core_main --help)",
       "Bash(./test_core_main)",
-      "Bash(echo \"EXIT_CODE=$?\")"
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Bash(xargs -I{} basename {})",
+      "Bash(grep -l \"hooks\" .claude/settings.json .claude/settings.local.json)",
+      "Bash(python3 -c 'import json,glob *)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('/home/alex/.claude/settings.json'\\)\\); print\\('hooks:', list\\(d.get\\('hooks',{}\\).keys\\(\\)\\) or 'НЕТ'\\)\")",
+      "Bash(ls -la .git/hooks/pre-commit)"
     ],
     "additionalDirectories": [
       "/home/alex/.continue",
