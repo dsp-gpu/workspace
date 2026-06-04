@@ -75,7 +75,8 @@ finetune-env/
 │   └── advanced/                   # collect_patterns_md, code_templates, idioms, math_foundations, error_handling
 │
 ├── enrich/                         # enrich_dataset, enrich_test_gen, enrich_class_summary, watch_enrich
-├── build/                          # build_dataset_v3, dedup_top_classes, prepare_phase_b, _concat_enriched, snapshot
+├── assemble/                       # build_dataset_v3, dedup_top_classes, prepare_phase_b, _concat_enriched, snapshot
+│                                   #  (имя assemble, НЕ build/ — build/ коллизит с .gitignore + pip/setuptools)
 ├── ingest/                         # parse_test_tags, ingest_test_tags, generate_rag_manifest, generate_arch_files, apply_doxytags_repo, clean_doxytags_dups, migrate_pgvector_to_qdrant, update_rag_tags_and_claude_md
 │
 ├── train/                          # обучение
@@ -134,7 +135,7 @@ finetune-env/
 | `collect_negative_pairs, namespace_correction, hard_negatives, refusal_pairs, arch_rationale, explicit_negatives, db_facts` | `collect/anti_galluc/` |
 | `collect_patterns_md, code_templates, idioms, math_foundations, error_handling` | `collect/advanced/` |
 | `enrich_*, watch_enrich` | `enrich/` |
-| `build_dataset_v3, dedup_top_classes, prepare_phase_b, _concat_enriched, collect_dataset, collect_more_dataset` | `build/` |
+| `build_dataset_v3, dedup_top_classes, prepare_phase_b, _concat_enriched, collect_dataset, collect_more_dataset` | `assemble/` |
 | `parse_test_tags, ingest_test_tags, generate_*, apply_doxytags_repo, clean_doxytags_dups, migrate_pgvector_to_qdrant, update_rag_tags_and_claude_md` | `ingest/` |
 | `train_*, run_dynamics_v3, merge_lora, post_training, plot_train_curves, preflight_smoke_check` | `train/` |
 | `run_with_resume.sh, qwen_*.sh, run_full_*, cont_r1_*, run_dynamics_*, run_long_train_v6, run_short_test_v6, run_smoke_*` | `train/runners/` |

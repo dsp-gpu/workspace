@@ -580,7 +580,14 @@
       "Bash(nohup tail -F -n0 /tmp/qwen_biglora_cont600.log)",
       "Bash(disown)",
       "Bash(pkill -f \"tail -F.*qwen_biglora_cont600\")",
-      "Bash(bash Scripts/qwen_biglora_resume600.sh)"
+      "Bash(bash Scripts/qwen_biglora_resume600.sh)",
+      "Bash(.venv/bin/python3)",
+      "Bash(cd /home/alex/finetune-env *)",
+      "Bash(.venv/bin/python3 -c ' *)",
+      "Bash(ps -eo pid,ppid,etime,stat,cmd)",
+      "Bash(.venv/bin/python3 -m core.paths)",
+      "Bash(.venv/bin/python3 -c \"from core.paths import ensure_dirs, OUTPUT, SNAPSHOTS; ensure_dirs\\(\\); print\\('OUTPUT exists:', OUTPUT.exists\\(\\)\\); print\\('SNAPSHOTS exists:', SNAPSHOTS.exists\\(\\)\\)\")",
+      "Bash(.venv/bin/python3 -c \"from core.paths import SNAPSHOTS; f=SNAPSHOTS/'dataset_v7_train.jsonl'; print\\(f, '->', 'OK' if f.exists\\(\\) else 'НЕТ'\\)\")"
     ],
     "additionalDirectories": [
       "/home/alex/.continue",
@@ -592,7 +599,8 @@
       "/home/alex/rag-mentor/MemoryBank/.claude/rules",
       "/home/alex/finetune-env/Core/phase6_qwen3coder_30b_moe",
       "/home/alex/rag-mentor/MemoryBank/specs",
-      "/home/alex/rag-mentor/MemoryBank/sessions"
+      "/home/alex/rag-mentor/MemoryBank/sessions",
+      "/home/alex/finetune-env"
     ]
   },
   "enableAllProjectMcpServers": true,
