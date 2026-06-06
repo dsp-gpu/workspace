@@ -8,10 +8,13 @@ paths:
 
 # 06 — Профилирование GPU (ProfilingFacade v2)
 
-> ⚠️ Старый `GPUProfiler` — `@deprecated` (до Phase D).
-> В новом коде — **только `ProfilingFacade`**.
+> ✅ **`ProfilingFacade`** — новый профайлер **v2** (profiler-v2 rewrite, `core/services/profiling/`).
+> Это и есть «новый вариант GPUProfiler»: единственный API профилирования.
+> ⚠️ Legacy `GPUProfiler` **удалён 2026-04-27** (`TASK_Profiler_v2_RemoveLegacy`) — класса в коде НЕТ,
+> остались только историч. комментарии в шапках. В новом коде — **только `ProfilingFacade`**.
 > **Полные примеры** → `@MemoryBank/.claude/specs/ProfilingFacade_Usage.md`
 > **Механизм** → `@MemoryBank/.claude/specs/GPU_Profiling_Mechanism.md`
+> **Полный API v2** → `core/Doc/Services/Profiling/Full.md`
 
 ## Единая точка
 

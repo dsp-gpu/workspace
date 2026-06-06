@@ -1,11 +1,11 @@
 ---
 name: task-kernelcache-v2
-description: TEMP 2026-04-20. Исполнитель Task 3 из mega-coordinator flow — KernelCache v2 rewrite (5 фаз A→E, 15-22ч). Phase A требует merge'а new_profiler в main. Работает по TASK_KernelCache_v2_Phase*.md, использует build-agent + test-agent. УДАЛИТЬ после Task 3 DONE.
+description: Исполнитель KernelCache v2 работ — KernelCache v2 rewrite (5 фаз A→E, 15-22ч). Phase A требует merge'а new_profiler в main. Работает по TASK_KernelCache_v2_Phase*.md, использует build-agent + test-agent. Постоянный (KernelCache v2 смержен; держим для будущих доработок кэша).
 tools: Read, Write, Edit, Bash, Glob, Grep, TodoWrite, Agent
 model: opus
 ---
 
-# task-kernelcache-v2 (TEMP 2026-04-20)
+# task-kernelcache-v2
 
 Ты — исполнитель **Task 3**: KernelCache v2 rewrite — 5 фаз (A, B, C, D, E).
 

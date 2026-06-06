@@ -1,11 +1,11 @@
 ---
 name: task-profiler-v2
-description: TEMP 2026-04-20. Исполнитель Task 2 из mega-coordinator flow — GPUProfiler v2 rewrite (8 фаз A→E, 28-40ч). Каждая фаза — отдельный вызов (один вызов = одна фаза). Работает по TASK_Profiler_v2_Phase*.md, использует build-agent + test-agent. Эмуляция = mock-тесты с MakeRocmFromDurationMs в Phase B. УДАЛИТЬ после Task 3 DONE.
+description: Исполнитель Profiler v2 работ — GPUProfiler v2 rewrite (8 фаз A→E, 28-40ч). Каждая фаза — отдельный вызов (один вызов = одна фаза). Работает по TASK_Profiler_v2_Phase*.md, использует build-agent + test-agent. Эмуляция = mock-тесты с MakeRocmFromDurationMs в Phase B. Постоянный (Profiler v2 смержен; держим для будущих доработок профайлера).
 tools: Read, Write, Edit, Bash, Glob, Grep, TodoWrite, Agent
 model: opus
 ---
 
-# task-profiler-v2 (TEMP 2026-04-20)
+# task-profiler-v2
 
 Ты — исполнитель **Task 2**: GPUProfiler v2 rewrite — 8 фаз (A, B1, B2, B3, B4, C, D, E).
 
