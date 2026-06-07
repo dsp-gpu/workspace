@@ -1,6 +1,17 @@
 # 🚧 IN PROGRESS
 
-**Обновлено**: 2026-06-01 (Phase 7 A→D ✅ DONE, Phase E ждёт FP16 base + Profiler/KernelCache v2 техдолг закрыт)
+**Обновлено**: 2026-06-07
+
+---
+
+## 🆕 2026-06-07 — llm-router (агентный кодинг-оркестратор) — спека готова, Phase 0 next
+
+**Активный таск** → [TASK_llm_router_phase0.md](TASK_llm_router_phase0.md) (каркас + реестр, 1-2 дня).
+**Спека** → [specs/llm_router_architecture_2026-06-07.md](../specs/llm_router_architecture_2026-06-07.md).
+
+Развилка A/B/CLARIFY + агентный pipeline (generate→review→run→verify) + БД anti-hallucination (`entity_registry` из `L2_symbols`). Tract A = 14B-FT (loss 0.45) + RAG, Tract B = 35B-A3B-MTP @ :8080 (~50 t/s). Reuse rag-mentor (bge-m3 1024, Qdrant, реестр). Цель — переносимый полигон → DeepSeek v4.
+
+**Открыто (1):** режим VRAM V1(`-cmoe`)/V2/V3 — старт V3, цифры `-cmoe` → решение Phase 2.
 
 ---
 
