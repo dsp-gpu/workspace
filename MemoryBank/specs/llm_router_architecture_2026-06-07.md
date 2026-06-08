@@ -11,21 +11,22 @@
 
 ## 1. Цель и принципы
 
-Система с **развилкой на два пути** + **агентный pipeline**. Не «просто роутер».
+Система с **развилкой на N трактов через реестр способностей** + **агентный pipeline**. Не «просто роутер».
 
-**Развилка (ядро):**
-- **Путь A — доменный**: код с нашими наработанными библиотеками/устройствами (контроллеры, структуры, протоколы, GRASP-паттерны на наших модулях). Модель — **Tract A (Qwen2.5-Coder-14B-FT)** + RAG.
-- **Путь B — независимый**: новый/обычный код, не привязанный к нашим библиотекам. Модель — **Tract B (Qwen3.6-35B-A3B-MTP)**.
+**Тракты (растущий реестр, §4):** каждый тракт = профиль способностей в `tract_registry`. Старт — 2, добавление нового = запись профиля (голову почти не трогаем):
+- **Tract A — доменный**: код с нашими библиотеками/устройствами. `Qwen2.5-Coder-14B-FT` + RAG.
+- **Tract B — независимый**: новый/общий код. `Qwen3.6-35B-A3B-MTP`.
+- **Tract C+ (план):** отчёты, и др. спец-модели — добавляются как профили без переобучения роутера.
 
 **Принципы:**
-1. **Оба пути первичны** — доменный код (A) И независимый код (B).
-2. **FT + RAG вместе, не вместо** (§6.3): FT знает *как/стиль*, RAG даёт *точные факты*.
-3. **Не угадывать — переспрашивать** (CLARIFY, §4.3), как Кодо (rule 01).
-4. **Контроль галлюцинаций** через БД-реестр реальных сущностей (§5).
-5. **Переносимость — требование №1**: модели за `LLMBackend`, смена `14B/35B → DeepSeek v4` = правка конфига, не кода.
-6. **Не плодить сущности**: embedder/Qdrant/Qwen/реестр — reuse из rag-mentor.
+1. **N трактов через реестр**: маршрут = similarity(запрос, профили трактов), не фиксированный switch.
+2. **FT + RAG вместе** (§6.3): FT — стиль/паттерны, RAG — точные факты.
+3. **Не угадывать — переспрашивать** (CLARIFY через порог уверенности, §4.3).
+4. **Контроль галлюцинаций** через БД-реестр сущностей (§5).
+5. **Переносимость**: модели за `LLMBackend`, смена `14B/35B → DeepSeek v4` = правка конфига.
+6. **Не плодить сущности**: embedder/Qdrant/реестр — reuse rag-mentor.
 
-**Назначение PoC**: учебный переносимый полигон на RX 9070 → перенос на мощный сервер → локальный **DeepSeek v4**.
+**PoC**: переносимый полигон RX 9070 → сервер → локальный **DeepSeek v4**.
 
 ---
 
@@ -67,10 +68,10 @@ HTTP query
 │ RAG retrieve (rag-mentor POST /search :7821 → top-k, bge-m3 1024)  │
 │         │                                                          │
 │         ▼                                                          │
-│ ROUTER (§4): сигналы → путь  A | B | CLARIFY                       │
+│ ROUTER (§4): сигналы → тракт по реестру (similarity) | CLARIFY     │
 │         │                                                          │
 │         ▼  ОРКЕСТРАНТ (state-machine, §7)                          │
-│   GENERATE   A→Tract A(14B-FT)+RAG  │  B→Tract B(35B-MTP)          │
+│   GENERATE   tract из реестра: A=14B-FT+RAG · B=35B-MTP · C+=…     │
 │         ▼                                                          │
 │   DEEP REVIEW   Tract B (35B) — всегда, независимый критик         │
 │         ▼                                                          │
@@ -87,54 +88,56 @@ backends: Tract A llama-server :8001 · Tract B :8080 · rag-mentor HTTP
 
 ---
 
-## 4. Router — выбор пути A / B / CLARIFY
+## 4. Router — выбор тракта по реестру способностей
 
-### 4.1. Decision-логика (старт — без обучения)
+### 4.1. Реестр трактов (`tract_registry`)
 
-rag-mentor индексирует **только наши** библиотеки → similarity сам отвечает «наше / не наше». Отдельный LLM-классификатор на старте **не нужен** (RAG всё равно зовём, score бесплатен).
+Каждый тракт = профиль способностей. Маршрут = **similarity(сигналы запроса, профили)**, не фиксированный switch → новый тракт (отчёты и т.д.) добавляется записью, без переобучения роутера.
 
-```python
-rag   = rag_mentor.search(query, k=5, rerank=True)   # POST /search :7821
-score = rag.hits[0].score
-
-# 1) Явное намерение пользователя БЬЁТ score
-if   intent == "from_scratch":  route = B          # «с нуля», «независимо»
-elif intent == "use_ours":      route = A          # «используя наши модули X»
-
-# 2) Уверенные зоны по similarity (пороги θ_high/θ_low калибруем позже)
-elif score >= θ_high:           route = A          # уверенно наше
-elif score <  θ_low:            route = B          # уверенно не наше
-
-# 3) Серая зона → доп. сигналы; конфликт/много кандидатов → переспрос
-elif domain_signal and one_candidate:   route = A
-elif domain_signal and many_candidates: route = CLARIFY   # §4.3
-else:                                    route = B
+```sql
+CREATE TABLE llm_bench.tract_registry (
+  tract_id   TEXT PRIMARY KEY,          -- 'A' | 'B' | 'reports' | ...
+  role       TEXT,                       -- domain_codegen | general_codegen | reports
+  endpoint   TEXT,                       -- llama-server :8001 / :8080 / ...
+  capability_text TEXT,                  -- описание «что умеет» → bge-m3 эмбеддинг
+  capability_emb  BYTEA,                 -- кэш эмбеддинга профиля (1024)
+  keywords   TEXT[],                     -- триггер-лексика тракта
+  enabled    BOOL DEFAULT true, priority INT DEFAULT 0
+);
 ```
 
-### 4.2. Три сигнала домена
+### 4.2. Decision-логика (старт — rule-based, без обучения)
 
-1. **`entity_hit`** — имя нашей сущности из реестра (`N0121`, `FFTProcessor`). → §5.
-2. **`domain_keyword`** — лексика: `GPU/HIP/ROCm/kernel/модуль/DSP`, имена 10 репо. Ловит «напиши **FFT модуль GPU**» без точного имени класса.
-3. **`intent_marker`** — `use_ours` («используя наши модули», «отрефактори») → A; `from_scratch` («с нуля», «чистый python», чужой стек) → B.
+```python
+rag   = rag_mentor.search(query, k=5, rerank=True)        # POST /search :7821
+feats = build_features(query, rag)                         # §4.3
+scores = {t.tract_id: tract_score(feats, t)               # similarity + keyword + intent
+          for t in tract_registry if t.enabled}
+top, second = top2(scores)
 
-`domain_signal = entity_hit OR domain_keyword OR (intent == use_ours)`.
+if   feats.intent_forces_tract:        route = forced     # явное «используя наши X» / «с нуля»
+elif top.score - second.score < τ_margin:  route = CLARIFY  # неуверенно — переспрос (§4.4)
+else:                                   route = top.tract_id
+```
 
-### 4.3. CLARIFY — переспрос вместо угадывания
+rag-mentor индексирует **только наши** библиотеки → его score сам разделяет «наше/не наше». Профиль Tract A ловит высокий RAG-score + domain-сигналы; Tract B — дефолт при низком score.
 
-Третий исход. Когда:
-- конфликт сигналов (`entity_hit`=A, но `intent`=from_scratch);
-- несколько кандидатов («FFT» = GPU-модуль C++ vs python с нуля);
-- серая зона + высокая цена ошибки.
+### 4.3. Сигналы запроса (`build_features`)
 
-Формат:
+1. **`entity_hit`** — имя сущности из реестра (`N0121`, `FFTProcessor`), §5.
+2. **`domain_keyword`** — `GPU/HIP/ROCm/kernel/DSP` + имена 10 репо.
+3. **`intent_marker`** — `use_ours` → форс домен-тракт; `from_scratch` → форс независимый.
+4. **`rag_top1_score`** + число кандидатов.
+
+### 4.4. CLARIFY — переспрос (порог `τ_margin`, не отдельный класс)
+
+Когда top-2 тракта близки или конфликт сигналов (`entity_hit` vs `intent=from_scratch`):
 ```
 Нашёл варианты — какой?
   A) GPU-модуль dsp::spectrum::FFTProcessor (C++ HIP) + python-binding — из наработок
   B) независимая реализация с нуля на python (numpy)
 ```
-Ответ → `router_decisions` (обучающий пример, чтобы CLARIFY срабатывал реже).
-
-> Пороги/веса сигналов — калибруем на данных в Phase 1-2. Сейчас фиксируем *структуру*.
+Ответ → `router_decisions` (обучающий пример). Пороги/веса — калибруем в Phase 1-2.
 
 ---
 
@@ -304,7 +307,8 @@ CREATE TABLE llm_bench.router_decisions (
   query_hash TEXT,
   -- query_embed VECTOR(1024)  ← ТОЛЬКО Phase 3 (нужен pgvector + суперюзер; в Phase 0 не создаём)
   rag_top1_score FLOAT, rag_top1_module TEXT, rag_top1_brief TEXT,  -- /search не отдаёт doc_id
-  route CHAR(1),                 -- 'A' | 'B' | 'C' (=CLARIFY)
+  route TEXT,                    -- tract_id ('A'|'B'|'reports'|...) | 'CLARIFY' (FK tract_registry)
+  route_margin FLOAT,            -- top.score - second.score (для калибровки τ_margin)
   classifier_version TEXT,       -- 'rule-v1' | 'trained-v1'
   chosen_model TEXT, escalated BOOL DEFAULT false, residency_switch BOOL DEFAULT false,
   latency_total_ms INT, latency_classify_ms INT, latency_generate_ms INT,
@@ -321,13 +325,43 @@ Retrain (Phase 3): `rows WHERE quality_score IS NOT NULL` ∪ основной 1
 
 ## 11. Trained router-head (Phase 3)
 
-Когда rule-based пороги начнут ошибаться >~10% — заменяем на trained (датасет 10-20K+ растёт, RAGRouter обгоняет rule-based при таком объёме).
+Когда rule-based пороги начнут ошибаться >~10% — заменяем на trained head (RAGRouter-подход, обгоняет rule-based на 10-20K+).
 
 ```
 q_emb[1024] ⊕ d_emb_top1[1024] ⊕ rag_score_5[5] ⊕ meta[8]  → concat[2061]
-  → MLP [2061 → 256 → 64 → 3]  → P[A], P[B], P[CLARIFY]
+  → MLP [2061 → 256 → 64 → N_tracts]  → score на каждый тракт
+CLARIFY = (max - second) < τ_margin   # порог, НЕ отдельный класс → масштаб на N
 ```
-Все эмбеддинги — bge-m3. `q_emb` и `d_emb_top1` rag-mentor по `/search` **не отдаёт** → router считает их сам (re-embed query + top1.text через bge-m3) либо добавляем эндпоинт в rag-mentor (правка rag-mentor → отдельный OK). Trained head = 0 GB VRAM. Онлайн-дообучение на production-логах.
+Выход = **N трактов** (число строк `tract_registry`), не фикс-3. Эмбеддинги bge-m3 (`q_emb`, `d_emb_top1` router считает сам — re-embed). Trained head = **0 GB VRAM**.
+
+> **Почему голова, а не генеративная LLM** (анализ `llm_router_model_choice_2026-06-08.md`): для выбора тракта генеративная LLM = +1-2 ГБ VRAM, ×10-20 latency, не точнее. Лучший роутер RouteLLM — лёгкая голова на эмбеддингах. Рост базы (42→600 модулей) живёт в RAG-индексе, не в классах.
+
+---
+
+## 11-bis. Цикл дообучения (data-flywheel + расписание)
+
+Два независимых контура: **ежедневный inкремент RAG** (дёшево) и **выходное обучение** (тяжело).
+
+### Ежедневный ingest — 00:00, git-driven
+```
+если за день были коммиты (DSP-GPU / pao):
+  git diff → изменённые файлы → cpp_parse → затронутые символы
+  → upsert в entity_registry + инкрементальный re-embed ТОЛЬКО новых → Qdrant
+эмбеддер bge-m3 заморожен; полного переиндекса нет.
+```
+Нет коммитов / не влияет на RAG → пропуск. Накопленные `router_decisions` за день → к выходному обучению.
+
+### Выходное обучение — Пт 18:00 → Пн 08:00 (VRAM-очередь, по одной модели)
+```
+1) Route-голова   (минуты)  — на router_decisions ∪ базовый 10-20K
+2) Tract A 14B-FT (часы)    — если за неделю прирост датасета домена
+3) Tract C+ генераторы (отчёты, …) — по очереди, если есть свежие данные
+→ shadow A/B 5% → промоушн если accuracy ≥ prod − 1%
+```
+- Сериализация по VRAM (17 ГБ): **одна модель за раз**, не параллельно.
+- Голова — каждые выходные (дёшево); тяжёлые тела — только при приросте данных.
+- Эмбеддер bge-m3 еженедельно **НЕ** переобучаем (пере-индекс 600 модулей = дорого, без выигрыша).
+- Окно ограничено Пн 08:00 — если очередь не успела, тела переносятся на след. выходные (голова приоритетна).
 
 ---
 
@@ -335,10 +369,11 @@ q_emb[1024] ⊕ d_emb_top1[1024] ⊕ rag_score_5[5] ⊕ meta[8]  → concat[2061
 
 | Phase | Длит. | Содержимое | DoD |
 |-------|-------|-----------|-----|
-| **0** | 1-2 дня | Repo + FastAPI скелет + `rag_client` + Tract A `:8001` + таблицы (`router_decisions`,`entity_registry`,`entity_edges`) + загрузка `L2_symbols`/`edges` (pao готов; DSP-GPU прогнать `cpp_parse`) | `/healthz` зелёный, dry-run классифицирует, реестр залит |
-| **1** | 1 нед | Развилка A/B (§4) + CLARIFY + V3-резидентность + pipeline generate→review | оба пути работают, спорное → переспрос, метрики копятся |
+| **0** | 1-2 дня | Repo + FastAPI скелет + `rag_client` + Tract A `:8001` + таблицы (`router_decisions`,`entity_registry`,`entity_edges`,**`tract_registry`** seed A/B) + загрузка `L2_symbols`/`edges` (pao готов; DSP-GPU прогнать `cpp_parse`) | `/healthz` зелёный, dry-run выбирает тракт, реестры залиты |
+| **1** | 1 нед | Выбор тракта по реестру (§4) + CLARIFY(τ) + V3-резидентность + pipeline generate→review | тракты работают, спорное → переспрос, метрики копятся |
 | **2** | 1-2 нед | VERIFY: anti-hallucination (БД) + RUN sandbox + logprob-эскалация A→B + Prometheus | галлюцинации ловятся БД, задача с исполнением → код+artifact, P95 A < 3 с |
-| **3** | 2-3 нед | Trained head на 10-20K + логах, shadow A/B | head accuracy ≥ rule + 5%, выкат |
+| **2.5** | 3-5 дн | **Flywheel-scheduler (§11-bis)**: cron ежедн. git-ingest 00:00 + выходное окно Пт→Пн (VRAM-очередь) | ingest по коммиту инкрементальный; выходной прогон головы зелёный |
+| **3** | 2-3 нед | Trained head (N трактов) на 10-20K + логах, shadow A/B | head accuracy ≥ rule + 5%, выкат |
 | **4** | по железу | Перенос на сервер: backend-конфиг → DeepSeek v4, всё always-on | то же поведение на новом железе без правки оркестратора |
 
 ---
@@ -346,11 +381,11 @@ q_emb[1024] ⊕ d_emb_top1[1024] ⊕ rag_score_5[5] ⊕ meta[8]  → concat[2061
 ## 13. Зафиксировано / открыто
 
 **Зафиксировано** (не переспрашивать):
-- Архитектура = развилка A/B/CLARIFY + агентный pipeline + БД anti-hallucination.
-- Tract A = `Qwen2.5-Coder-14B-FT` (loss ~0.45). Tract B = `Qwen3.6-35B-A3B-MTP` @ `:8080` (~50 t/s).
-- Embedder/Qdrant/реестр — reuse rag-mentor (bge-m3 1024; `L2_symbols` готов для pao).
-- Старт routing = rule-based на RAG-similarity (НЕ prompted-LLM). Trained head — Phase 3.
-- Метрики → `llm_bench`. Имя репо = `llm-router`.
+- Архитектура = **N трактов через `tract_registry`** (similarity-выбор) + CLARIFY через порог + агентный pipeline + БД anti-hallucination.
+- Tract A = `Qwen2.5-Coder-14B-FT` (~0.45). Tract B = `Qwen3.6-35B-A3B-MTP` @ `:8080` (~50 t/s). Tract C+ (отчёты) — профилем, без переобучения роутера.
+- Routing-мозг = **лёгкая голова на bge-m3** (НЕ генеративная LLM — `llm_router_model_choice_2026-06-08.md`). Старт rule-based, trained head Phase 3, выход = N трактов.
+- **Cadence (§11-bis):** ежедневный git-driven RAG-ingest 00:00; обучение Пт 18:00→Пн 08:00 (голова + тела по VRAM-очереди); bge-m3 не переобучаем.
+- Embedder/Qdrant/реестр — reuse rag-mentor. Метрики → `llm_bench`. Репо = `llm-router`.
 
 **Открыто (1 вопрос):** режим VRAM V1/V2/V3 (§8) — старт V3, цифры `-cmoe` → решение в Phase 2.
 
